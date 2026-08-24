@@ -109,6 +109,7 @@ body{
 main{max-width:1240px;margin:0 auto;padding:28px 20px 60px}
 .page-head{padding:6px 4px 22px}
 .page-head h1{font-size:27px;font-weight:700;letter-spacing:-.3px}
+.page-head h1:empty{display:none}
 .page-head .subtitle{font-size:14px;color:var(--ink2);margin-top:4px}
 .page-head .subtitle:empty{display:none}
 .page-head input{display:block;width:100%}
@@ -332,52 +333,52 @@ function sampleData(){
     { label:b[0], count:b[1], median:b[2], sd:b[3], n:b[4], color:CAT[1] },
   ];
   return normalize({
-    title: "고령층 스마트폰 UI·보이스피싱 대응 실험 결과",
-    subtitle: "피험자 4명(박시환·박선진·유찬·채민) · 7개 실험 · 총 272회 시행",
+    title: "",
+    subtitle: "",
     questions: [
-      { title:"글씨 크기별 문장 인식 정확도", note:"노안 필터 '중' 고정 · 조건당 12회 시행", type:"barV", mode:"value", unit:"%",
+      { title:"", note:"", type:"barV", mode:"value", unit:"%",
         items: ord3(["10pt",52.1,62.5,31.39,12], ["14pt",75.0,75.0,22.82,12], ["20pt",89.6,100.0,16.00,12]) },
 
-      { title:"글씨 크기별 과제 수행 시간", note:"짧을수록 좋음 · 조건당 12회 시행", type:"line", mode:"value", unit:"초",
+      { title:"", note:"", type:"line", mode:"value", unit:"초",
         items: ord3(["10pt",5.05,4.75,2.69,12], ["14pt",6.68,6.10,2.29,12], ["20pt",5.71,5.30,2.05,12]) },
 
-      { title:"음성 주파수별 안내 음성 인식 정확도", note:"조건당 11회 시행", type:"barV", mode:"value", unit:"%",
+      { title:"", note:"", type:"barV", mode:"value", unit:"%",
         items: ord3(["저음",70.5,75.0,25.71,11], ["보통",86.4,100.0,16.39,11], ["고음",93.2,100.0,15.41,11]) },
 
-      { title:"음성 주파수별 과제 수행 시간", note:"세 조건 간 차이 거의 없음 · 조건당 11회 시행", type:"barV", mode:"value", unit:"초",
+      { title:"", note:"", type:"barV", mode:"value", unit:"초",
         items: ord3(["저음",5.79,5.80,1.45,11], ["보통",5.81,5.60,1.24,11], ["고음",6.09,6.20,1.65,11]) },
 
-      { title:"문장 난이도별 정답률", note:"조건당 12회 시행", type:"barV", mode:"value", unit:"%",
+      { title:"", note:"", type:"barV", mode:"value", unit:"%",
         items: ord3(["쉬움",100.0,null,null,12], ["보통",91.7,null,null,12], ["어려움",91.7,null,null,12]) },
 
-      { title:"문장 난이도별 과제 수행 시간", note:"어려운 문장에서 시간이 크게 늘어남 · 조건당 12회 시행", type:"barV", mode:"value", unit:"초",
+      { title:"", note:"", type:"barV", mode:"value", unit:"초",
         items: ord3(["쉬움",5.43,5.05,1.15,12], ["보통",5.18,4.90,1.19,12], ["어려움",7.94,6.60,4.57,12]) },
 
-      { title:"버튼 개수별 목표 버튼 탐색 시간", note:"오조작은 전 조건 0회 · 조건당 12회 시행", type:"line", mode:"value", unit:"초",
+      { title:"", note:"", type:"line", mode:"value", unit:"초",
         items: ord3(["2개",1.15,0.95,0.61,12], ["4개",1.26,1.20,0.45,12], ["8개",2.80,2.50,1.29,12]) },
 
-      { title:"보이스피싱 경고 알림 유무별 사기 판별 정답률", note:"경고 OFF 36회 · 경고 ON 33회 시행", type:"barH", mode:"value", unit:"%",
+      { title:"", note:"", type:"barH", mode:"value", unit:"%",
         items: ab(["경고 OFF",77.8,null,null,36], ["경고 ON",97.0,null,null,33]) },
 
-      { title:"보이스피싱 경고 알림 유무별 판단 소요 시간", note:"경고가 있을 때 더 빠르게 판단 · 짧을수록 좋음", type:"barH", mode:"value", unit:"초",
+      { title:"", note:"", type:"barH", mode:"value", unit:"초",
         items: ab(["경고 OFF",2.68,1.45,3.87,36], ["경고 ON",1.70,1.40,1.15,33]) },
 
-      { title:"경고 알림 OFF — 판별 결과 분포", note:"총 36회 시행", type:"donut", mode:"count", unit:"회",
+      { title:"", note:"", type:"donut", mode:"count", unit:"회",
         items:[{ label:"정답", count:28, color:GOOD }, { label:"오답", count:8, color:BAD }] },
 
-      { title:"경고 알림 ON — 판별 결과 분포", note:"총 33회 시행", type:"donut", mode:"count", unit:"회",
+      { title:"", note:"", type:"donut", mode:"count", unit:"회",
         items:[{ label:"정답", count:32, color:GOOD }, { label:"오답", count:1, color:BAD }] },
 
-      { title:"AI 탐지 방식별 보이스피싱 판별 정확도", note:"방식당 11회 시행", type:"barH", mode:"value", unit:"%",
+      { title:"", note:"", type:"barH", mode:"value", unit:"%",
         items: ab(["규칙 기반",60.0,60.0,0.00,11], ["LLM",79.5,79.0,1.37,11]) },
 
-      { title:"AI 요약 기능 유무별 내용 이해 정확도", note:"조건당 20회 시행", type:"barH", mode:"value", unit:"%",
+      { title:"", note:"", type:"barH", mode:"value", unit:"%",
         items: ab(["요약 OFF",95.0,100.0,10.00,20], ["요약 ON",92.5,100.0,19.53,20]) },
 
-      { title:"AI 요약 기능 유무별 과제 수행 시간", note:"요약을 켜면 더 빠르게 파악 · 짧을수록 좋음", type:"barH", mode:"value", unit:"초",
+      { title:"", note:"", type:"barH", mode:"value", unit:"초",
         items: ab(["요약 OFF",6.46,5.10,4.17,20], ["요약 ON",5.52,5.05,1.89,20]) },
 
-      { title:"실험별 시행 횟수", note:"전체 272회의 구성", type:"table", mode:"count", unit:"회",
+      { title:"", note:"", type:"table", mode:"count", unit:"회",
         items:[
           { label:"보이스피싱", count:69, color:CAT[0] },
           { label:"AI 요약", count:40, color:CAT[1] },
@@ -406,7 +407,7 @@ function normalize(d){
       type: CHART_TYPES.some(t => t[0] === q.type) ? q.type : "barV",
       mode: q.mode === "value" ? "value" : "count",
       unit: String(q.unit ?? ""),
-      barGap: Number.isFinite(q.barGap) ? Math.min(70, Math.max(0, Math.round(q.barGap))) : 10,
+      barGap: Number.isFinite(q.barGap) ? Math.min(40, Math.max(0, Math.round(q.barGap))) : 4,
       items: [],
     };
     const numOrNull = v => Number.isFinite(v) ? v : (Number.isFinite(Number(v)) && v !== "" && v !== null ? Number(v) : null);
@@ -532,8 +533,11 @@ function barV(q){
   const W = 640, H = 340, m = { t: 30, r: 14, b: 54, l: 48 };
   const pw = W - m.l - m.r, ph = H - m.t - m.b;
   const sc = niceScale(Math.max(...q.items.map(i => i.count)));
+  /* 슬라이더 값(px)이 곧 막대 사이 여백 — 막대 두께는 남는 폭을 채우도록 계산됨 */
+  const gapPx = Math.min(q.barGap, n > 1 ? Math.max(0, (pw - 4 * n) / (n - 1)) : 0);
   const band = pw / n;
-  const bw = Math.min(band - 2, Math.max(4, band * (1 - q.barGap / 100)));
+  const bw = n > 1 ? (pw - gapPx * (n - 1)) / n : pw;
+  const step = bw + gapPx;
   const y = v => m.t + ph - (v / sc.max) * ph;
 
   let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(q.title)} 세로 막대그래프">`;
@@ -543,7 +547,7 @@ function barV(q){
     s += `<text x="${m.l-8}" y="${ty+4}" text-anchor="end" font-size="11" fill="var(--muted)" style="font-variant-numeric:tabular-nums">${fmt(tv)}</text>`;
   }
   q.items.forEach((it, i) => {
-    const x0 = r2(m.l + band * i + (band - bw) / 2);
+    const x0 = r2(m.l + step * i);
     const yTop = y(it.count), h = m.t + ph - yTop;
     const bx1 = r2(x0 + bw), byTop = r2(yTop), by0 = m.t + ph;
     if (h >= 4){
@@ -553,7 +557,7 @@ function barV(q){
     }
     s += `<text x="${r2(x0+bw/2)}" y="${r2((h>0?byTop:by0)-7)}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink2)" style="font-variant-numeric:tabular-nums">${esc(vstr(q, it.count))}</text>`;
     wrapLabel(it.label, band - 8).forEach((ln, li) => {
-      s += `<text x="${r2(m.l + band*i + band/2)}" y="${by0 + 16 + li*14}" text-anchor="middle" font-size="12" fill="var(--muted)">${esc(ln)}</text>`;
+      s += `<text x="${r2(x0+bw/2)}" y="${by0 + 16 + li*14}" text-anchor="middle" font-size="12" fill="var(--muted)">${esc(ln)}</text>`;
     });
   });
   return s + `</svg>`;
@@ -563,7 +567,7 @@ function barV(q){
 function barH(q){
   const n = q.items.length;
   const rowH = 40;
-  const bh = Math.min(rowH - 4, Math.max(4, rowH * (1 - q.barGap / 100)));
+  const bh = Math.max(4, rowH - q.barGap);
   const labelW = Math.min(170, Math.max(...q.items.map(i => tw(i.label, 12.5))) + 18);
   const W = 640, m = { t: 10, r: 76, b: 30, l: r2(labelW) };
   const H = m.t + n * rowH + m.b;
@@ -820,8 +824,8 @@ function cardHTML(q, idx){
         <input class="q-unit" value="${esc(q.unit)}" placeholder="단위" aria-label="단위">
         <span class="bar-gap-control" style="${showGap ? "" : "display:none"}">
           <label class="gap-label">막대 간격</label>
-          <input type="range" class="q-bargap" min="0" max="70" step="5" value="${q.barGap}" aria-label="막대 간격">
-          <span class="gap-value">${q.barGap}%</span>
+          <input type="range" class="q-bargap" min="0" max="40" step="2" value="${q.barGap}" aria-label="막대 간격(px)">
+          <span class="gap-value">${q.barGap}px</span>
         </span>
         <button class="icon-btn" data-action="up-q" title="질문 위로">↑</button>
         <button class="icon-btn" data-action="down-q" title="질문 아래로">↓</button>
@@ -898,8 +902,8 @@ document.addEventListener("input", e => {
     refreshChart(q.id); save(); return;
   }
   if (el.classList.contains("q-bargap")){
-    q.barGap = Math.min(70, Math.max(0, parseInt(el.value, 10) || 0));
-    el.closest(".bar-gap-control").querySelector(".gap-value").textContent = q.barGap + "%";
+    q.barGap = Math.min(40, Math.max(0, parseInt(el.value, 10) || 0));
+    el.closest(".bar-gap-control").querySelector(".gap-value").textContent = q.barGap + "px";
     refreshChart(q.id); save(); return;
   }
   const row = el.closest(".item-row");
