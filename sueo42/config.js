@@ -1,0 +1,40 @@
+// [설정 파일] 구글 시트 링크, 열 이름, 지역 목록을 바꾸는 곳이에요.
+// 시트를 바꾸고 싶으면 이 파일만 고치면 돼요.
+
+const CONFIG = {
+  // 구글 시트 → 파일 → 공유 → 웹에 게시 → "CSV" 로 게시한 링크를 따옴표 안에 붙여 넣으세요.
+  // 비어 있으면 아래 예시 데이터(data/sample.csv)를 사용해요.
+  SHEET_CSV_URL: "",
+
+  // 시트 링크가 비어 있을 때 쓰는 예시 데이터
+  SAMPLE_CSV_URL: "data/sample.csv",
+
+  // 시트 첫 줄(제목 줄)에 적힌 열 이름이에요. 시트의 열 이름을 바꾸면 여기도 똑같이 바꿔 주세요.
+  COLUMNS: {
+    meaning: "의미",
+    id: "표현 ID",
+    category: "카테고리",
+    region: "지역",
+    evidence: "사용 지역 근거",
+    source: "영상 출처",
+    video: "영상 링크",
+    review: "검수 여부"
+  },
+
+  // 검수 여부 칸에 이 글자가 정확히 적힌 줄만 앱에 보여요.
+  APPROVED_TEXT: "검수 완료",
+
+  // 표준 수어를 적을 때 "지역" 칸에 쓰는 글자
+  STANDARD_REGION: "표준",
+
+  // 앱에서 다루는 지역과 색깔
+  REGIONS: [
+    { name: "서울·경기", color: "#5b8def" },
+    { name: "충청", color: "#2bb3a3" },
+    { name: "전라", color: "#f2994a" },
+    { name: "경상", color: "#e0607e" }
+  ],
+
+  // 목표 단어 수 (목록 화면 위에 진행률로 보여줘요)
+  TOTAL_WORDS: 42
+};
