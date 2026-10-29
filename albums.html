@@ -93,18 +93,9 @@ main{max-width:980px;margin:0 auto;padding:0 16px 80px}
 .tracks{margin-top:22px;font-size:13px;color:var(--muted)}
 .tracks b{color:var(--ink);font-weight:700}
 
-/* ============ 다 들은 뒤 ============ */
+/* ============ 한 줄 ============ */
 .after{margin-top:36px;border-left:4px solid var(--red);padding:4px 0 4px 20px}
-.after .lbl{font-size:11px;font-weight:800;letter-spacing:.14em}
-.line{font-family:"Noto Serif KR",Georgia,serif;font-weight:700;font-size:26px;line-height:1.4;margin-top:8px;word-break:keep-all;transition:filter .3s}
-.review:not(.done) .line{filter:blur(8px);user-select:none}
-.toggle{
-  appearance:none;border:2px solid var(--ink);background:transparent;color:var(--ink);
-  font:inherit;font-size:11px;font-weight:800;letter-spacing:.14em;
-  padding:8px 16px;cursor:pointer;margin-top:16px;
-}
-.toggle:hover{background:var(--ink);color:var(--page)}
-.review.done .toggle{background:var(--ink);color:var(--page)}
+.line{font-family:"Noto Serif KR",Georgia,serif;font-weight:700;font-size:26px;line-height:1.4;word-break:keep-all}
 
 @media (max-width:720px){
   .review{padding:32px 0}
@@ -144,21 +135,15 @@ const ALBUMS = [
   },
 ];
 
-const KEY = "album-ranking:done";
-let done = {};
-try{ done = JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){}
-
 function esc(s){
   return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
 
 function render(){
   document.getElementById("list").innerHTML = ALBUMS.map((a, i) => {
-    const id = a.artist + "/" + a.title;
-    const isDone = !!done[id];
     const tracks = a.tracks.map(t => t === a.title_track ? `<b>${esc(t)}</b>` : esc(t)).join(" · ");
     return `
-    <article class="review${isDone ? " done" : ""}">
+    <article class="review">
       <div class="hero">
         <div class="cover" data-title="${esc(a.title)}">
           <img src="${esc(a.cover)}" alt="${esc(a.artist)} — ${esc(a.title)} 앨범 커버" referrerpolicy="no-referrer">
@@ -177,9 +162,7 @@ function render(){
         <p class="text">${esc(a.text)}</p>
         <p class="tracks">수록곡 — ${tracks}</p>
         <div class="after">
-          <div class="lbl">다 들은 뒤</div>
           <p class="line">“${esc(a.line)}”</p>
-          <button class="toggle" data-id="${esc(id)}">${isDone ? "다 들음 ✓" : "다 들음"}</button>
         </div>
       </div>
     </article>`;
@@ -197,14 +180,6 @@ function render(){
     else img.addEventListener("error", fallback, {once:true});
   });
 }
-
-document.getElementById("list").addEventListener("click", e => {
-  const b = e.target.closest(".toggle");
-  if(!b) return;
-  done[b.dataset.id] = !done[b.dataset.id];
-  try{ localStorage.setItem(KEY, JSON.stringify(done)); }catch(e){}
-  render();
-});
 
 try{
   const th = localStorage.getItem("survey-dashboard-data-v2:theme");
