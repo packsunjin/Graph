@@ -125,13 +125,32 @@ main{max-width:980px;margin:0 auto;padding:16px 16px 80px}
 .dek{font-family:"Noto Serif KR",Georgia,serif;font-size:20px;line-height:1.55;margin-top:18px;word-break:keep-all}
 .text{display:flex;flex-direction:column;gap:18px;margin-top:22px}
 .text p{font-family:"Noto Serif KR",Georgia,serif;font-size:16px;line-height:1.9;color:var(--ink2);word-break:keep-all}
-.text p:first-child::first-letter{font-size:3.1em;font-weight:900;float:left;line-height:.9;margin:6px 8px 0 0;color:var(--ink)}
 .tracks{margin-top:26px;font-size:13px;color:var(--muted)}
 .tracks b{color:var(--ink);font-weight:700}
 
-/* ============ 한 줄 ============ */
-.after{margin-top:36px;border-left:4px solid var(--red);padding:4px 0 4px 20px}
-.line{font-family:"Noto Serif KR",Georgia,serif;font-weight:700;font-size:26px;line-height:1.4;word-break:keep-all}
+/* ============ 한 줄 (리뷰 도입부) ============ */
+.line{font-family:"Noto Serif KR",Georgia,serif;font-style:italic;font-size:15px;color:var(--muted);margin-top:18px;word-break:keep-all}
+
+/* ============ 점수 내역 ============ */
+.breakdown{margin-top:32px;border-top:1px solid var(--rule);padding-top:12px}
+.bd-title{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--muted)}
+.bd-rows{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px 14px;align-items:center;margin-top:12px;font-size:13px}
+.bd-bar{height:6px;background:var(--hair);overflow:hidden}
+.bd-bar i{display:block;height:100%;background:var(--ink)}
+.bd-num{font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+.bd-sum{grid-column:1/-1;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--hair);padding-top:10px;margin-top:4px;font-size:13px;color:var(--ink2)}
+.bd-sum b{color:var(--ink);font-variant-numeric:tabular-nums}
+.bd-note{margin-top:10px;font-size:12px;color:var(--muted);word-break:keep-all}
+
+/* ============ 평가 기준 ============ */
+.criteria{max-width:980px;margin:0 auto;padding:20px 16px 4px}
+.criteria details{border:1px solid var(--hair);padding:0 16px}
+.criteria summary{cursor:pointer;padding:12px 0;font-size:12px;font-weight:700;letter-spacing:.08em}
+.criteria summary:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.criteria dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 16px;padding:0 0 14px;font-size:13px}
+.criteria dt{font-weight:700}
+.criteria dd{color:var(--ink2)}
+.criteria p{padding:0 0 14px;font-size:13px;color:var(--ink2);word-break:keep-all}
 
 @media (max-width:720px){
   .review summary{grid-template-columns:52px minmax(0,1fr) auto;gap:12px;padding:14px 4px}
@@ -144,7 +163,6 @@ main{max-width:980px;margin:0 auto;padding:16px 16px 80px}
   .title{font-size:25px}
   .body{margin-top:32px}
   .dek{font-size:18px}
-  .line{font-size:22px}
 }
 </style>
 </head>
@@ -154,222 +172,281 @@ main{max-width:980px;margin:0 auto;padding:16px 16px 80px}
   <div class="nav" id="count"></div>
 </header>
 
+<section class="criteria">
+  <details>
+    <summary>평가 기준</summary>
+    <p>점수는 가사 70%, 평단 30%로 매긴다. 가사는 아래 다섯 항목을 10점 만점으로 매긴 평균이고, 평단 점수는 리드머·IZM·피치포크 등 평론 점수를 10점 만점으로 바꾼 평균이다. 8.0 이상은 Best New Listen.</p>
+    <dl id="criteria-list"></dl>
+  </details>
+</section>
+
 <main id="list"></main>
 
 <script>
-// 점수 높은 순으로 정렬해서 표시. score 8.5 이상은 Best New Listen
+// 가사 기준 5개 항목(각 10점)의 평균이 70%, 평단 점수 평균이 30%
+const CRITERIA = [
+  ["theme", "주제 일관성", "앨범 전체가 하나의 주제나 이야기로 묶이는가"],
+  ["craft", "표현력", "비유, 이미지, 말장난, 라임이 살아 있는가"],
+  ["honesty", "진정성", "자기 이야기와 구체적인 디테일이 있는가"],
+  ["original", "독창성", "뻔한 자랑과 디스를 넘어서는 시선이 있는가"],
+  ["density", "밀도", "반복과 채움 말고 읽을 문장이 충분한가"],
+];
+const LYRIC_WEIGHT = 0.7;
+
 const ALBUMS = [
-  {
-    artist: "XXX",
-    title: "LANGUAGE",
-    score: 8.7,
-    cover: "https://image.bugsm.co.kr/album/images/1200/202111/20211157.jpg",
-    year: "2018",
-    label: "BANA",
-    format: "정규 · 10곡",
-    genre: "힙합 / 익스페리멘탈",
-    dek: "래퍼 김심야와 프로듀서 FRNK가 남의 문법을 하나도 빌리지 않고 자기들만의 말로 쓴 첫 정규. 쌍둥이 앨범의 첫 번째 장이다.",
-    text: [
-      "첫 곡 ‘18거 1517’이 시작되는 순간부터 이 앨범은 듣는 사람을 배려하지 않는다. FRNK의 비트는 금속판을 긁는 것처럼 차갑고, 예상한 자리에 드럼이 떨어지지 않는다. 그 위에서 김심야는 숨 쉴 틈 없이 말을 밀어 넣는데, 그 말의 대부분은 자기 자신과 자기가 속한 씬을 향한 불만이다.",
-      "‘Ugly’, ‘수작’, ‘S_it’으로 이어지는 앞부분은 거의 공격에 가깝다. 듣기 좋게 다듬을 수 있었던 부분들을 일부러 날것으로 남겨 두었고, 그 거친 질감이 오히려 앨범의 설득력이 된다. 중간에 놓인 ‘간주곡’과 ‘Arranged’는 잠깐 숨을 고르게 해 주지만, 긴장이 완전히 풀리지는 않는다.",
-      "마지막 ‘Bad For You’와 ‘Told You’에 이르면 이 불편함이 하나의 태도였다는 걸 알게 된다. 남들이 알아듣기 쉬운 말로 번역하는 대신 자기 언어를 끝까지 지키겠다는 고집. 한국 힙합에서 이만큼 타협 없이 만들어진 정규 앨범은 드물고, 그래서 처음 들을 때보다 다시 들을 때 더 크게 들린다.",
-    ],
-    tracks: ["18거 1517", "Ugly", "수작", "간주곡", "Trust Us", "S_it", "뭐 어쩔까 그럼", "Arranged", "Bad For You", "Told You"],
-    line: "번역되지 않는 분노",
-  },
-  {
-    artist: "김심야",
-    title: "도그마",
-    score: 8.5,
-    cover: "https://image.bugsm.co.kr/album/images/1200/41547/4154749.jpg",
-    year: "2026",
-    label: "BANA",
-    format: "정규 · 10곡",
-    genre: "힙합",
-    dek: "음원과 손에 쥐는 물건, 두 세계에 동시에 존재하도록 만든 김심야의 두 번째 솔로 정규. 명상 기기를 닮은 스피커 플레이어로도 나왔다.",
-    text: [
-      "XXX 시절 김심야의 랩은 늘 화가 나 있었다. 도그마에서 가장 먼저 느껴지는 변화는 그 화가 빠졌다는 것이다. 목소리는 낮아졌고, 단어 사이의 간격은 넓어졌다. 대신 한 발 물러서서 자기 삶을 바라보는 시선이 생겼다.",
-      "29분이 채 안 되는 짧은 앨범이지만 밀도는 높다. ‘Me Life & Nothing Else’로 시작해 ‘Move My Feet’, ‘T-H-I-R-S-T-Y’로 이어지는 흐름은 같은 동작을 반복하면서 조금씩 깊어지는 수행처럼 들린다. ‘HDI HDI HDI HDI HDI HDI’처럼 제목부터 반복을 드러내는 곡도 있고, 마지막 곡 이름도 ‘Keep Counting’이다. 숫자를 세며 호흡을 고르는 명상이 앨범 전체의 리듬이 된다.",
-      "물건으로서의 앨범, 20분이 넘는 긴 뮤직비디오까지 포함하면 도그마는 음악이라기보다 하나의 의식에 가깝다. 다만 그 설계가 과시로 느껴지지 않는 건 소리 자체가 조용하고 단단하기 때문이다. 분노로 이름을 알린 래퍼가 분노 없이도 이만큼 날카로울 수 있다는 걸 보여 준다.",
-    ],
-    tracks: ["Me Life & Nothing Else", "Move My Feet", "T-H-I-R-S-T-Y", "It’s That", "9 Out of 10", "HDI HDI HDI HDI HDI HDI", "Zulu Love", "Hanat Dool Set", "SOTS", "Keep Counting"],
-    line: "분노가 빠져나간 자리의 고요",
-  },
-  {
-    artist: "XXX",
-    title: "SECOND LANGUAGE",
-    score: 8.2,
-    cover: "https://image.bugsm.co.kr/album/images/1200/202300/20230095.jpg",
-    year: "2019",
-    label: "BANA",
-    format: "정규 · 10곡",
-    genre: "힙합 / 일렉트로닉",
-    dek: "LANGUAGE가 나온 지 석 달 만에 도착한 쌍둥이 앨범. 같은 언어를 쓰지만 이번엔 더 많은 사람이 알아듣게 말한다.",
-    text: [
-      "첫 장이 감정을 터뜨리는 앨범이었다면 SECOND LANGUAGE는 감정을 덜어 내는 앨범이다. 김심야의 목소리는 여전히 냉소적이지만 소리를 지르지는 않는다. FRNK는 비트의 각을 조금 깎고, 그 자리에 그루브를 채웠다.",
-      "그래서 ‘Bougie’, ‘FAD’, ‘Language’ 같은 곡은 전작보다 훨씬 쉽게 몸에 붙는다. 그렇다고 대중적인 앨범이 된 건 아니다. ‘무뢰배’로 문을 열고 ‘사무직’으로 닫는 구성에는 여전히 사회와 거리를 두는 태도가 깔려 있고, ‘괜찮아’와 ‘다했어’처럼 평범한 말로 된 제목 뒤에도 쉽게 풀리지 않는 감정이 숨어 있다.",
-      "두 장을 이어서 들으면 비로소 그림이 완성된다. 하나는 문을 걸어 잠근 방이고, 다른 하나는 그 문을 반쯤 열어 둔 방이다. 초대받은 자리에 가서도 자기 자리는 직접 고르는 사람들의 앨범이고, 입문용으로는 이쪽이 더 낫다.",
-    ],
-    tracks: ["무뢰배", "우린", "우아", "Bougie", "FAD", "Scale Model", "Language", "괜찮아", "다했어", "사무직"],
-    line: "초대받은 식탁 위의 낯선 자리",
-  },
   {
     artist: "이현준",
     title: "번역 중 손실",
-    score: 8.0,
     cover: "https://image.bugsm.co.kr/album/images/1200/204992/20499241.jpg",
     year: "2022",
     label: "이현준",
     format: "정규 · 14곡",
     genre: "익스페리멘탈 / 인더스트리얼 힙합",
-    dek: "말이 다른 사람에게 건너가는 동안 무엇이 사라지는지를 끝까지 따라가는 앨범. 첫 정규 이후 3년 만의 두 번째 정규다.",
+    lyric: {theme: 9, craft: 9, honesty: 9, original: 9, density: 8},
+    critics: [["리드머", 4, 5]],
+    line: "끝내 닿지 못한 말들의 소음",
+    dek: "말이 다른 사람에게 건너가는 동안 무엇이 빠져나가는지를 끝까지 따라가는 두 번째 정규.",
     text: [
-      "이 앨범의 주제는 ‘번역’이다. 언어를 다른 언어로 옮기는 일만이 아니라, 내 마음을 다른 사람에게 전하는 일, 사람의 생각을 기계가 받아 적는 일까지 모두 번역으로 본다. 그리고 그 과정마다 무언가가 새어 나간다는 걸 집요하게 확인한다.",
-      "‘Hello Stranger’에서 낯선 사람에게 말을 걸고, ‘게슈탈트’와 ‘농담’을 지나 ‘자율 주행’, ‘번역 오류’, ‘A.I. 내적 보고서’로 갈수록 대화의 상대가 점점 사람에서 기계로 바뀐다. 중간에 끼어 있는 스킷과 ‘Windows 95 Launch Dance’ 같은 곡은 이야기를 쉬어 가는 장치이면서 동시에 앨범의 기묘한 유머를 보여 준다.",
-      "소리는 거칠다. 노이즈와 금속성 질감이 쉴 새 없이 밀려와서 한 번에 다 듣기엔 피곤할 때도 있다. 하지만 그 피로함마저 의도된 것처럼 들린다. 정확하게 전달되지 않는 말들이 쌓여서 생기는 소음. 마지막 ‘Good Bye Closer’와 ‘Newspaper’까지 듣고 나면, 처음부터 끝까지 하나의 이야기였다는 게 분명해진다.",
+      "이 앨범의 가사는 처음부터 끝까지 하나의 질문을 붙든다. 말이 다른 사람에게 건너가는 동안 무엇이 빠져나가는가. 술자리에서 처음 만난 사람에게 속을 다 꺼내 놓고 다음엔 모른 척하기로 하는 ‘Hello Stranger’, 같은 단어를 되뇌다 의미가 무너지는 경험을 제목으로 삼은 ‘게슈탈트’, 남들이 웃는 농담에 혼자 웃지 못하는 ‘농담’까지, 앞부분은 사람 사이의 번역 실패를 차례로 보여 준다.",
+      "중반부터는 번역의 상대가 기계와 약으로 바뀐다. 스트레스를 무디게 해 주는 약 SOMA, 운전대를 넘겨받은 자율 주행차, 감정을 수치로 읽어 내는 A.I. 보고서. 특히 ‘자율 주행’에서 앞차와의 간격을 지키는 기계를 보며 우리에게 필요했던 게 딱 그 정도의 거리였다고 깨닫는 대목은 이 목록 전체에서 가장 정확한 비유다. ‘White Lighter’는 사랑을 담배에, 부모를 불씨에 겹쳐 자기가 태어난 순간까지 거슬러 올라간다.",
+      "가사가 무겁다. 죽음을 아무렇지 않게 말하는 순간이 여러 번 나오고, 위로보다 무력감이 오래 남는다. 그래도 거의 모든 곡이 한국어로 또박또박 쓰였고, 뻔한 자랑이나 디스가 거의 없다. 마지막 곡에서 화자는 스스로를 문 앞에 쌓이는 신문에 빗댄다. 해석하기 귀찮으면 그냥 쌓아 둬도 괜찮다고. 앨범 전체의 주제를 한 장면으로 접는 마무리다.",
     ],
     tracks: ["Hello Stranger", "게슈탈트", "농담", "soma skit", "SOMA", "자율 주행", "번역 오류", "Windows 95 Launch Dance", "번역 중 손실", "A.I. 내적 보고서", "White Lighter", "직역", "Good Bye Closer", "Newspaper"],
     title_track: "SOMA",
-    line: "끝내 닿지 못한 말들의 소음",
   },
   {
     artist: "XXX",
-    title: "KYOMI",
-    score: 7.8,
-    cover: "https://image.bugsm.co.kr/album/images/1200/200445/20044575.jpg",
-    year: "2016",
+    title: "LANGUAGE",
+    cover: "https://image.bugsm.co.kr/album/images/1200/202111/20211157.jpg",
+    year: "2018",
     label: "BANA",
-    format: "EP · 7곡",
-    genre: "힙합 / 퓨처 베이스",
-    dek: "정규 앨범 하나 없던 두 사람이 해외 매체의 관심부터 먼저 받으며 내놓은 데뷔 EP. 파티에서 만난 남녀의 하룻밤을 하나의 이야기로 묶었다.",
+    format: "정규 · 10곡",
+    genre: "힙합 / 익스페리멘탈",
+    lyric: {theme: 9, craft: 8, honesty: 9, original: 9, density: 7},
+    critics: [["IZM", 4.5, 5], ["리드머", 3.5, 5], ["피치포크", 7.3, 10]],
+    line: "번역되지 않는 분노",
+    dek: "김심야와 FRNK가 남의 문법을 빌리지 않고 자기들만의 말로 쓴 첫 정규. 쌍둥이 앨범의 첫 번째 장이다.",
     text: [
-      "랩 앨범이지만 비트만 따로 들으면 전자 음악에 더 가깝다. FRNK는 한 곡 안에서도 힙합에서 퓨처 베이스로, 트랩에서 신스팝으로 쉬지 않고 장르를 갈아 끼운다. 그래서 곡의 구조를 예측하기 어렵고, 그게 이 EP의 가장 큰 재미다.",
-      "‘Liquor’로 술잔을 들고 시작해서 ‘Too High’, ‘Pass’, ‘Dior Homme’를 지나 ‘승무원’으로 착륙하는 22분은 밤이 깊어지는 순서 그대로다. 김심야의 랩은 아직 LANGUAGE만큼 날카롭지는 않지만, 비트 위를 미끄러지듯 타는 감각은 이미 완성되어 있다.",
-      "나중에 나온 두 장의 LANGUAGE에 비하면 가볍고 즐겁다. 하지만 이 가벼움 속에서 XXX가 어디로 갈지에 대한 힌트가 전부 보인다. 장르의 경계를 신경 쓰지 않는 태도, 한국어 랩을 낯설게 들리게 만드는 방식. 시작점으로 다시 들어 볼 만한 EP다.",
+      "첫 곡 ‘18거 1517’은 아버지의 낡은 체어맨에서 시작한다. 성공하면 아버지께 벤틀리를 사 드리겠다던 약속이 곡 끝에서 조용히 철회되는 구조인데, 이 한 곡에 앨범의 갈등이 다 들어 있다. 예술을 하고 싶은 마음과 돈을 벌어야 하는 현실, 그리고 그 사이에서 점점 냉소적으로 변해 가는 자신.",
+      "이후 곡들은 그 갈등을 여러 방향에서 찌른다. ‘Ugly’는 예술과 상업 사이에 메스를 대는 성형 비유를 쓰고, ‘뭐 어쩔까 그럼’은 예술은 인간, 인간은 욕심, 욕심은 돈으로 이어지는 연쇄를 몇 번이고 다시 굴리다 끝내 결론을 내지 못한다. 씬을 향한 공격이 많지만 그 공격이 결국 자기 자신에게 돌아온다는 점이 이 앨범을 흔한 디스 앨범과 다르게 만든다. 나도 결국 똑같아지겠지, 라는 자조가 곳곳에 박혀 있다.",
+      "약점은 밀도다. 영어 비속어와 검열된 욕설이 문장 사이를 많이 채우고, 몇몇 곡은 같은 불만을 다른 말로 되풀이한다. 그래도 돈 이야기를 그만하겠다면서 계속 돈 이야기를 하는 모순을 숨기지 않고 오히려 앨범의 주제로 삼았다는 점에서, 가사의 완성도는 이 목록 최상위권이다.",
     ],
-    tracks: ["Liquor", "우물정자", "교미", "Too High", "Pass", "Dior Homme", "승무원"],
-    title_track: "승무원",
-    line: "새벽까지 꺼지지 않는 파티의 열기",
-  },
-  {
-    artist: "비와이",
-    title: "The Movie Star",
-    score: 7.5,
-    cover: "https://image.bugsm.co.kr/album/images/1200/202415/20241522.jpg",
-    year: "2019",
-    label: "Dejavu Group",
-    format: "정규 · 12곡",
-    genre: "힙합",
-    dek: "작곡부터 편곡, 믹스까지 비와이가 직접 맡아 한 편의 영화처럼 짠 정규 앨범. 조연으로 시작해 주인공이 되는 이야기다.",
-    text: [
-      "트랙 순서만 봐도 이 앨범이 하려는 이야기가 보인다. ‘적응’으로 시작해서 ‘주연’을 지나 마지막 곡 ‘주인공’으로 끝난다. 신인이 무대에 적응하고, 주연을 맡고, 결국 이야기 전체의 주인공이 되는 과정을 영화처럼 펼쳐 놓았다.",
-      "크러쉬, 버벌진트, 씨잼, 쿤디판다, SUMIN까지 피처링진이 화려하지만 누구도 비와이를 가리지 않는다. 그들은 장면마다 잠깐 등장했다 사라지는 조연이고, 카메라는 끝까지 비와이를 따라간다. 직접 만든 비트는 웅장하고 극적이며, 신앙과 자기 확신이 섞인 비와이 특유의 가사가 그 위를 채운다.",
-      "‘가라사대’에서 그 웅장함이 정점을 찍는다. 다만 앨범 전체가 같은 높이의 확신으로 계속 이어지다 보니, 중반부에는 비슷한 장면이 반복되는 느낌도 있다. 그래도 한 사람이 처음부터 끝까지 만들어 낸 영화라는 점에서, 비와이의 디스코그래피에서 가장 완결된 작품이다.",
-    ],
-    tracks: ["적응", "WON", "아들이", "본토", "거장", "주연", "장미는아름답지만가시가있다", "찬란", "초월", "다음것", "가라사대", "주인공"],
-    line: "스스로 주인공이 된 자의 확신",
-  },
-  {
-    artist: "와비사비룸",
-    title: "물질보다정신",
-    score: 7.3,
-    cover: "https://image.bugsm.co.kr/album/images/1200/200018/20001880.jpg",
-    year: "2015",
-    label: "AVLX",
-    format: "EP · 7곡",
-    genre: "힙합 / 클라우드 랩",
-    dek: "세속에 매이지 않고 불완전함을 오히려 드러내겠다는 그룹 이름 그대로, 돈과 허세 대신 정신을 앞세운 두 번째 EP.",
-    text: [
-      "에이뤠가 만든 비트는 건조하고 날카로운 드럼 위에 나른한 루프를 겹쳐 놓은 구조다. 소리가 연기처럼 공간을 채우고, 장유석과 제이플로우는 그 안개 속을 천천히 헤엄치듯 랩을 얹는다. 서두르지 않는 플로우가 이 팀의 가장 큰 무기다.",
-      "첫 곡 ‘분장’이 앨범의 인상을 거의 결정한다. 맥락 없이 툭툭 튀어나오는 단어들, 일부러 촌스럽게 비튼 B급 감성 사이로 한국 힙합 씬을 비웃는 순간들이 번뜩인다. 이어지는 ‘누군가’, ‘I Like It’, ‘나그참파’도 같은 온도를 유지하면서 타이틀곡 ‘밥말리’로 모인다.",
-      "첫 EP가 세 사람이 각자의 색을 섞어 보는 실험이었다면, 이번에는 그 위에 팀으로서의 생각을 덧칠했다. 지금 들으면 사운드가 조금 오래된 느낌도 있지만, 돈 이야기가 넘치던 시기에 정반대 방향을 고집했다는 것만으로도 다시 들어 볼 이유가 충분하다.",
-    ],
-    tracks: ["분장", "누군가", "I Like It", "나그참파", "밥말리", "동그라미", "물질보다정신"],
-    title_track: "밥말리",
-    line: "연기 속에 느긋하게 흐르는 정신",
-  },
-  {
-    artist: "반타01",
-    title: "OGI-PATTERN",
-    score: 7.0,
-    cover: "https://image.bugsm.co.kr/album/images/1200/207843/20784328.jpg",
-    year: "2026",
-    label: "Defy",
-    format: "정규 · 17곡",
-    genre: "힙합 / 얼터너티브 랩",
-    dek: "순우리말 ‘오기’와 옷을 만드는 패턴사들의 ‘패턴’을 합친 제목. 반타01이 cwar라는 이름으로 낸 마지막 앨범이다.",
-    text: [
-      "17곡, 44분. 처음부터 끝까지 거칠게 밀어붙이는 앨범이다. ‘Sunkane’으로 문을 열고 ‘아이보리어택’, ‘Flame’, ‘카리스마’로 이어지는 앞부분은 투지와 허세가 뒤섞여 있고, 사운드도 일반적인 랩 앨범의 틀을 계속 벗어나려고 한다.",
-      "제목이 말해 주듯 이 앨범의 재료는 오기다. 다만 ‘BROTHER’, ‘하루살이’, ‘Liar’ 같은 곡에서는 그 거친 겉면 아래에 숨은 다정함이 슬쩍 드러난다. 표현이 서툴러도 마음은 넓다는 걸 믿어 달라는 부탁 같은 앨범이고, 그래서 일기장을 몰래 읽는 기분이 든다.",
-      "아쉬운 점은 길이다. 17곡이 모두 같은 에너지로 몰아치다 보니 후반부 ‘Virus’, ‘REN.’, ‘메테오7’쯤에서는 인상이 조금씩 흐려진다. 열 곡 남짓으로 줄였다면 훨씬 단단했을 것이다. 그래도 이름을 바꾸기 직전의 래퍼가 자기를 전부 쏟아 낸 기록이라는 점에서 의미가 있다.",
-    ],
-    tracks: ["Sunkane", "아이보리어택", "who I AM/rainbo", "Flame", "카리스마", "BROTHER", "오기", "악마", "W.o.W", "trap", "하루살이", "PRADA", "Liar", "Virus", "REN.", "메테오7", "Superstarshit"],
-    title_track: "Sunkane",
-    line: "거친 오기 속에 숨긴 다정함",
+    tracks: ["18거 1517", "Ugly", "수작", "간주곡", "Trust Us", "S_it", "뭐 어쩔까 그럼", "Arranged", "Bad For You", "Told You"],
   },
   {
     artist: "비와이",
     title: "POP IS CRYIN'",
-    score: 6.9,
     cover: "https://image.bugsm.co.kr/album/images/1200/41470/4147037.jpg",
     year: "2026",
     label: "Opus Magnum",
     format: "정규 · 15곡",
     genre: "힙합",
-    dek: "약 7년 만의 정규이자 새 레이블에서 여는 첫 장. The Movie Star의 주인공이 조명 밖으로 걸어 나온 앨범이다.",
+    lyric: {theme: 8, craft: 8, honesty: 9, original: 8, density: 7},
+    critics: [["리드머", 4, 5], ["IZM", 4, 5]],
+    line: "조명이 꺼진 뒤의 울음",
+    dek: "약 7년 만의 정규. 확신으로 가득했던 래퍼가 처음으로 실패를 고백하는 앨범이다.",
     text: [
-      "가장 먼저 귀에 들어오는 건 소리의 온도다. 전작의 웅장한 오케스트라 대신 비와이가 직접 쌓은 신스 베이스와 드럼이 낮게 깔린다. 화려하게 터지는 순간보다 밤처럼 가라앉은 순간이 훨씬 많다.",
-      "‘머리맡에’, ‘찾으니’, ‘알면서도’처럼 혼잣말 같은 제목들이 앨범 앞쪽을 채운다. 확신에 차 있던 래퍼가 처음으로 흔들리는 모습을 보여 주고, ‘공수레공수거’와 ‘아비가’에 이르러서는 신앙과 가족에 대한 이야기가 더 개인적인 목소리로 나온다. 후반부 ‘STIGMATA’와 ‘M.O.L.T’에서는 허물을 벗듯 다시 힘을 끌어올린다.",
-      "방향은 분명히 흥미롭다. 다만 15곡, 50분은 이 차분한 분위기를 유지하기엔 조금 길고, 중간에 비슷한 질감의 곡들이 이어지면서 집중력이 떨어지는 구간이 있다. 비와이의 새로운 얼굴을 보여 준 앨범으로는 충분하지만, 그 얼굴이 완성되려면 한 장이 더 필요해 보인다.",
+      "‘Sweet Escape’에서 비와이는 크게 벌여 놓은 사업과 날아간 자산, 쌓인 빚을 숫자까지 들어 털어놓고, 스스로를 실패한 사람과 실패해 본 사람 사이 어디쯤에 세운다. 이전 앨범에서 자신을 영화의 주인공으로 세웠던 사람이 쓴 문장이라는 걸 생각하면 꽤 큰 변화다.",
+      "가사의 중심에는 두 개의 축이 있다. 하나는 신앙과 돈의 충돌이다. ‘공수레공수거’는 교회 형이 보내는 편지 형식으로 가난을 미덕으로 포장하는 논리를 늘어놓고, 바로 다음 곡 ‘알면서도’가 그 논리를 정면으로 반박한다. 다른 하나는 아버지가 된 삶이다. 새벽 수유의 분유 양까지 적어 넣은 ‘Am I’는 마약과 총으로 채워진 힙합 클리셰를 늘어놓은 뒤 그런 얘기 없이 사는 자신의 하루를 대비시켜, 그럼 나는 힙합이 아니냐고 묻는다. ‘악수’는 여러 레이블의 영입 제안을 받던 시절을 장면 단위로 기억해 낸다.",
+      "명품 브랜드와 돈 자랑이 여전히 많아서 반성과 과시가 한 곡 안에서 부딪히는 순간이 잦다. 다만 그 모순을 본인도 알고 있다는 게 가사에 드러난다. 다시 두 번 산다는 ‘M.O.L.T’, 두 갈림길 앞에 선 ‘2wayS’로 이어지는 후반부는 무너진 뒤 다시 일어서는 과정을 성실하게 따라간다. 비와이의 가사 중 가장 사적인 앨범이다.",
     ],
     tracks: ["Sweet Escape", "머리맡에", "찾으니", "외", "배있길 보우", "악수", "Am I", "공수레공수거", "알면서도", "아비가", "SOUTHSIDE FREESTYLE", "STIGMATA", "M.O.L.T", "2wayS", "Shosanna"],
-    line: "조명이 꺼진 뒤의 울음",
   },
   {
-    artist: "반타01 & MPT",
+    artist: "비와이",
+    title: "The Movie Star",
+    cover: "https://image.bugsm.co.kr/album/images/1200/202415/20241522.jpg",
+    year: "2019",
+    label: "Dejavu Group",
+    format: "정규 · 12곡",
+    genre: "힙합",
+    lyric: {theme: 9, craft: 8, honesty: 7, original: 8, density: 6},
+    critics: [["리드머", 3.5, 5]],
+    line: "스스로 주인공이 된 자의 확신",
+    dek: "배우로 살지 않고 주인공으로 살겠다는 다짐을 영화 한 편의 구조로 짠 앨범.",
+    text: [
+      "앨범 전체가 하나의 시나리오처럼 짜여 있다. ‘적응’에서 시작해 ‘주연’을 거쳐 ‘주인공’으로 끝나고, 마지막 곡은 앞 곡들의 핵심 구절을 다시 불러 모아 엔딩처럼 정리한다. 남이 써 준 대사를 읊는 배우와 자기 삶을 사는 주인공을 구분하는 질문이 처음부터 끝까지 이어진다.",
+      "가장 좋은 가사는 ‘본토’다. 흑인 래퍼를 흉내 내던 10대를 돌아보며, 미국을 본토라고 부르는 말 자체가 패배주의라고 짚는다. 그리고 이제 자기 음악의 본토는 자기 발밑이라고 선언한다. 한국에서 힙합을 한다는 것에 대해 이만큼 정면으로 쓴 가사는 드물다. 외화를 벌어 원으로 환전한다는 ‘WON’, 성경 말투를 비튼 ‘가라사대’처럼 한국어로만 가능한 말장난도 많다.",
+      "약점은 넘치는 자기 확신이다. 신앙과 자기 자랑이 겹치면서 듣는 사람이 들어갈 틈이 적고, 한 구절만 되풀이하는 ‘주연’이나 훅이 길게 반복되는 곡들이 밀도를 떨어뜨린다. 그래도 앨범 하나를 처음부터 끝까지 한 이야기로 묶어 내는 설계는 이 목록에서 가장 단단한 편이다.",
+    ],
+    tracks: ["적응", "WON", "아들이", "본토", "거장", "주연", "장미는아름답지만가시가있다", "찬란", "초월", "다음것", "가라사대", "주인공"],
+  },
+  {
+    artist: "XXX",
+    title: "SECOND LANGUAGE",
+    cover: "https://image.bugsm.co.kr/album/images/1200/202300/20230095.jpg",
+    year: "2019",
+    label: "BANA",
+    format: "정규 · 10곡",
+    genre: "힙합 / 일렉트로닉",
+    lyric: {theme: 8, craft: 8, honesty: 7, original: 7, density: 7},
+    critics: [["리드머", 3.5, 5], ["피치포크", 7.5, 10]],
+    line: "초대받은 식탁 위의 낯선 자리",
+    dek: "LANGUAGE의 갈등을 이어받되, 이번엔 지금이 아니라 끝에 남을 것을 다투는 쌍둥이 앨범.",
+    text: [
+      "보컬 없는 ‘무뢰배’로 문을 연 뒤 ‘우린’과 ‘우아’는 죽고 나면 돈도 이름도 아무 소용없다는 생각을 반복하며 무엇을 남길지 묻는다. 전작이 지금 당장의 돈과 예술을 다퉜다면, 이번엔 끝에 남는 것을 다툰다.",
+      "가장 날카로운 곡은 ‘다했어’다. 진짜 음악이 뭔지에 대한 질문을 수십 개 연달아 던지고, 그 질문을 던지는 자신까지 같은 줄에 세운다. ‘Bougie’는 돈 대신 품위를 지키겠다는 선언을, ‘FAD’는 옷과 성형으로 따라잡는 유행을, ‘사무직’은 레이블을 떠나는 사람의 퇴사 인사를 각각 다룬다. 주제는 넓어졌지만 흩어지지는 않는다.",
+      "다만 전작과 겹치는 말이 많다. 돈, 연예인, 씬, 꼰대라는 대상이 거의 그대로 돌아오고, ‘Language’의 훅처럼 같은 문장을 길게 반복하는 구간도 있다. ‘Scale Model’에서 스스로 클리셰가 됐다고 인정하는 대목은 솔직하지만, 그 인정이 반복을 덜어 주지는 않는다. 두 장을 함께 놓고 읽을 때 의미가 커지는 앨범이다.",
+    ],
+    tracks: ["무뢰배", "우린", "우아", "Bougie", "FAD", "Scale Model", "Language", "괜찮아", "다했어", "사무직"],
+  },
+  {
+    artist: "김심야",
+    title: "도그마",
+    cover: "https://image.bugsm.co.kr/album/images/1200/41547/4154749.jpg",
+    year: "2026",
+    label: "BANA",
+    format: "정규 · 10곡",
+    genre: "힙합",
+    lyric: {theme: 9, craft: 7, honesty: 6, original: 7, density: 5},
+    critics: [["IZM", 4, 5], ["리드머", 3, 5], ["피치포크", 7.7, 10]],
+    line: "비워 낸 거울 앞의 고집",
+    dek: "음원과 손에 쥐는 물건, 두 세계에 동시에 존재하도록 만든 김심야의 첫 솔로 정규.",
+    text: [
+      "가사에 불교 용어가 많다. 번뇌, 탐진치, 다르마, 카르마, 알아차림. 비우고 지우며 발을 옮긴다는 ‘Move My Feet’, 텅 빈 거울을 기념비로 삼는다는 구절, 원을 그리다 다시 원점으로 돌아오는 ‘Keep Counting’까지, 수행과 반복이라는 콘셉트는 앨범 전체에 일관되게 유지된다. 고립 위에 평화가 있다는 생각이 가장 자주 돌아오는 장면이다.",
+      "그런데 가사를 자세히 보면 비워 낸 사람의 말만 있는 건 아니다. ‘9 Out of 10’은 남의 음악에 10점 중 1점을 주며 조롱하고, ‘It’s That’과 ‘Zulu Love’에는 여전히 거친 경멸이 가득하다. 마음을 비우려는 사람과 여전히 남을 깎아내리는 사람이 한 앨범 안에 같이 있다. 제목이 도그마, 곧 고집인 걸 보면 의도된 모순일 수도 있지만 가사만으로는 분명하지 않다.",
+      "밀도도 아쉽다. 영어 비중이 높고, ‘Move My Feet’, ‘T-H-I-R-S-T-Y’, ‘SOTS’처럼 짧은 구절을 여러 번 되풀이하는 곡이 많으며 ‘HDI HDI HDI HDI HDI HDI’는 가사가 사실상 한 줄이다. 29분이라는 짧은 길이를 생각하면 실제로 읽히는 문장은 더 적다. 콘셉트는 선명하지만 그 콘셉트를 채우는 말이 부족하다.",
+    ],
+    tracks: ["Me Life & Nothing Else", "Move My Feet", "T-H-I-R-S-T-Y", "It’s That", "9 Out of 10", "HDI HDI HDI HDI HDI HDI", "Zulu Love", "Hanat Dool Set", "SOTS", "Keep Counting"],
+  },
+  {
+    artist: "와비사비룸",
+    title: "물질보다정신",
+    cover: "https://image.bugsm.co.kr/album/images/1200/200018/20001880.jpg",
+    year: "2015",
+    label: "AVLX",
+    format: "EP · 7곡",
+    genre: "힙합 / 클라우드 랩",
+    lyric: {theme: 6, craft: 5, honesty: 6, original: 5, density: 5},
+    critics: [["리드머", 4.5, 5]],
+    line: "향 연기 너머의 날 선 정신",
+    dek: "세속에 매이지 않고 불완전함을 드러내겠다는 그룹 이름 그대로, 돈과 허세 대신 정신을 앞세운 두 번째 EP.",
+    text: [
+      "돈보다 정신을 앞세우겠다는 의지는 분명하다. ‘분장’은 흑인을 흉내 내는 래퍼들을 비웃으며 노란 피부와 한국 땅을 자랑으로 삼고, ‘나그참파’는 인도 향의 연기를 타고 명상하듯 자기 안으로 들어간다. ‘동그라미’에서 남들은 굴러다니는 동그라미, 자신은 모난 세모라고 대비하는 비유도 단순하지만 기억에 남는다.",
+      "가장 진솔한 곡은 ‘누군가’다. 빚에 시달리는 부모와 상처를 견디는 자신을 그리며, 울고 싶은 밤에도 울지 않겠다고 버틴다. ‘I Like It’은 고통이 새살을 돋게 하고 그 새살을 다시 찢는다는 이미지를 쓴다. 이런 순간들에서는 와비사비라는 이름의 뜻, 불완전함을 받아들이는 태도가 실제로 보인다.",
+      "하지만 나머지 많은 부분이 욕설과 조롱이다. 다른 래퍼들을 향한 비난이 같은 단어로 반복되고, 성적이고 폭력적인 표현이 별다른 의미 없이 쓰인다. 정신을 말하는 앨범인데 정작 그 정신을 설명하는 말은 적다. 평단이 높이 산 건 주로 사운드와 래핑의 신선함이고, 가사만 놓고 보면 콘셉트를 다 따라가지 못한다.",
+    ],
+    tracks: ["분장", "누군가", "I Like It", "나그참파", "밥말리", "동그라미", "물질보다정신"],
+    title_track: "밥말리",
+  },
+  {
+    artist: "XXX",
+    title: "KYOMI",
+    cover: "https://image.bugsm.co.kr/album/images/1200/200445/20044575.jpg",
+    year: "2016",
+    label: "BANA",
+    format: "EP · 7곡",
+    genre: "힙합 / 퓨처 베이스",
+    lyric: {theme: 7, craft: 6, honesty: 6, original: 7, density: 5},
+    critics: [["IZM", 2.5, 5], ["리드머", 3.5, 5], ["웨이브", 8.5, 10]],
+    line: "파티 한가운데 선 구경꾼의 냉소",
+    dek: "클럽 하나를 무대로 같은 밤의 여러 장면을 이어 붙인 XXX의 데뷔 EP.",
+    text: [
+      "클럽 하나를 무대로 한 옴니버스다. 곡마다 장면은 다르지만 모두 같은 밤, 같은 공간에서 벌어진다. 술에 취해 시비를 거는 ‘Liquor’, 잘생긴 오빠를 기다리는 사람들 사이에서 분위기만 띄우다 빠지는 ‘교미’, 이곳이 전쟁터인지 동물들의 잔치인지 묻는 ‘Too High’, 유행만 좇는 사람들을 비웃는 ‘Dior Homme’까지, 화자는 파티 한가운데 있으면서도 계속 바깥에서 그 파티를 관찰한다.",
+      "좋은 순간은 그 관찰이 자기에게 돌아올 때다. 화자는 남들을 조롱하지만, 정작 클럽에서 자신은 아무도 쳐다보지 않는 사람이라는 걸 숨기지 않는다. ‘Liquor’ 끝부분에서 갑자기 부모님께 걱정하지 말라고, 잠은 잘 못 자도 진짜로 괜찮다고 말하는 대목은 앨범 전체에서 가장 맨얼굴에 가깝다. 타이틀곡 ‘승무원’도 화려한 비행 대신 같은 시차, 같은 집에서 일어나고 싶다는 피로를 이야기한다.",
+      "약점은 분명하다. 영어 비중이 높고, 여성을 향한 비속어가 곡마다 반복되며, 그 표현이 비판의 대상인지 화자 자신의 태도인지 경계가 흐릿하다. 상대를 깎아내리는 말이 많아서 남는 문장은 생각보다 적다. 그래도 LANGUAGE에서 터질 자기혐오와 씬 비판의 씨앗이 이미 여기 다 있다.",
+    ],
+    tracks: ["Liquor", "우물정자", "교미", "Too High", "Pass", "Dior Homme", "승무원"],
+    title_track: "승무원",
+  },
+  {
+    artist: "아라흔 & MPT",
     title: "아름8",
-    score: 6.6,
     cover: "https://image.bugsm.co.kr/album/images/1200/208179/20817954.jpg",
     year: "2026",
     label: "KAI MODE",
     format: "정규 · 13곡",
     genre: "힙합 / 랩",
-    dek: "반타01이라는 새 이름으로 MPT와 함께 낸 첫 합작. 끝없는 아름다움을 자기들끼리만 나눠 갖겠다는 앨범이다.",
+    lyric: {theme: 5, craft: 4, honesty: 8, original: 5, density: 4},
+    critics: [["리드머", 4.5, 5]],
+    line: "싸움 끝에 꺼낸 속마음",
+    dek: "주짓수 도장과 가족, 친구를 재료로 삼은 아라흔과 MPT의 첫 합작. 제목의 8은 무한한 나다움이라는 뜻이다.",
     text: [
-      "제목의 8은 옆으로 눕히면 무한대 기호가 된다. 끝없이 이어지는 무언가를 붙잡으려는 앨범인데, 그 무언가는 대부분 싸움의 형태로 나타난다. ‘사이렌’으로 경보를 울리고 ‘HOWMUCH?’, ‘AMAGETDON’으로 몰아친 뒤 ‘태권도’, ‘Korea BJJ’처럼 무술과 수련의 단어들이 이어진다.",
-      "MPT가 믹스와 마스터를 맡아서인지 OGI-PATTERN보다 소리가 훨씬 정돈되어 있고, 38분이라는 길이도 적당하다. 피아노와 현악이 들어간 ‘사이렌’, ‘태권도’는 거친 랩과 대비를 이루며 앨범에 숨 쉴 틈을 만든다.",
-      "가장 기억에 남는 건 마지막 두 곡이다. 내내 주먹을 쥐고 있던 앨범이 ‘할머니’와 ‘TRAUMA’에서 갑자기 속을 털어놓는다. 이 반전이 좋지만, 앞부분의 공격성이 비슷한 패턴으로 반복되는 탓에 거기까지 가는 길이 조금 단조롭다. 새 이름의 첫인사로는 충분히 인상적이다.",
+      "OGI-PATTERN과 같은 방식으로 쓰인 가사지만 결이 조금 더 따뜻하다. 첫 곡 ‘사이렌’은 말 없는 아버지, 약해지는 어머니, 동생에 대한 걱정을 나열하며 시작하고, 마지막 ‘TRAUMA’는 자신을 용서해 준 친구에게 고마움을 전하며 끝난다. 그 사이에 놓인 ‘할머니’는 짧은 작별 인사 한 줄뿐이다. 가족과 친구라는 축은 앨범 전체에서 분명하다.",
+      "새로 들어온 재료는 무술이다. ‘Korea BJJ’, ‘태권도’, ‘Self Control’에는 주짓수 띠와 도장, 호흡법 같은 단어가 자주 나오고, 몸을 단련하는 일이 마음을 다스리는 일과 겹쳐진다. 태권도 사범이었던 아버지 이야기도 나온다. 특히 ‘태권도’의 도입부는 남의 말에 흔들리지 말고 나답게 살라는 단순한 말인데, 앨범에서 가장 또렷하게 읽히는 문장이다.",
+      "나머지는 전작의 약점을 그대로 갖고 있다. DEFY, 블랙홀, 바이러스, 사랑 나눠 같은 단어가 곡마다 되풀이되고, 문장 사이의 연결이 약해 무슨 말을 하려는지 따라가기 어려운 구간이 길다. 평단의 높은 평가는 주로 사운드와 에너지 쪽에서 나온 것으로 보이고, 가사는 마음이 정리된 만큼 아직 정리되지 않았다.",
     ],
     tracks: ["사이렌", "HOWMUCH?", "샤이니", "십새끼", "AMAGETDON", "Self Control", "eeee", "KAI MODE", "하얀질주", "Korea BJJ", "태권도", "할머니", "TRAUMA"],
-    line: "싸움 끝에 꺼낸 속마음",
   },
   {
     artist: "빌스택스",
     title: "DETOX",
-    score: 6.0,
     cover: "https://image.bugsm.co.kr/album/images/1200/203172/20317226.jpg",
     year: "2020",
     label: "ATMseoul",
     format: "정규 · 10곡",
     genre: "힙합",
-    dek: "대마초 합법화를 공개적으로 주장해 온 빌스택스가 주제 하나에 앨범 전체를 건 카세트테이프 컨셉 앨범.",
+    lyric: {theme: 6, craft: 5, honesty: 7, original: 5, density: 4},
+    critics: [["리드머", 4, 5]],
+    partial: "열 곡 중 여덟 곡이 19세 이용 제한 곡이라 가사를 확인하지 못했다. 가사 점수는 ‘Lonely Stoner’와 ‘답답해’ 두 곡과 앨범 콘셉트만으로 매겼다.",
+    line: "들뜸과 가라앉음 사이의 연기",
+    dek: "대마초 합법화를 공개적으로 주장해 온 빌스택스가 주제 하나에 앨범 전체를 건 카세트테이프 콘셉트 앨범.",
     text: [
-      "앨범은 카세트테이프처럼 A면과 B면으로 나뉜다. A면의 이름은 ‘SATIVA’, B면은 ‘INDICA’. 대마초의 두 품종에서 이름을 따왔고, 실제로 두 면의 분위기가 확연히 다르다. 실물도 420장 한정 카세트로 나왔을 만큼 컨셉에 진심이다.",
-      "A면의 ‘WASABI’, ‘허경영’, ‘TNF’는 들뜨고 시끄럽다. 여러 피처링진이 몰려와 파티처럼 떠들썩한 분위기를 만든다. 반면 B면의 ‘Lonely Stoner’, ‘답답해’, ‘Thur'sday’는 늘어지고 외롭다. 같은 주제를 들뜬 쪽과 가라앉은 쪽에서 각각 보여 주는 구성은 영리하다.",
-      "문제는 컨셉이 음악보다 앞선다는 점이다. 주제 자체가 워낙 강해서 곡마다의 개성이 그 그늘에 묻히고, 31분 동안 같은 이야기를 다른 말로 반복하는 느낌이 든다. 한국 힙합에서 이 주제를 정면으로 다룬 시도라는 점은 분명히 기록할 만하지만, 다시 꺼내 듣게 되는 앨범은 아니다.",
+      "앨범은 카세트테이프처럼 A면과 B면으로 나뉜다. A면은 SATIVA, B면은 INDICA. 대마초의 두 품종에서 이름을 따왔고 각 면은 서로 다른 분위기의 곡으로 채워졌다. 다만 A면 다섯 곡을 포함해 여덟 곡이 19세 이용 제한 곡이라 국내 음원 사이트에서도, 나무위키에서도 가사를 볼 수 없었다. 이 리뷰의 가사 평가는 B면의 두 곡에 기대고 있다.",
+      "확인한 두 곡은 생각보다 훨씬 쓸쓸하다. ‘Lonely Stoner’는 휴대폰을 비행기 모드로 돌리고 혼자 방에 틀어박혀 아무 의미 없는 밤을 보내고 싶다는 노래인데, 누가 나를 안아 준 적 있었나 묻는 대목에서 외로움이 드러난다. ‘답답해’는 성적을 요구하는 부모, 그 불안이 그대로 옮아온 자신, 그 불안을 약으로 지우고 싶은 마음을 거칠게 쏟아낸다.",
+      "두 곡만 보면 가사는 솔직하지만 표현이 단순하고 훅이 같은 말을 길게 반복해서 밀도가 낮다. 반면 평단과 시상식의 평가는 이 목록에서도 손꼽힐 만큼 높다. 가사로 다 설명되지 않는 사운드와 콘셉트의 힘이 있다는 뜻이고, 나머지 여덟 곡을 읽으면 가사 점수가 달라질 수 있다.",
     ],
     tracks: ["WASABI", "Wickr me", "허경영", "한국거가 아닌거", "TNF", "Wake N' Bake", "Lonely Stoner", "답답해", "Price Tag", "Thur'sday"],
-    line: "들뜸과 가라앉음 사이의 연기",
+  },
+  {
+    artist: "아라흔",
+    title: "OGI-PATTERN",
+    cover: "https://image.bugsm.co.kr/album/images/1200/207843/20784328.jpg",
+    year: "2026",
+    label: "Defy",
+    format: "정규 · 17곡",
+    genre: "힙합 / 얼터너티브 랩",
+    lyric: {theme: 4, craft: 4, honesty: 8, original: 6, density: 4},
+    critics: [["리드머", 4, 5]],
+    line: "거친 오기 속에 숨긴 다정함",
+    dek: "순우리말 ‘오기’와 옷을 만드는 패턴사들의 ‘패턴’을 합친 제목. cwar라는 이름으로 낸 마지막 앨범이다.",
+    text: [
+      "17곡 내내 생각나는 대로 쏟아 낸 일기 같은 가사다. 문장이 중간에 끊기고, 주어가 자주 바뀌고, 친구와 크루 이름이 곳곳에 튀어나온다. 그래서 한 곡을 하나의 이야기로 읽기 어렵다. 스스로 거침없는 일기장이라고 부른 그대로다.",
+      "그 혼란 속에서 진짜 감정이 튀어나오는 순간들이 있다. 동생 아론에게 살아서 헤엄치라고 부르는 ‘Flame’, 떠나간 친구가 너무 보고 싶고 괜찮지 않다고 털어놓는 ‘BROTHER’, 불안과 사랑을 함께 고백하는 ‘REN.’. 아버지와 어머니, 동생을 향한 말들은 거칠어도 진심으로 읽힌다.",
+      "다만 표현을 다듬은 흔적은 적다. 욕설과 상대를 깎아내리는 말, 같은 구호의 반복이 많고, 비유는 떠오르는 대로 붙였다 떼는 수준이라 오래 남지 않는다. 진정성 점수는 높지만 나머지 기준에서는 점수를 주기 어렵다. 마음이 먼저 나오고 말이 따라가지 못하는 앨범이다.",
+    ],
+    tracks: ["Sunkane", "아이보리어택", "who I AM/rainbo", "Flame", "카리스마", "BROTHER", "오기", "악마", "W.o.W", "trap", "하루살이", "PRADA", "Liar", "Virus", "REN.", "메테오7", "Superstarshit"],
+    title_track: "Sunkane",
   },
 ];
 
-const BNM = 8.5;
+const BNM = 8.0;
 
 function esc(s){
   return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
 
+function lyricScore(a){
+  return CRITERIA.reduce((sum, [k]) => sum + a.lyric[k], 0) / CRITERIA.length;
+}
+function criticScore(a){
+  return a.critics.reduce((sum, [, v, max]) => sum + v / max * 10, 0) / a.critics.length;
+}
+function breakdownHTML(a){
+  const rows = CRITERIA.map(([k, label]) => `
+    <span>${esc(label)}</span>
+    <span class="bd-bar"><i style="width:${a.lyric[k] * 10}%"></i></span>
+    <span class="bd-num">${a.lyric[k]}</span>`).join("");
+  const critics = a.critics.map(([src, v, max]) => `${esc(src)} ${v}/${max}`).join(" · ");
+  return `
+    <div class="breakdown">
+      <div class="bd-title">점수 내역</div>
+      <div class="bd-rows">
+        ${rows}
+        <div class="bd-sum"><span>가사 평균 <b>${a.lyricAvg.toFixed(1)}</b> × 0.7</span><span>평단 <b>${a.criticAvg.toFixed(1)}</b> × 0.3</span><span>합계 <b>${a.score.toFixed(1)}</b></span></div>
+      </div>
+      <p class="bd-note">평단: ${critics}</p>
+      ${a.partial ? `<p class="bd-note">${esc(a.partial)}</p>` : ""}
+    </div>`;
+}
+
 function render(){
+  ALBUMS.forEach(a => {
+    a.lyricAvg = lyricScore(a);
+    a.criticAvg = criticScore(a);
+    a.score = a.lyricAvg * LYRIC_WEIGHT + a.criticAvg * (1 - LYRIC_WEIGHT);
+  });
+  document.getElementById("criteria-list").innerHTML = CRITERIA.map(([, label, desc]) => `<dt>${esc(label)}</dt><dd>${esc(desc)}</dd>`).join("");
   const list = [...ALBUMS].sort((a, b) => b.score - a.score);
   document.getElementById("count").textContent = `${list.length}장의 앨범 · 점수 순`;
   document.getElementById("list").innerHTML = list.map((a, i) => {
@@ -405,12 +482,11 @@ function render(){
         </div>
         <div class="body">
           <div class="genre">${esc(a.genre)}</div>
+          <p class="line">${esc(a.line)}</p>
           <p class="dek">${esc(a.dek)}</p>
           <div class="text">${a.text.map(p => `<p>${esc(p)}</p>`).join("")}</div>
           <p class="tracks">수록곡 — ${tracks}</p>
-          <div class="after">
-            <p class="line">“${esc(a.line)}”</p>
-          </div>
+          ${breakdownHTML(a)}
         </div>
       </div>
     </details>`;
