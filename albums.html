@@ -19,6 +19,7 @@
   --hair:#e5e5e5;
   --red:#ff3530;
   --cover-bg:#f0f0f0;
+  --hover:rgba(0,0,0,.03);
 }
 @media (prefers-color-scheme: dark){
   html:not([data-theme="light"]){
@@ -31,6 +32,7 @@
     --hair:#2a2a2a;
     --red:#ff5a55;
     --cover-bg:#1c1c1c;
+    --hover:rgba(255,255,255,.04);
   }
 }
 html[data-theme="dark"]{
@@ -43,6 +45,7 @@ html[data-theme="dark"]{
   --hair:#2a2a2a;
   --red:#ff5a55;
   --cover-bg:#1c1c1c;
+  --hover:rgba(255,255,255,.04);
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
@@ -58,46 +61,72 @@ body{
 .mast .logo{font-family:"Noto Serif KR",Georgia,serif;font-weight:900;font-size:30px;letter-spacing:-.02em}
 .mast .nav{margin-top:8px;font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--muted)}
 
-/* ============ 순위 목차 ============ */
-.index{max-width:980px;margin:0 auto;padding:28px 16px 8px;border-bottom:1px solid var(--hair)}
-.index ol{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:2px 32px}
-.index a{display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:baseline;padding:8px 0;color:inherit;text-decoration:none;border-bottom:1px solid var(--hair)}
-.index a:hover .t,.index a:focus-visible .t{text-decoration:underline;text-decoration-color:var(--red)}
-.index .n{font-weight:800;font-variant-numeric:tabular-nums}
-.index .t{min-width:0}
-.index .t i{font-family:"Noto Serif KR",Georgia,serif;margin-left:6px}
+main{max-width:980px;margin:0 auto;padding:16px 16px 80px}
 
-main{max-width:980px;margin:0 auto;padding:0 16px 80px}
+/* ============ 접힌 줄 ============ */
+.review{border-bottom:1px solid var(--hair)}
+.review summary{
+  list-style:none;cursor:pointer;
+  display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:16px;align-items:center;
+  padding:16px 8px;
+}
+.review summary::-webkit-details-marker{display:none}
+.review summary:hover{background:var(--hover)}
+.review summary:focus-visible{outline:2px solid var(--red);outline-offset:-2px}
+.thumb{width:64px;height:64px;background:var(--cover-bg);overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.sum-text{min-width:0}
+.sum-artist{font-size:14px;font-weight:800}
+.sum-title{font-family:"Noto Serif KR",Georgia,serif;font-style:italic;font-size:19px;line-height:1.3;overflow-wrap:anywhere}
+.sum-bnm{display:block;margin-top:2px;font-size:10px;font-weight:800;letter-spacing:.14em;color:var(--red);text-transform:uppercase}
+.sum-right{display:flex;align-items:center;gap:14px}
+.chev{width:10px;height:10px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:rotate(45deg) translate(-2px,-2px);transition:transform .25s}
+.review[open] .chev{transform:rotate(-135deg) translate(-2px,-2px)}
+.review[open] summary .thumb{opacity:0}
 
-/* ============ 리뷰 ============ */
-.review{padding:48px 0;border-bottom:1px solid var(--hair)}
+/* ============ 점수 원 ============ */
+.score{
+  border:3px solid var(--ink);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-variant-numeric:tabular-nums;line-height:1;
+}
+.score.sm{width:48px;height:48px;border-width:2px;font-size:17px}
+.score.lg{width:92px;height:92px;font-size:34px;margin:22px auto 0}
+.score.bnm{border-color:var(--red);color:var(--red)}
+
+/* ============ 펼친 리뷰 ============ */
+.panel{padding:12px 0 56px}
+.review[open] .panel{animation:unfold .45s ease-out}
+@keyframes unfold{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .review[open] .panel{animation:none}
+  .chev{transition:none}
+}
 .hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center}
 .cover{
-  aspect-ratio:1/1;width:100%;background:var(--cover-bg);
+  aspect-ratio:1/1;width:100%;max-width:100%;background:var(--cover-bg);
   box-shadow:0 10px 30px rgba(0,0,0,.18);overflow:hidden;
   display:flex;align-items:center;justify-content:center;
 }
 .cover img{width:100%;height:100%;object-fit:cover;display:block}
-.cover .ph{font-family:"Noto Serif KR",Georgia,serif;font-style:italic;color:var(--muted);padding:20px;text-align:center}
+.ph{font-family:"Noto Serif KR",Georgia,serif;font-style:italic;color:var(--muted);padding:8px;text-align:center;font-size:12px}
+.cover .ph{font-size:18px;padding:20px}
+.thumb .ph{display:none}
 
 .head{text-align:center}
 .artist{font-size:26px;font-weight:800;letter-spacing:-.01em;line-height:1.2}
-.title{font-family:"Noto Serif KR",Georgia,serif;font-style:italic;font-size:30px;font-weight:400;margin-top:6px;line-height:1.25}
-.rank{
-  width:84px;height:84px;margin:22px auto 0;border:3px solid var(--ink);border-radius:50%;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;
-}
-.rank b{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums}
-.rank small{font-size:9px;font-weight:700;letter-spacing:.14em;margin-top:3px}
-.bnm{display:inline-block;margin-top:16px;font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--red);text-transform:uppercase}
+.title{font-family:"Noto Serif KR",Georgia,serif;font-style:italic;font-size:30px;font-weight:400;margin-top:6px;line-height:1.25;text-wrap:balance}
+.bnm-tag{display:inline-block;margin-top:16px;font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--red);text-transform:uppercase}
 .meta{margin-top:14px;font-size:12px;color:var(--muted);letter-spacing:.04em}
 .meta span+span::before{content:"•";margin:0 8px}
 
 .body{max-width:640px;margin:44px auto 0}
 .genre{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--muted);border-top:1px solid var(--rule);padding-top:12px}
 .dek{font-family:"Noto Serif KR",Georgia,serif;font-size:20px;line-height:1.55;margin-top:18px;word-break:keep-all}
-.text{font-family:"Noto Serif KR",Georgia,serif;font-size:16px;line-height:1.9;color:var(--ink2);margin-top:18px;word-break:keep-all}
-.tracks{margin-top:22px;font-size:13px;color:var(--muted)}
+.text{display:flex;flex-direction:column;gap:18px;margin-top:22px}
+.text p{font-family:"Noto Serif KR",Georgia,serif;font-size:16px;line-height:1.9;color:var(--ink2);word-break:keep-all}
+.text p:first-child::first-letter{font-size:3.1em;font-weight:900;float:left;line-height:.9;margin:6px 8px 0 0;color:var(--ink)}
+.tracks{margin-top:26px;font-size:13px;color:var(--muted)}
 .tracks b{color:var(--ink);font-weight:700}
 
 /* ============ 한 줄 ============ */
@@ -105,7 +134,11 @@ main{max-width:980px;margin:0 auto;padding:0 16px 80px}
 .line{font-family:"Noto Serif KR",Georgia,serif;font-weight:700;font-size:26px;line-height:1.4;word-break:keep-all}
 
 @media (max-width:720px){
-  .review{padding:32px 0}
+  .review summary{grid-template-columns:52px minmax(0,1fr) auto;gap:12px;padding:14px 4px}
+  .thumb{width:52px;height:52px}
+  .sum-title{font-size:17px}
+  .sum-right{gap:10px}
+  .score.sm{width:44px;height:44px;font-size:15px}
   .hero{grid-template-columns:1fr;gap:28px}
   .artist{font-size:22px}
   .title{font-size:25px}
@@ -121,201 +154,270 @@ main{max-width:980px;margin:0 auto;padding:0 16px 80px}
   <div class="nav" id="count"></div>
 </header>
 
-<nav class="index" aria-label="순위"><ol id="index"></ol></nav>
-
 <main id="list"></main>
 
 <script>
-// 순위 순서대로 추가
+// 점수 높은 순으로 정렬해서 표시. score 8.5 이상은 Best New Listen
 const ALBUMS = [
   {
     artist: "XXX",
     title: "LANGUAGE",
+    score: 8.7,
     cover: "https://image.bugsm.co.kr/album/images/1200/202111/20211157.jpg",
     year: "2018",
     label: "BANA",
     format: "정규 · 10곡",
     genre: "힙합 / 익스페리멘탈",
-    dek: "김심야와 FRNK가 서로의 언어만으로 대화하듯 만든 첫 정규. 『SECOND LANGUAGE』와 짝을 이루는 더블 앨범의 첫 장이다.",
-    text: "FRNK의 비트는 금속처럼 차갑게 갈라지고, 김심야는 자기혐오와 씬을 향한 냉소를 숨기지 않고 쏟아낸다. 듣기 편하게 다듬는 대신 날것의 감정을 그대로 남겨 두었고, 그 불편함이 앨범의 정체성이 됐다. ‘18거 1517’로 문을 열어 ‘Told You’로 닫히기까지, 한국 힙합이 들어 본 적 없는 문법을 처음부터 끝까지 밀어붙인다. 피치포크 7.3점.",
+    dek: "래퍼 김심야와 프로듀서 FRNK가 남의 문법을 하나도 빌리지 않고 자기들만의 말로 쓴 첫 정규. 쌍둥이 앨범의 첫 번째 장이다.",
+    text: [
+      "첫 곡 ‘18거 1517’이 시작되는 순간부터 이 앨범은 듣는 사람을 배려하지 않는다. FRNK의 비트는 금속판을 긁는 것처럼 차갑고, 예상한 자리에 드럼이 떨어지지 않는다. 그 위에서 김심야는 숨 쉴 틈 없이 말을 밀어 넣는데, 그 말의 대부분은 자기 자신과 자기가 속한 씬을 향한 불만이다.",
+      "‘Ugly’, ‘수작’, ‘S_it’으로 이어지는 앞부분은 거의 공격에 가깝다. 듣기 좋게 다듬을 수 있었던 부분들을 일부러 날것으로 남겨 두었고, 그 거친 질감이 오히려 앨범의 설득력이 된다. 중간에 놓인 ‘간주곡’과 ‘Arranged’는 잠깐 숨을 고르게 해 주지만, 긴장이 완전히 풀리지는 않는다.",
+      "마지막 ‘Bad For You’와 ‘Told You’에 이르면 이 불편함이 하나의 태도였다는 걸 알게 된다. 남들이 알아듣기 쉬운 말로 번역하는 대신 자기 언어를 끝까지 지키겠다는 고집. 한국 힙합에서 이만큼 타협 없이 만들어진 정규 앨범은 드물고, 그래서 처음 들을 때보다 다시 들을 때 더 크게 들린다.",
+    ],
     tracks: ["18거 1517", "Ugly", "수작", "간주곡", "Trust Us", "S_it", "뭐 어쩔까 그럼", "Arranged", "Bad For You", "Told You"],
-    line: "아무도 번역해 주지 않는 언어로 끝까지 말하는 고집",
+    line: "남이 알아듣든 말든, 끝까지 내 말로 한다",
   },
   {
     artist: "김심야",
     title: "도그마",
+    score: 8.5,
     cover: "https://image.bugsm.co.kr/album/images/1200/41547/4154749.jpg",
     year: "2026",
     label: "BANA",
     format: "정규 · 10곡",
     genre: "힙합",
-    dek: "‘도그마는 피지컬계와 디지털계에 공존합니다.’ 명상 기기를 닮은 스피커 플레이어로도 나온 김심야의 정규 2집.",
-    text: "XXX 시절의 분노는 빠지고, 그 자리를 한 걸음 물러서서 바라보는 여유가 채운다. 29분 남짓한 짧은 러닝타임 안에서 ‘Me Life & Nothing Else’부터 ‘Keep Counting’까지 반복과 호흡을 세는 듯한 리듬이 이어진다. 박찬경 작가가 연출한 26분짜리 뮤직비디오와 4,500장 한정 플레이어까지 앨범 전체가 하나의 의식처럼 설계됐다. 피치포크 7.7점, 한국 힙합 앨범 최고점.",
+    dek: "음원과 손에 쥐는 물건, 두 세계에 동시에 존재하도록 만든 김심야의 두 번째 솔로 정규. 명상 기기를 닮은 스피커 플레이어로도 나왔다.",
+    text: [
+      "XXX 시절 김심야의 랩은 늘 화가 나 있었다. 도그마에서 가장 먼저 느껴지는 변화는 그 화가 빠졌다는 것이다. 목소리는 낮아졌고, 단어 사이의 간격은 넓어졌다. 대신 한 발 물러서서 자기 삶을 바라보는 시선이 생겼다.",
+      "29분이 채 안 되는 짧은 앨범이지만 밀도는 높다. ‘Me Life & Nothing Else’로 시작해 ‘Move My Feet’, ‘T-H-I-R-S-T-Y’로 이어지는 흐름은 같은 동작을 반복하면서 조금씩 깊어지는 수행처럼 들린다. ‘HDI HDI HDI HDI HDI HDI’처럼 제목부터 반복을 드러내는 곡도 있고, 마지막 곡 이름도 ‘Keep Counting’이다. 숫자를 세며 호흡을 고르는 명상이 앨범 전체의 리듬이 된다.",
+      "물건으로서의 앨범, 20분이 넘는 긴 뮤직비디오까지 포함하면 도그마는 음악이라기보다 하나의 의식에 가깝다. 다만 그 설계가 과시로 느껴지지 않는 건 소리 자체가 조용하고 단단하기 때문이다. 분노로 이름을 알린 래퍼가 분노 없이도 이만큼 날카로울 수 있다는 걸 보여 준다.",
+    ],
     tracks: ["Me Life & Nothing Else", "Move My Feet", "T-H-I-R-S-T-Y", "It’s That", "9 Out of 10", "HDI HDI HDI HDI HDI HDI", "Zulu Love", "Hanat Dool Set", "SOTS", "Keep Counting"],
-    line: "화를 다 태우고 남은 자리에서 조용히 숫자를 세는 사람",
+    line: "화는 다 내려놓고, 천천히 숫자만 센다",
   },
   {
     artist: "XXX",
     title: "SECOND LANGUAGE",
+    score: 8.2,
     cover: "https://image.bugsm.co.kr/album/images/1200/202300/20230095.jpg",
     year: "2019",
     label: "BANA",
     format: "정규 · 10곡",
     genre: "힙합 / 일렉트로닉",
-    dek: "‘I was invited to the party but I chose my own seat at the table.’ 『LANGUAGE』의 쌍둥이이자 반대편.",
-    text: "첫 장이 감정을 터뜨렸다면 두 번째 장은 감정을 덜어 내고 문을 넓혔다. FRNK는 사람들이 더 많이 듣게끔 만든 앨범이라고 말했고, 실제로 ‘Bougie’, ‘Language’, ‘괜찮아’에는 전작에 없던 매끈한 그루브가 흐른다. 그래도 날은 그대로라서, 정중하게 차린 식탁 위에서 자기 자리를 직접 고르는 태도가 끝까지 유지된다. 피치포크 7.5점.",
+    dek: "LANGUAGE가 나온 지 석 달 만에 도착한 쌍둥이 앨범. 같은 언어를 쓰지만 이번엔 더 많은 사람이 알아듣게 말한다.",
+    text: [
+      "첫 장이 감정을 터뜨리는 앨범이었다면 SECOND LANGUAGE는 감정을 덜어 내는 앨범이다. 김심야의 목소리는 여전히 냉소적이지만 소리를 지르지는 않는다. FRNK는 비트의 각을 조금 깎고, 그 자리에 그루브를 채웠다.",
+      "그래서 ‘Bougie’, ‘FAD’, ‘Language’ 같은 곡은 전작보다 훨씬 쉽게 몸에 붙는다. 그렇다고 대중적인 앨범이 된 건 아니다. ‘무뢰배’로 문을 열고 ‘사무직’으로 닫는 구성에는 여전히 사회와 거리를 두는 태도가 깔려 있고, ‘괜찮아’와 ‘다했어’처럼 평범한 말로 된 제목 뒤에도 쉽게 풀리지 않는 감정이 숨어 있다.",
+      "두 장을 이어서 들으면 비로소 그림이 완성된다. 하나는 문을 걸어 잠근 방이고, 다른 하나는 그 문을 반쯤 열어 둔 방이다. 초대받은 자리에 가서도 자기 자리는 직접 고르는 사람들의 앨범이고, 입문용으로는 이쪽이 더 낫다.",
+    ],
     tracks: ["무뢰배", "우린", "우아", "Bougie", "FAD", "Scale Model", "Language", "괜찮아", "다했어", "사무직"],
     line: "초대받은 파티에서 끝내 내 자리는 내가 고른다",
   },
   {
     artist: "이현준",
     title: "번역 중 손실",
+    score: 8.0,
     cover: "https://image.bugsm.co.kr/album/images/1200/204992/20499241.jpg",
     year: "2022",
     label: "이현준",
     format: "정규 · 14곡",
     genre: "익스페리멘탈 / 인더스트리얼 힙합",
-    dek: "‘너무 가까이 해석하지 말라. 가까이 다가갈수록 당신은 단어의 의미를 잃어버릴 것이다.’",
-    text: "『MAIN STREAM』 이후 3년 만의 정규 2집은 ‘번역’이라는 모호한 주제 하나로 사람들 사이의 오해와 자기 안의 결함을 차례로 되짚는다. 게슈탈트, 자율 주행, Windows 95, A.I. 내적 보고서처럼 기계와 인지의 언어를 빌려 와 소통이 어디서 새어 나가는지를 추적한다. 노이즈가 넘쳐 피로할 때도 있지만, ‘Hello Stranger’에서 ‘Newspaper’까지 이어지는 서사는 단단하다.",
+    dek: "말이 다른 사람에게 건너가는 동안 무엇이 사라지는지를 끝까지 따라가는 앨범. 첫 정규 이후 3년 만의 두 번째 정규다.",
+    text: [
+      "이 앨범의 주제는 ‘번역’이다. 언어를 다른 언어로 옮기는 일만이 아니라, 내 마음을 다른 사람에게 전하는 일, 사람의 생각을 기계가 받아 적는 일까지 모두 번역으로 본다. 그리고 그 과정마다 무언가가 새어 나간다는 걸 집요하게 확인한다.",
+      "‘Hello Stranger’에서 낯선 사람에게 말을 걸고, ‘게슈탈트’와 ‘농담’을 지나 ‘자율 주행’, ‘번역 오류’, ‘A.I. 내적 보고서’로 갈수록 대화의 상대가 점점 사람에서 기계로 바뀐다. 중간에 끼어 있는 스킷과 ‘Windows 95 Launch Dance’ 같은 곡은 이야기를 쉬어 가는 장치이면서 동시에 앨범의 기묘한 유머를 보여 준다.",
+      "소리는 거칠다. 노이즈와 금속성 질감이 쉴 새 없이 밀려와서 한 번에 다 듣기엔 피곤할 때도 있다. 하지만 그 피로함마저 의도된 것처럼 들린다. 정확하게 전달되지 않는 말들이 쌓여서 생기는 소음. 마지막 ‘Good Bye Closer’와 ‘Newspaper’까지 듣고 나면, 처음부터 끝까지 하나의 이야기였다는 게 분명해진다.",
+    ],
     tracks: ["Hello Stranger", "게슈탈트", "농담", "soma skit", "SOMA", "자율 주행", "번역 오류", "Windows 95 Launch Dance", "번역 중 손실", "A.I. 내적 보고서", "White Lighter", "직역", "Good Bye Closer", "Newspaper"],
     title_track: "SOMA",
-    line: "옮겨 적을수록 흐려지는, 끝내 닿지 않는 마음의 원문",
+    line: "말이 건너가는 동안 마음이 조금씩 샌다",
   },
   {
     artist: "XXX",
     title: "KYOMI",
+    score: 7.8,
     cover: "https://image.bugsm.co.kr/album/images/1200/200445/20044575.jpg",
     year: "2016",
     label: "BANA",
     format: "EP · 7곡",
     genre: "힙합 / 퓨처 베이스",
-    dek: "정규 앨범 하나 없이 해외 매체부터 먼저 주목한 듀오의 데뷔 EP. 파티를 즐기는 남녀라는 하나의 컨셉으로 묶었다.",
-    text: "랩 위에 놓였지만 비트는 전자 음악에 더 가깝다. FRNK는 한 곡 안에서도 힙합, 퓨처 베이스, 트랩, 신스팝을 쉬지 않고 갈아 끼우고, 김심야는 그 위를 거침없이 미끄러진다. ‘Liquor’로 취해서 ‘승무원’으로 착륙하는 22분은 이후 XXX가 갈 길을 미리 보여 주는 예고편이다.",
+    dek: "정규 앨범 하나 없던 두 사람이 해외 매체의 관심부터 먼저 받으며 내놓은 데뷔 EP. 파티에서 만난 남녀의 하룻밤을 하나의 이야기로 묶었다.",
+    text: [
+      "랩 앨범이지만 비트만 따로 들으면 전자 음악에 더 가깝다. FRNK는 한 곡 안에서도 힙합에서 퓨처 베이스로, 트랩에서 신스팝으로 쉬지 않고 장르를 갈아 끼운다. 그래서 곡의 구조를 예측하기 어렵고, 그게 이 EP의 가장 큰 재미다.",
+      "‘Liquor’로 술잔을 들고 시작해서 ‘Too High’, ‘Pass’, ‘Dior Homme’를 지나 ‘승무원’으로 착륙하는 22분은 밤이 깊어지는 순서 그대로다. 김심야의 랩은 아직 LANGUAGE만큼 날카롭지는 않지만, 비트 위를 미끄러지듯 타는 감각은 이미 완성되어 있다.",
+      "나중에 나온 두 장의 LANGUAGE에 비하면 가볍고 즐겁다. 하지만 이 가벼움 속에서 XXX가 어디로 갈지에 대한 힌트가 전부 보인다. 장르의 경계를 신경 쓰지 않는 태도, 한국어 랩을 낯설게 들리게 만드는 방식. 시작점으로 다시 들어 볼 만한 EP다.",
+    ],
     tracks: ["Liquor", "우물정자", "교미", "Too High", "Pass", "Dior Homme", "승무원"],
     title_track: "승무원",
-    line: "취한 채 이륙해서 새벽에 불시착하는 스물두 분",
+    line: "술잔 들고 이륙해서 새벽에 착륙한다",
   },
   {
     artist: "비와이",
     title: "The Movie Star",
+    score: 7.5,
     cover: "https://image.bugsm.co.kr/album/images/1200/202415/20241522.jpg",
     year: "2019",
     label: "Dejavu Group",
     format: "정규 · 12곡",
     genre: "힙합",
-    dek: "‘주연에서 주인공으로. 나는 영화가 되었다.’ 프로듀싱부터 믹스까지 비와이가 혼자 끌고 간 영화 한 편.",
-    text: "‘적응’으로 시작해 ‘주연’을 거쳐 ‘주인공’으로 끝나는 트랙 순서가 그대로 한 사람의 성장 서사다. 크러쉬, 버벌진트, 씨잼, 쿤디판다 같은 조연들이 장면마다 등장하지만, 카메라는 끝까지 비와이에게서 떨어지지 않는다. 신앙과 자기 확신이 뒤섞인 특유의 웅장함이 ‘가라사대’에서 정점을 찍는다.",
+    dek: "작곡부터 편곡, 믹스까지 비와이가 직접 맡아 한 편의 영화처럼 짠 정규 앨범. 조연으로 시작해 주인공이 되는 이야기다.",
+    text: [
+      "트랙 순서만 봐도 이 앨범이 하려는 이야기가 보인다. ‘적응’으로 시작해서 ‘주연’을 지나 마지막 곡 ‘주인공’으로 끝난다. 신인이 무대에 적응하고, 주연을 맡고, 결국 이야기 전체의 주인공이 되는 과정을 영화처럼 펼쳐 놓았다.",
+      "크러쉬, 버벌진트, 씨잼, 쿤디판다, SUMIN까지 피처링진이 화려하지만 누구도 비와이를 가리지 않는다. 그들은 장면마다 잠깐 등장했다 사라지는 조연이고, 카메라는 끝까지 비와이를 따라간다. 직접 만든 비트는 웅장하고 극적이며, 신앙과 자기 확신이 섞인 비와이 특유의 가사가 그 위를 채운다.",
+      "‘가라사대’에서 그 웅장함이 정점을 찍는다. 다만 앨범 전체가 같은 높이의 확신으로 계속 이어지다 보니, 중반부에는 비슷한 장면이 반복되는 느낌도 있다. 그래도 한 사람이 처음부터 끝까지 만들어 낸 영화라는 점에서, 비와이의 디스코그래피에서 가장 완결된 작품이다.",
+    ],
     tracks: ["적응", "WON", "아들이", "본토", "거장", "주연", "장미는아름답지만가시가있다", "찬란", "초월", "다음것", "가라사대", "주인공"],
-    line: "엔딩 크레딧까지 스스로 쓰는 주인공의 확신",
+    line: "조연으로 들어와서 주인공으로 나간다",
   },
   {
     artist: "와비사비룸",
     title: "물질보다정신",
+    score: 7.3,
     cover: "https://image.bugsm.co.kr/album/images/1200/200018/20001880.jpg",
     year: "2015",
     label: "AVLX",
     format: "EP · 7곡",
     genre: "힙합 / 클라우드 랩",
-    dek: "속(俗)에 얽매이지 않고 불완전함을 드러낸다는 그룹 이름 그대로, 돈과 허세보다 ‘정신’을 앞세운 와비사비룸의 두 번째 EP.",
-    text: "에이뤠의 건조하고 날 선 드럼 위에 나른한 루프가 연기처럼 깔리고, 장유석(짱유)과 제이플로우는 그 안개 속을 느긋하게 헤엄치듯 랩을 얹는다. 첫 EP 『비밀꼴라쥬』가 세 멤버의 색을 섞어 본 실험이었다면, 이번 앨범은 그 위에 각자의 정신을 덧칠해 팀만의 세계관을 완성한 작품이다. B급 정서와 맥락 없이 튀어나오는 단어들 사이로 한국 힙합 씬을 향한 비꼼이 번뜩이고, 타이틀곡 ‘밥말리’를 중심으로 앨범 전체가 ‘물질보다 정신’이라는 한 문장을 향해 흐른다.",
+    dek: "세속에 매이지 않고 불완전함을 오히려 드러내겠다는 그룹 이름 그대로, 돈과 허세 대신 정신을 앞세운 두 번째 EP.",
+    text: [
+      "에이뤠가 만든 비트는 건조하고 날카로운 드럼 위에 나른한 루프를 겹쳐 놓은 구조다. 소리가 연기처럼 공간을 채우고, 장유석과 제이플로우는 그 안개 속을 천천히 헤엄치듯 랩을 얹는다. 서두르지 않는 플로우가 이 팀의 가장 큰 무기다.",
+      "첫 곡 ‘분장’이 앨범의 인상을 거의 결정한다. 맥락 없이 툭툭 튀어나오는 단어들, 일부러 촌스럽게 비튼 B급 감성 사이로 한국 힙합 씬을 비웃는 순간들이 번뜩인다. 이어지는 ‘누군가’, ‘I Like It’, ‘나그참파’도 같은 온도를 유지하면서 타이틀곡 ‘밥말리’로 모인다.",
+      "첫 EP가 세 사람이 각자의 색을 섞어 보는 실험이었다면, 이번에는 그 위에 팀으로서의 생각을 덧칠했다. 지금 들으면 사운드가 조금 오래된 느낌도 있지만, 돈 이야기가 넘치던 시기에 정반대 방향을 고집했다는 것만으로도 다시 들어 볼 이유가 충분하다.",
+    ],
     tracks: ["분장", "누군가", "I Like It", "나그참파", "밥말리", "동그라미", "물질보다정신"],
     title_track: "밥말리",
-    line: "연기처럼 번지는 루프 속, 끝내 물질에 지지 않는 정신",
+    line: "다들 돈 얘기할 때 혼자 정신 얘기를 한다",
   },
   {
     artist: "반타01",
     title: "OGI-PATTERN",
+    score: 7.0,
     cover: "https://image.bugsm.co.kr/album/images/1200/207843/20784328.jpg",
     year: "2026",
     label: "Defy",
     format: "정규 · 17곡",
     genre: "힙합 / 얼터너티브 랩",
-    dek: "‘오기’는 순우리말에서, ‘패턴’은 옷을 만드는 패턴사들에게서 따왔다. cwar라는 이름으로 낸 마지막 앨범.",
-    text: "스스로 ‘거침없는 일기장’이라고 부른 앨범답게 17곡 내내 용맹함과 투지를 앞세운다. ‘Sunkane’부터 ‘Superstarshit’까지 실험적인 사운드와 프로덕션을 끝까지 밀어붙이지만, 그 거친 표면 아래에는 따뜻한 마음을 믿어 달라는 부탁이 깔려 있다. 이름을 바꾸기 직전의 래퍼가 남긴 자기소개서에 가깝다.",
+    dek: "순우리말 ‘오기’와 옷을 만드는 패턴사들의 ‘패턴’을 합친 제목. 반타01이 cwar라는 이름으로 낸 마지막 앨범이다.",
+    text: [
+      "17곡, 44분. 처음부터 끝까지 거칠게 밀어붙이는 앨범이다. ‘Sunkane’으로 문을 열고 ‘아이보리어택’, ‘Flame’, ‘카리스마’로 이어지는 앞부분은 투지와 허세가 뒤섞여 있고, 사운드도 일반적인 랩 앨범의 틀을 계속 벗어나려고 한다.",
+      "제목이 말해 주듯 이 앨범의 재료는 오기다. 다만 ‘BROTHER’, ‘하루살이’, ‘Liar’ 같은 곡에서는 그 거친 겉면 아래에 숨은 다정함이 슬쩍 드러난다. 표현이 서툴러도 마음은 넓다는 걸 믿어 달라는 부탁 같은 앨범이고, 그래서 일기장을 몰래 읽는 기분이 든다.",
+      "아쉬운 점은 길이다. 17곡이 모두 같은 에너지로 몰아치다 보니 후반부 ‘Virus’, ‘REN.’, ‘메테오7’쯤에서는 인상이 조금씩 흐려진다. 열 곡 남짓으로 줄였다면 훨씬 단단했을 것이다. 그래도 이름을 바꾸기 직전의 래퍼가 자기를 전부 쏟아 낸 기록이라는 점에서 의미가 있다.",
+    ],
     tracks: ["Sunkane", "아이보리어택", "who I AM/rainbo", "Flame", "카리스마", "BROTHER", "오기", "악마", "W.o.W", "trap", "하루살이", "PRADA", "Liar", "Virus", "REN.", "메테오7", "Superstarshit"],
     title_track: "Sunkane",
-    line: "거칠게 박음질한 오기 사이로 비치는 따뜻한 안감",
+    line: "말은 거칠어도 속은 따뜻하다",
   },
   {
     artist: "비와이",
     title: "POP IS CRYIN'",
+    score: 6.9,
     cover: "https://image.bugsm.co.kr/album/images/1200/41470/4147037.jpg",
     year: "2026",
     label: "Opus Magnum",
     format: "정규 · 15곡",
     genre: "힙합",
-    dek: "‘Girls don't cry / Pop is cryin'.’ 약 7년 만의 정규이자 새 레이블 Opus Magnum에서 여는 첫 장.",
-    text: "신스 베이스와 드럼을 비와이가 거의 직접 쌓아 올렸고, 웅장함 대신 밤처럼 낮게 가라앉은 소리가 앨범을 채운다. ‘머리맡에’, ‘찾으니’, ‘알면서도’처럼 혼잣말 같은 제목들이 이어지다가 ‘STIGMATA’, ‘M.O.L.T’에서 허물을 벗는다. 『The Movie Star』의 주인공이 조명 밖에서 우는 법을 배운 앨범이다.",
+    dek: "약 7년 만의 정규이자 새 레이블에서 여는 첫 장. The Movie Star의 주인공이 조명 밖으로 걸어 나온 앨범이다.",
+    text: [
+      "가장 먼저 귀에 들어오는 건 소리의 온도다. 전작의 웅장한 오케스트라 대신 비와이가 직접 쌓은 신스 베이스와 드럼이 낮게 깔린다. 화려하게 터지는 순간보다 밤처럼 가라앉은 순간이 훨씬 많다.",
+      "‘머리맡에’, ‘찾으니’, ‘알면서도’처럼 혼잣말 같은 제목들이 앨범 앞쪽을 채운다. 확신에 차 있던 래퍼가 처음으로 흔들리는 모습을 보여 주고, ‘공수레공수거’와 ‘아비가’에 이르러서는 신앙과 가족에 대한 이야기가 더 개인적인 목소리로 나온다. 후반부 ‘STIGMATA’와 ‘M.O.L.T’에서는 허물을 벗듯 다시 힘을 끌어올린다.",
+      "방향은 분명히 흥미롭다. 다만 15곡, 50분은 이 차분한 분위기를 유지하기엔 조금 길고, 중간에 비슷한 질감의 곡들이 이어지면서 집중력이 떨어지는 구간이 있다. 비와이의 새로운 얼굴을 보여 준 앨범으로는 충분하지만, 그 얼굴이 완성되려면 한 장이 더 필요해 보인다.",
+    ],
     tracks: ["Sweet Escape", "머리맡에", "찾으니", "외", "배있길 보우", "악수", "Am I", "공수레공수거", "알면서도", "아비가", "SOUTHSIDE FREESTYLE", "STIGMATA", "M.O.L.T", "2wayS", "Shosanna"],
-    line: "울지 않던 주인공이 조명 밖에서 처음 흘린 눈물",
+    line: "확신에 차 있던 사람이 처음으로 운다",
   },
   {
     artist: "반타01 & MPT",
     title: "아름8",
+    score: 6.6,
     cover: "https://image.bugsm.co.kr/album/images/1200/208179/20817954.jpg",
     year: "2026",
     label: "KAI MODE",
     format: "정규 · 13곡",
     genre: "힙합 / 랩",
-    dek: "‘무한한 아름다움. 우리만의 것.’ 반타01이라는 새 이름으로 MPT와 함께 낸 첫 합작.",
-    text: "8을 옆으로 눕히면 무한대가 된다. ‘사이렌’으로 경보를 울리고 ‘HOWMUCH?’, ‘AMAGETDON’, ‘태권도’, ‘Korea BJJ’로 이어지는 트랙들은 싸움과 수련의 언어로 가득하다. 그러다 ‘할머니’와 ‘TRAUMA’에서 갑자기 속을 드러내며 끝나는, 거칠지만 솔직한 38분이다.",
+    dek: "반타01이라는 새 이름으로 MPT와 함께 낸 첫 합작. 끝없는 아름다움을 자기들끼리만 나눠 갖겠다는 앨범이다.",
+    text: [
+      "제목의 8은 옆으로 눕히면 무한대 기호가 된다. 끝없이 이어지는 무언가를 붙잡으려는 앨범인데, 그 무언가는 대부분 싸움의 형태로 나타난다. ‘사이렌’으로 경보를 울리고 ‘HOWMUCH?’, ‘AMAGETDON’으로 몰아친 뒤 ‘태권도’, ‘Korea BJJ’처럼 무술과 수련의 단어들이 이어진다.",
+      "MPT가 믹스와 마스터를 맡아서인지 OGI-PATTERN보다 소리가 훨씬 정돈되어 있고, 38분이라는 길이도 적당하다. 피아노와 현악이 들어간 ‘사이렌’, ‘태권도’는 거친 랩과 대비를 이루며 앨범에 숨 쉴 틈을 만든다.",
+      "가장 기억에 남는 건 마지막 두 곡이다. 내내 주먹을 쥐고 있던 앨범이 ‘할머니’와 ‘TRAUMA’에서 갑자기 속을 털어놓는다. 이 반전이 좋지만, 앞부분의 공격성이 비슷한 패턴으로 반복되는 탓에 거기까지 가는 길이 조금 단조롭다. 새 이름의 첫인사로는 충분히 인상적이다.",
+    ],
     tracks: ["사이렌", "HOWMUCH?", "샤이니", "십새끼", "AMAGETDON", "Self Control", "eeee", "KAI MODE", "하얀질주", "Korea BJJ", "태권도", "할머니", "TRAUMA"],
-    line: "옆으로 누운 8처럼, 끝없이 도는 싸움과 사랑",
+    line: "내내 주먹 쥐고 있다가 마지막에 속을 꺼낸다",
   },
   {
     artist: "빌스택스",
     title: "DETOX",
+    score: 6.0,
     cover: "https://image.bugsm.co.kr/album/images/1200/203172/20317226.jpg",
     year: "2020",
     label: "ATMseoul",
     format: "정규 · 10곡",
     genre: "힙합",
-    dek: "대마초 합법화를 공개적으로 주장해 온 빌스택스가 ‘국내 최초 대마초 앨범’을 내걸고 만든 카세트테이프 컨셉 앨범.",
-    text: "Side A ‘SATIVA’와 Side B ‘INDICA’로 나뉘어 있고, 각 면은 다른 스타일의 곡들로 채워졌다. 앞면의 ‘WASABI’, ‘허경영’, ‘TNF’가 들뜨고 시끄럽다면, 뒷면의 ‘Lonely Stoner’, ‘답답해’, ‘Thur'sday’는 늘어지고 외롭다. 420장 한정 카세트로도 나온, 주제 하나에 모든 걸 건 31분이다.",
+    dek: "대마초 합법화를 공개적으로 주장해 온 빌스택스가 주제 하나에 앨범 전체를 건 카세트테이프 컨셉 앨범.",
+    text: [
+      "앨범은 카세트테이프처럼 A면과 B면으로 나뉜다. A면의 이름은 ‘SATIVA’, B면은 ‘INDICA’. 대마초의 두 품종에서 이름을 따왔고, 실제로 두 면의 분위기가 확연히 다르다. 실물도 420장 한정 카세트로 나왔을 만큼 컨셉에 진심이다.",
+      "A면의 ‘WASABI’, ‘허경영’, ‘TNF’는 들뜨고 시끄럽다. 여러 피처링진이 몰려와 파티처럼 떠들썩한 분위기를 만든다. 반면 B면의 ‘Lonely Stoner’, ‘답답해’, ‘Thur'sday’는 늘어지고 외롭다. 같은 주제를 들뜬 쪽과 가라앉은 쪽에서 각각 보여 주는 구성은 영리하다.",
+      "문제는 컨셉이 음악보다 앞선다는 점이다. 주제 자체가 워낙 강해서 곡마다의 개성이 그 그늘에 묻히고, 31분 동안 같은 이야기를 다른 말로 반복하는 느낌이 든다. 한국 힙합에서 이 주제를 정면으로 다룬 시도라는 점은 분명히 기록할 만하지만, 다시 꺼내 듣게 되는 앨범은 아니다.",
+    ],
     tracks: ["WASABI", "Wickr me", "허경영", "한국거가 아닌거", "TNF", "Wake N' Bake", "Lonely Stoner", "답답해", "Price Tag", "Thur'sday"],
-    line: "A면에서 들뜨고 B면에서 가라앉는 연기 한 모금",
+    line: "A면에서 들뜨고, B면에서 가라앉는다",
   },
 ];
+
+const BNM = 8.5;
 
 function esc(s){
   return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
 
 function render(){
-  document.getElementById("count").textContent = `${ALBUMS.length}장의 앨범 · 순위`;
-  document.getElementById("index").innerHTML = ALBUMS.map((a, i) =>
-    `<li><a href="#r${i + 1}"><span class="n">${i + 1}</span><span class="t">${esc(a.artist)}<i>${esc(a.title)}</i></span></a></li>`
-  ).join("");
-  document.getElementById("list").innerHTML = ALBUMS.map((a, i) => {
+  const list = [...ALBUMS].sort((a, b) => b.score - a.score);
+  document.getElementById("count").textContent = `${list.length}장의 앨범 · 점수 순`;
+  document.getElementById("list").innerHTML = list.map((a, i) => {
+    const best = a.score >= BNM;
+    const score = a.score.toFixed(1);
     const tracks = a.tracks.map(t => t === a.title_track ? `<b>${esc(t)}</b>` : esc(t)).join(" · ");
     return `
-    <article class="review" id="r${i + 1}">
-      <div class="hero">
-        <div class="cover" data-title="${esc(a.title)}">
-          <img src="${esc(a.cover)}" alt="${esc(a.artist)} — ${esc(a.title)} 앨범 커버" referrerpolicy="no-referrer">
+    <details class="review" id="r${i + 1}">
+      <summary>
+        <div class="thumb" data-title="${esc(a.title)}"><img src="${esc(a.cover)}" alt="" referrerpolicy="no-referrer"></div>
+        <div class="sum-text">
+          <div class="sum-artist">${esc(a.artist)}</div>
+          <div class="sum-title">${esc(a.title)}</div>
+          ${best ? `<span class="sum-bnm">Best New Listen</span>` : ""}
         </div>
-        <div class="head">
-          <div class="artist">${esc(a.artist)}</div>
-          <h2 class="title">${esc(a.title)}</h2>
-          <div class="rank"><b>${i + 1}</b><small>RANK</small></div>
-          ${i === 0 ? `<div class="bnm">Best New Listen</div>` : ""}
-          <div class="meta"><span>${esc(a.label)}</span><span>${esc(a.year)}</span><span>${esc(a.format)}</span></div>
+        <div class="sum-right">
+          <div class="score sm${best ? " bnm" : ""}" aria-label="10점 만점에 ${score}점">${score}</div>
+          <span class="chev" aria-hidden="true"></span>
+        </div>
+      </summary>
+      <div class="panel">
+        <div class="hero">
+          <div class="cover" data-title="${esc(a.title)}">
+            <img src="${esc(a.cover)}" alt="${esc(a.artist)} — ${esc(a.title)} 앨범 커버" referrerpolicy="no-referrer">
+          </div>
+          <div class="head">
+            <div class="artist">${esc(a.artist)}</div>
+            <h2 class="title">${esc(a.title)}</h2>
+            <div class="score lg${best ? " bnm" : ""}" aria-label="10점 만점에 ${score}점">${score}</div>
+            ${best ? `<div class="bnm-tag">Best New Listen</div>` : ""}
+            <div class="meta"><span>${esc(a.label)}</span><span>${esc(a.year)}</span><span>${esc(a.format)}</span></div>
+          </div>
+        </div>
+        <div class="body">
+          <div class="genre">${esc(a.genre)}</div>
+          <p class="dek">${esc(a.dek)}</p>
+          <div class="text">${a.text.map(p => `<p>${esc(p)}</p>`).join("")}</div>
+          <p class="tracks">수록곡 — ${tracks}</p>
+          <div class="after">
+            <p class="line">“${esc(a.line)}”</p>
+          </div>
         </div>
       </div>
-      <div class="body">
-        <div class="genre">${esc(a.genre)}</div>
-        <p class="dek">${esc(a.dek)}</p>
-        <p class="text">${esc(a.text)}</p>
-        <p class="tracks">수록곡 — ${tracks}</p>
-        <div class="after">
-          <p class="line">“${esc(a.line)}”</p>
-        </div>
-      </div>
-    </article>`;
+    </details>`;
   }).join("");
 
   // 커버를 못 불러오면 제목으로 대체
-  document.querySelectorAll(".cover img").forEach(img => {
+  document.querySelectorAll(".cover img, .thumb img").forEach(img => {
     const fallback = () => {
       const ph = document.createElement("div");
       ph.className = "ph";
@@ -327,6 +429,22 @@ function render(){
   });
 }
 
+// 한 번에 하나만 펼치기
+document.getElementById("list").addEventListener("toggle", e => {
+  const d = e.target;
+  if(!d.open) return;
+  document.querySelectorAll(".review[open]").forEach(o => { if(o !== d) o.open = false; });
+  const top = d.getBoundingClientRect().top;
+  if(top < 0) d.scrollIntoView({block:"start"});
+  if(location.hash !== "#" + d.id) history.replaceState(null, "", "#" + d.id);
+}, true);
+
+function openFromHash(){
+  const d = location.hash && document.querySelector(location.hash);
+  if(d && d.classList.contains("review")){ d.open = true; d.scrollIntoView({block:"start"}); }
+}
+window.addEventListener("hashchange", openFromHash);
+
 try{
   const th = localStorage.getItem("survey-dashboard-data-v2:theme");
   if(th) document.documentElement.dataset.theme = th;
@@ -334,6 +452,7 @@ try{
 }catch(e){ document.documentElement.removeAttribute("data-theme"); }
 
 render();
+openFromHash();
 </script>
 </body>
 </html>
