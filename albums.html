@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>들을 앨범 순위</title>
+<style>
+/* ============ 색상 토큰 (라이트/다크) ============ */
+:root{
+  color-scheme: light;
+  --page:#f9f9f7;
+  --surface:#fcfcfb;
+  --ink:#0b0b0b;
+  --ink2:#52514e;
+  --muted:#898781;
+  --border:rgba(11,11,11,.10);
+  --accent:#2a78d6;
+  --wash:rgba(11,11,11,.045);
+}
+@media (prefers-color-scheme: dark){
+  html:not([data-theme="light"]){
+    color-scheme: dark;
+    --page:#0d0d0d;
+    --surface:#1a1a19;
+    --ink:#ffffff;
+    --ink2:#c3c2b7;
+    --muted:#898781;
+    --border:rgba(255,255,255,.10);
+    --accent:#3987e5;
+    --wash:rgba(255,255,255,.06);
+  }
+}
+html[data-theme="dark"]{
+  color-scheme: dark;
+  --page:#0d0d0d;
+  --surface:#1a1a19;
+  --ink:#ffffff;
+  --ink2:#c3c2b7;
+  --muted:#898781;
+  --border:rgba(255,255,255,.10);
+  --accent:#3987e5;
+  --wash:rgba(255,255,255,.06);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:"Pretendard Variable",Pretendard,system-ui,-apple-system,"Segoe UI","Malgun Gothic",sans-serif;
+  background:var(--page);
+  color:var(--ink);
+  line-height:1.6;
+}
+main{max-width:760px;margin:0 auto;padding:32px 16px 64px}
+h1{font-size:24px;font-weight:700;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:13px;margin-top:4px}
+
+/* ============ 앨범 카드 ============ */
+.list{list-style:none;margin-top:24px;display:flex;flex-direction:column;gap:14px}
+.album{
+  display:grid;grid-template-columns:56px 1fr;gap:16px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:20px;
+}
+.rank{font-size:34px;font-weight:800;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
+.artist{font-size:13px;color:var(--ink2);font-weight:600}
+.name{font-size:19px;font-weight:700;margin-top:2px}
+.label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.06em;margin-top:14px}
+.concept{font-size:14px;color:var(--ink2);margin-top:4px}
+.after{margin-top:16px;padding-top:14px;border-top:1px dashed var(--border)}
+.line{font-size:17px;font-weight:600;margin-top:4px;word-break:keep-all}
+.line::before{content:"“"}
+.line::after{content:"”"}
+.album:not(.done) .line{filter:blur(6px);user-select:none}
+.toggle{
+  appearance:none;border:1px solid var(--border);background:var(--surface);
+  color:var(--ink);font:inherit;font-size:12px;font-weight:600;
+  padding:5px 11px;border-radius:999px;cursor:pointer;margin-top:10px;
+}
+.toggle:hover{background:var(--wash)}
+.album.done .toggle{background:var(--accent);border-color:var(--accent);color:#fff}
+</style>
+</head>
+<body>
+<main>
+  <h1>들을 앨범 순위</h1>
+  <p class="sub">한 줄 감상은 ‘다 들음’을 누르면 보여요.</p>
+  <ol class="list" id="list"></ol>
+</main>
+
+<script>
+// 순위 순서대로 추가
+const ALBUMS = [
+  {
+    artist: "와비사비룸",
+    title: "물질보다 정신",
+    concept: "가진 것보다 마음의 상태를 묻는 앨범. 제목부터 ‘물질보다 정신’을 내세우고, 이름처럼 불완전하고 덜어낸 것에서 아름다움을 찾는 와비사비의 태도로 소유와 욕심을 걷어 낸 자리에 남는 감정을 담담하게 따라간다.",
+    line: "비워 낸 방에 남은 마음의 온도",
+  },
+];
+
+const KEY = "album-ranking:done";
+let done = {};
+try{ done = JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){}
+
+function esc(s){
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function render(){
+  document.getElementById("list").innerHTML = ALBUMS.map((a, i) => {
+    const id = a.artist + "/" + a.title;
+    const isDone = !!done[id];
+    return `
+    <li class="album${isDone ? " done" : ""}">
+      <div class="rank">${i + 1}</div>
+      <div>
+        <div class="artist">${esc(a.artist)}</div>
+        <div class="name">${esc(a.title)}</div>
+        <div class="label">컨셉</div>
+        <p class="concept">${esc(a.concept)}</p>
+        <div class="after">
+          <div class="label">다 들은 뒤</div>
+          <p class="line">${esc(a.line)}</p>
+          <button class="toggle" data-id="${esc(id)}">${isDone ? "다 들음 ✓" : "다 들음"}</button>
+        </div>
+      </div>
+    </li>`;
+  }).join("");
+}
+
+document.getElementById("list").addEventListener("click", e => {
+  const b = e.target.closest(".toggle");
+  if(!b) return;
+  done[b.dataset.id] = !done[b.dataset.id];
+  try{ localStorage.setItem(KEY, JSON.stringify(done)); }catch(e){}
+  render();
+});
+
+try{
+  const th = localStorage.getItem("survey-dashboard-data-v2:theme");
+  if(th) document.documentElement.dataset.theme = th;
+  else document.documentElement.removeAttribute("data-theme");
+}catch(e){ document.documentElement.removeAttribute("data-theme"); }
+
+render();
+</script>
+</body>
+</html>
