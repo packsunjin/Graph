@@ -4,96 +4,143 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>들을 앨범 순위</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 /* ============ 색상 토큰 (라이트/다크) ============ */
 :root{
   color-scheme: light;
-  --page:#f9f9f7;
-  --surface:#fcfcfb;
-  --ink:#0b0b0b;
-  --ink2:#52514e;
-  --muted:#898781;
-  --border:rgba(11,11,11,.10);
-  --accent:#2a78d6;
-  --wash:rgba(11,11,11,.045);
+  --page:#ffffff;
+  --ink:#000000;
+  --ink2:#3a3a3a;
+  --muted:#757575;
+  --rule:#000000;
+  --hair:#e5e5e5;
+  --red:#ff3530;
+  --cover-bg:#f0f0f0;
 }
 @media (prefers-color-scheme: dark){
   html:not([data-theme="light"]){
     color-scheme: dark;
-    --page:#0d0d0d;
-    --surface:#1a1a19;
+    --page:#0f0f0f;
     --ink:#ffffff;
-    --ink2:#c3c2b7;
-    --muted:#898781;
-    --border:rgba(255,255,255,.10);
-    --accent:#3987e5;
-    --wash:rgba(255,255,255,.06);
+    --ink2:#cfcfcf;
+    --muted:#9a9a9a;
+    --rule:#ffffff;
+    --hair:#2a2a2a;
+    --red:#ff5a55;
+    --cover-bg:#1c1c1c;
   }
 }
 html[data-theme="dark"]{
   color-scheme: dark;
-  --page:#0d0d0d;
-  --surface:#1a1a19;
+  --page:#0f0f0f;
   --ink:#ffffff;
-  --ink2:#c3c2b7;
-  --muted:#898781;
-  --border:rgba(255,255,255,.10);
-  --accent:#3987e5;
-  --wash:rgba(255,255,255,.06);
+  --ink2:#cfcfcf;
+  --muted:#9a9a9a;
+  --rule:#ffffff;
+  --hair:#2a2a2a;
+  --red:#ff5a55;
+  --cover-bg:#1c1c1c;
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-  font-family:"Pretendard Variable",Pretendard,system-ui,-apple-system,"Segoe UI","Malgun Gothic",sans-serif;
+  font-family:"Pretendard Variable",Pretendard,system-ui,-apple-system,"Helvetica Neue",Arial,"Malgun Gothic",sans-serif;
   background:var(--page);
   color:var(--ink);
   line-height:1.6;
 }
-main{max-width:760px;margin:0 auto;padding:32px 16px 64px}
-h1{font-size:24px;font-weight:700;letter-spacing:-.01em}
-.sub{color:var(--muted);font-size:13px;margin-top:4px}
 
-/* ============ 앨범 카드 ============ */
-.list{list-style:none;margin-top:24px;display:flex;flex-direction:column;gap:14px}
-.album{
-  display:grid;grid-template-columns:40px 1fr;gap:12px;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:14px;padding:20px;
+/* ============ 마스트헤드 ============ */
+.mast{border-bottom:1px solid var(--rule);text-align:center;padding:22px 16px 18px}
+.mast .logo{font-family:"Noto Serif KR",Georgia,serif;font-weight:900;font-size:30px;letter-spacing:-.02em}
+.mast .nav{margin-top:8px;font-size:11px;font-weight:700;letter-spacing:.16em}
+.mast .nav span{margin:0 10px}
+.mast .nav .on{border-bottom:2px solid var(--red);padding-bottom:2px}
+
+main{max-width:980px;margin:0 auto;padding:0 16px 80px}
+
+/* ============ 리뷰 ============ */
+.review{padding:48px 0;border-bottom:1px solid var(--hair)}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center}
+.cover{
+  aspect-ratio:1/1;width:100%;background:var(--cover-bg);
+  box-shadow:0 10px 30px rgba(0,0,0,.18);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
 }
-.rank{font-size:34px;font-weight:800;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
-.artist{font-size:13px;color:var(--ink2);font-weight:600}
-.name{font-size:19px;font-weight:700;margin-top:2px}
-.label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.06em;margin-top:14px}
-.concept{font-size:14px;color:var(--ink2);margin-top:4px;word-break:keep-all}
-.after{margin-top:16px;padding-top:14px;border-top:1px dashed var(--border)}
-.line{font-size:17px;font-weight:600;margin-top:4px;word-break:keep-all}
-.line::before{content:"“"}
-.line::after{content:"”"}
-.album:not(.done) .line{filter:blur(6px);user-select:none}
+.cover img{width:100%;height:100%;object-fit:cover;display:block}
+.cover .ph{font-family:"Noto Serif KR",Georgia,serif;font-style:italic;color:var(--muted);padding:20px;text-align:center}
+
+.head{text-align:center}
+.artist{font-size:26px;font-weight:800;letter-spacing:-.01em;line-height:1.2}
+.title{font-family:"Noto Serif KR",Georgia,serif;font-style:italic;font-size:30px;font-weight:400;margin-top:6px;line-height:1.25}
+.rank{
+  width:84px;height:84px;margin:22px auto 0;border:3px solid var(--ink);border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;
+}
+.rank b{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums}
+.rank small{font-size:9px;font-weight:700;letter-spacing:.14em;margin-top:3px}
+.bnm{display:inline-block;margin-top:16px;font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--red);text-transform:uppercase}
+.meta{margin-top:14px;font-size:12px;color:var(--muted);letter-spacing:.04em}
+.meta span+span::before{content:"•";margin:0 8px}
+
+.body{max-width:640px;margin:44px auto 0}
+.genre{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--muted);border-top:1px solid var(--rule);padding-top:12px}
+.dek{font-family:"Noto Serif KR",Georgia,serif;font-size:20px;line-height:1.55;margin-top:18px;word-break:keep-all}
+.text{font-family:"Noto Serif KR",Georgia,serif;font-size:16px;line-height:1.9;color:var(--ink2);margin-top:18px;word-break:keep-all}
+.tracks{margin-top:22px;font-size:13px;color:var(--muted)}
+.tracks b{color:var(--ink);font-weight:700}
+
+/* ============ 다 들은 뒤 ============ */
+.after{margin-top:36px;border-left:4px solid var(--red);padding:4px 0 4px 20px}
+.after .lbl{font-size:11px;font-weight:800;letter-spacing:.14em}
+.line{font-family:"Noto Serif KR",Georgia,serif;font-weight:700;font-size:26px;line-height:1.4;margin-top:8px;word-break:keep-all;transition:filter .3s}
+.review:not(.done) .line{filter:blur(8px);user-select:none}
 .toggle{
-  appearance:none;border:1px solid var(--border);background:var(--surface);
-  color:var(--ink);font:inherit;font-size:12px;font-weight:600;
-  padding:5px 11px;border-radius:999px;cursor:pointer;margin-top:10px;
+  appearance:none;border:2px solid var(--ink);background:transparent;color:var(--ink);
+  font:inherit;font-size:11px;font-weight:800;letter-spacing:.14em;
+  padding:8px 16px;cursor:pointer;margin-top:16px;
 }
-.toggle:hover{background:var(--wash)}
-.album.done .toggle{background:var(--accent);border-color:var(--accent);color:#fff}
+.toggle:hover{background:var(--ink);color:var(--page)}
+.review.done .toggle{background:var(--ink);color:var(--page)}
+
+@media (max-width:720px){
+  .review{padding:32px 0}
+  .hero{grid-template-columns:1fr;gap:28px}
+  .artist{font-size:22px}
+  .title{font-size:25px}
+  .body{margin-top:32px}
+  .dek{font-size:18px}
+  .line{font-size:22px}
+}
 </style>
 </head>
 <body>
-<main>
-  <h1>들을 앨범 순위</h1>
-  <p class="sub">한 줄 감상은 ‘다 들음’을 누르면 보여요.</p>
-  <ol class="list" id="list"></ol>
-</main>
+<header class="mast">
+  <div class="logo">들을 앨범</div>
+  <div class="nav"><span class="on">순위</span><span>리뷰</span><span>한 줄</span></div>
+</header>
+
+<main id="list"></main>
 
 <script>
 // 순위 순서대로 추가
 const ALBUMS = [
   {
     artist: "와비사비룸",
-    title: "물질보다 정신",
-    concept: "가진 것보다 마음의 상태를 묻는 앨범. 제목부터 ‘물질보다 정신’을 내세우고, 이름처럼 불완전하고 덜어낸 것에서 아름다움을 찾는 와비사비의 태도로 소유와 욕심을 걷어 낸 자리에 남는 감정을 담담하게 따라간다.",
-    line: "비워 낸 방에 남은 마음의 온도",
+    title: "물질보다정신",
+    cover: "https://image.bugsm.co.kr/album/images/1200/200018/20001880.jpg",
+    year: "2015",
+    label: "AVLX",
+    format: "EP · 7곡",
+    genre: "힙합 / 클라우드 랩",
+    dek: "속(俗)에 얽매이지 않고 불완전함을 드러낸다는 그룹 이름 그대로, 돈과 허세보다 ‘정신’을 앞세운 와비사비룸의 두 번째 EP.",
+    text: "에이뤠의 건조하고 날 선 드럼 위에 나른한 루프가 연기처럼 깔리고, 장유석(짱유)과 제이플로우는 그 안개 속을 느긋하게 헤엄치듯 랩을 얹는다. 첫 EP 『비밀꼴라쥬』가 세 멤버의 색을 섞어 본 실험이었다면, 이번 앨범은 그 위에 각자의 정신을 덧칠해 팀만의 세계관을 완성한 작품이다. B급 정서와 맥락 없이 튀어나오는 단어들 사이로 한국 힙합 씬을 향한 비꼼이 번뜩이고, 타이틀곡 ‘밥말리’를 중심으로 앨범 전체가 ‘물질보다 정신’이라는 한 문장을 향해 흐른다.",
+    tracks: ["분장", "누군가", "I Like It", "나그참파", "밥말리", "동그라미", "물질보다정신"],
+    title_track: "밥말리",
+    line: "연기처럼 번지는 루프 속, 끝내 물질에 지지 않는 정신",
   },
 ];
 
@@ -109,22 +156,46 @@ function render(){
   document.getElementById("list").innerHTML = ALBUMS.map((a, i) => {
     const id = a.artist + "/" + a.title;
     const isDone = !!done[id];
+    const tracks = a.tracks.map(t => t === a.title_track ? `<b>${esc(t)}</b>` : esc(t)).join(" · ");
     return `
-    <li class="album${isDone ? " done" : ""}">
-      <div class="rank">${i + 1}</div>
-      <div>
-        <div class="artist">${esc(a.artist)}</div>
-        <div class="name">${esc(a.title)}</div>
-        <div class="label">컨셉</div>
-        <p class="concept">${esc(a.concept)}</p>
+    <article class="review${isDone ? " done" : ""}">
+      <div class="hero">
+        <div class="cover" data-title="${esc(a.title)}">
+          <img src="${esc(a.cover)}" alt="${esc(a.artist)} — ${esc(a.title)} 앨범 커버" referrerpolicy="no-referrer">
+        </div>
+        <div class="head">
+          <div class="artist">${esc(a.artist)}</div>
+          <h2 class="title">${esc(a.title)}</h2>
+          <div class="rank"><b>${i + 1}</b><small>RANK</small></div>
+          ${i === 0 ? `<div class="bnm">Best New Listen</div>` : ""}
+          <div class="meta"><span>${esc(a.label)}</span><span>${esc(a.year)}</span><span>${esc(a.format)}</span></div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="genre">${esc(a.genre)}</div>
+        <p class="dek">${esc(a.dek)}</p>
+        <p class="text">${esc(a.text)}</p>
+        <p class="tracks">수록곡 — ${tracks}</p>
         <div class="after">
-          <div class="label">다 들은 뒤</div>
-          <p class="line">${esc(a.line)}</p>
+          <div class="lbl">다 들은 뒤</div>
+          <p class="line">“${esc(a.line)}”</p>
           <button class="toggle" data-id="${esc(id)}">${isDone ? "다 들음 ✓" : "다 들음"}</button>
         </div>
       </div>
-    </li>`;
+    </article>`;
   }).join("");
+
+  // 커버를 못 불러오면 제목으로 대체
+  document.querySelectorAll(".cover img").forEach(img => {
+    const fallback = () => {
+      const ph = document.createElement("div");
+      ph.className = "ph";
+      ph.textContent = img.parentElement.dataset.title;
+      img.replaceWith(ph);
+    };
+    if(img.complete && !img.naturalWidth) fallback();
+    else img.addEventListener("error", fallback, {once:true});
+  });
 }
 
 document.getElementById("list").addEventListener("click", e => {
