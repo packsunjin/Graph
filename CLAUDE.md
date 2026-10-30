@@ -145,3 +145,12 @@
   - https://www.korean.go.kr/front/reportData/reportDataList.do?mn_id=207 (2020년 한국수어 말뭉치 구축 및 연구)
   - https://magazine.hankyung.com/business/article/202510088595b (한경비즈니스)
   - https://www.segye.com/newsView/20230603505351 (세계일보)
+
+### 추가 조사 3: 원문을 직접 봐야 하는 학위논문 — 2026-10-30
+공개된 페이지에는 초록·서지정보만 있고 단어별 결과는 없음. 학교 도서관이나 RISS 원문 보기로 열람 필요.
+- 서준환(2004) 「한국수화의 지역 차에 관한 조사 연구」 — 대구대학교 특수교육대학원 석사, 104쪽 → **경상(대구) 표현의 핵심 후보 자료**
+  https://www.riss.kr/search/detail/DetailView.do?p_mat_type=be54d9b8bc7cdb09&control_no=e9f80df5777697eeffe0bdc3ef48d419
+- 서도원(2007) 「충남 아산(온양) 지역 수화의 어휘 특성에 관한 조사 연구: 「한국수화사전」을 중심으로 한 비교 분석」
+  — 나사렛대학교 재활복지대학원 석사, 179쪽 → **충청 표현의 유일한 후보 자료** (사전과 아산 수화 어휘를 비교)
+  https://www.riss.kr/search/detail/DetailView.do?p_mat_type=be54d9b8bc7cdb09&control_no=3d9a2d6705997242ffe0bdc3ef48d419
+- 참고(지역 비교 아님): 「한국수화언어의 소멸, 변이, 생성의 특성연구-서울지역중심으로」(2018) — 서울 세대 간 어휘 변화 44개
