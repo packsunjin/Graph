@@ -6,7 +6,8 @@ const lab = {
   word: null,      // 지금 따라 하는 단어 (의미)
   frames: [],      // 기록한 손 좌표 [{ t, hands }]
   ranking: [],     // 비슷해 보이는 단어 순위 (의미 목록)
-  showIndex: 0     // 결과 화면 왼쪽에 보여줄 영상 번호
+  showWord: null,  // 결과 화면 왼쪽에 보여주는 사전 영상 단어
+  picked: null     // [다른 동작이었어요]에서 사용자가 고른 단어
 };
 
 // 직접 해보기 단어 목록 (config.js의 LAB_WORDS 중 데이터에 있는 단어만)
@@ -160,31 +161,38 @@ function recordMotion() {
     clearInterval(timer);
     stopCamera();
     lab.ranking = guessSimilar(lab.frames);
-    lab.showIndex = 0;
     drawLabResult();
   }, 1000);
 }
 
-// 결과 화면 왼쪽에서 볼 수 있는 영상 목록: 따라 한 단어 + 순위에 나온 단어
-function labCompareWords() {
-  const list = [lab.word];
-  lab.ranking.forEach(function (m) { if (list.indexOf(m) === -1) list.push(m); });
-  return list;
-}
-
-function drawLabCompareVideo() {
-  const list = labCompareWords();
-  const meaning = list[lab.showIndex % list.length];
+// 결과 화면 왼쪽에 사전 영상 보여주기 (meaning: 보여줄 단어)
+function drawLabCompareVideo(meaning) {
+  lab.showWord = meaning;
   const rank = lab.ranking.indexOf(meaning);
   let title = "사전 영상 · " + meaning;
-  if (meaning === lab.word) title += " (따라 한 단어)";
+  if (meaning === lab.picked) title += " (내가 고른 동작)";
+  else if (meaning === lab.word) title += " (따라 한 단어)";
   else if (rank !== -1) title += " (" + (rank + 1) + "번째로 비슷해 보이는 동작)";
   document.getElementById("result-video").innerHTML = labVideoPanelHTML(meaning, title);
+}
+
+// 결과 화면 아래 선택 버튼 칸 (1순위가 없으면 [다시 해보기]만)
+function labChoicesHTML() {
+  if (lab.ranking.length === 0) {
+    return '<div class="choices"><button class="primary" id="choice-retry">다시 해보기</button></div>';
+  }
+  return '<p class="lab-ask">AI는 이 동작을 \'① ' + esc(lab.ranking[0]) + '\'로 봤어요. 맞나요?</p>' +
+    '<div class="choices">' +
+    '<button class="primary" id="choice-yes">맞아요</button>' +
+    '<button class="ghost" id="choice-other">다른 동작이었어요</button>' +
+    '<button class="ghost" id="choice-retry">다시 해보기</button>' +
+    '</div>';
 }
 
 function drawLabResult() {
   const box = document.getElementById("lab");
   const marks = ["①", "②", "③", "④", "⑤"];
+  lab.picked = null;
 
   let rankHTML;
   if (lab.ranking.length === 0) {
@@ -205,41 +213,48 @@ function drawLabResult() {
     '<div class="cam"><canvas id="replay-canvas"></canvas></div>' +
     '<p class="source">이 기기에만 잠깐 저장된 좌표예요 · 장면 ' + lab.frames.length + '개</p></div>' +
     '</div>' +
-    '<p class="lab-step">어떻게 할지 직접 골라 주세요</p>' +
-    '<div class="choices">' +
-    '<button class="primary" id="choice-similar">비슷하게 한 것 같아요</button>' +
-    '<button class="ghost" id="choice-retry">다시 해볼래요</button>' +
-    '<button class="ghost" id="choice-other">다른 동작 영상 보기</button>' +
-    '</div>' +
+    labChoicesHTML() +
     '<div id="choice-msg"></div>';
 
-  drawLabCompareVideo();
+  drawLabCompareVideo(lab.word);
   startReplay(document.getElementById("replay-canvas"), lab.frames);
 
   box.querySelectorAll(".rank-item").forEach(function (item) {
-    item.addEventListener("click", function () {
-      lab.showIndex = labCompareWords().indexOf(item.dataset.word);
-      drawLabCompareVideo();
-    });
+    item.addEventListener("click", function () { drawLabCompareVideo(item.dataset.word); });
   });
-  document.getElementById("choice-similar").addEventListener("click", function () {
-    document.getElementById("choice-msg").innerHTML =
-      '<p class="note">내가 고른 것: "비슷하게 한 것 같아요" ✋ 다른 단어도 해 볼까요?</p>' +
-      '<button class="ghost" id="choice-next">다른 단어 해보기</button>';
-    document.getElementById("choice-next").addEventListener("click", function () {
-      const words = labWordList();
-      lab.word = words[(words.indexOf(lab.word) + 1) % words.length];
-      renderLab();
-    });
+  document.getElementById("choice-retry").addEventListener("click", renderLab); // 같은 단어로 다시 기록
+  if (lab.ranking.length === 0) return;
+  document.getElementById("choice-yes").addEventListener("click", labChoiceYes);
+  document.getElementById("choice-other").addEventListener("click", labChoiceOther);
+}
+
+// [맞아요] → 확인 문구 + 다음 단어 버튼 (칭찬·점수 없이)
+function labChoiceYes() {
+  document.getElementById("choice-msg").innerHTML =
+    '<p class="note">확인했어요. 다음 단어도 해 볼까요?</p>' +
+    '<button class="ghost" id="choice-next">다음 단어 해보기</button>';
+  document.getElementById("choice-next").addEventListener("click", function () {
+    const words = labWordList();
+    lab.word = words[(words.indexOf(lab.word) + 1) % words.length];
+    renderLab();
   });
-  document.getElementById("choice-retry").addEventListener("click", renderLab);
-  document.getElementById("choice-other").addEventListener("click", function () {
-    // 볼 영상이 따라 한 단어 하나뿐이면, 그 단어의 지역별 표현 화면으로 가요.
-    if (labCompareWords().length === 1) {
-      showDetail(lab.word);
-      return;
-    }
-    lab.showIndex = (lab.showIndex + 1) % labCompareWords().length;
-    drawLabCompareVideo();
+}
+
+// [다른 동작이었어요] → 단어 목록에서 내가 실제로 한 동작을 고르면, 그 사전 영상을 내 동작 옆에 보여줌
+function labChoiceOther() {
+  const chips = labWordList().map(function (meaning) {
+    return '<button class="chip" data-word="' + esc(meaning) + '">' + esc(meaning) + '</button>';
+  }).join("");
+  const msg = document.getElementById("choice-msg");
+  msg.innerHTML = '<p class="lab-step">내가 실제로 한 동작을 골라 주세요</p>' +
+    '<div class="chips wrap">' + chips + '</div>';
+
+  msg.querySelectorAll(".chip").forEach(function (chip) {
+    chip.addEventListener("click", function () {
+      lab.picked = chip.dataset.word;
+      msg.querySelectorAll(".chip").forEach(function (c) { c.classList.toggle("active", c === chip); });
+      drawLabCompareVideo(lab.picked);
+      document.getElementById("result-video").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
   });
 }
