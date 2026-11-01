@@ -38,9 +38,10 @@ function resetProgress() {
 }
 
 // 오늘 날짜 "2026-11-01" (이 기기 시간 기준)
+// (날짜의 월·일을 두 자리로 맞춰요: taste-skill-ignore)
 function dateString(date) {
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
+  const m = String(date.getMonth() + 1).padStart(2, "0"); // taste-skill-ignore
+  const d = String(date.getDate()).padStart(2, "0"); // taste-skill-ignore
   return date.getFullYear() + "-" + m + "-" + d;
 }
 
@@ -140,14 +141,14 @@ function streakDays() {
 // ---- 배지 (조건을 만족하면 자동으로 받아요) ----
 
 const BADGES = [
-  { id: "first", icon: "🌱", name: "첫 시도", how: "단어 1개 해 보기", check: function () { return triedCount() >= 1; } },
-  { id: "lab", icon: "✋", name: "카메라 앞으로", how: "직접 해보기 1번 하기", check: function () { return totalTries("lab") >= 1; } },
-  { id: "stage1", icon: "🥉", name: "단계 1 완료", how: "단계 1 단어 모두 해 보기", check: function () { return isStageDone(1); } },
-  { id: "streak3", icon: "🔥", name: "3일 연속", how: "3일 연속 학습", check: function () { return streakDays() >= 3; } },
-  { id: "half", icon: "🥈", name: "절반 왔다", how: "단어 21개 해 보기", check: function () { return triedCount() >= 21; } },
-  { id: "quiz100", icon: "🎯", name: "뜻 맞히기 100점", how: "뜻 맞히기 점수 100점 모으기", check: function () { return progress.quizTotal >= 100; } },
-  { id: "streak7", icon: "🌟", name: "7일 연속", how: "7일 연속 학습", check: function () { return streakDays() >= 7; } },
-  { id: "all", icon: "🏆", name: "42개 다 해보기", how: "단어 42개 모두 해 보기", check: function () { return APP_DATA.words.length > 0 && triedCount() >= APP_DATA.words.length; } }
+  { id: "first", name: "첫 시도", how: "단어 1개 해 보기", check: function () { return triedCount() >= 1; } },
+  { id: "lab", name: "카메라 앞으로", how: "직접 해보기 1번 하기", check: function () { return totalTries("lab") >= 1; } },
+  { id: "stage1", name: "단계 1 완료", how: "단계 1 단어 모두 해 보기", check: function () { return isStageDone(1); } },
+  { id: "streak3", name: "3일 연속", how: "3일 연속 학습", check: function () { return streakDays() >= 3; } },
+  { id: "half", name: "절반 왔다", how: "단어 21개 해 보기", check: function () { return triedCount() >= 21; } },
+  { id: "quiz100", name: "뜻 맞히기 100점", how: "뜻 맞히기 점수 100점 모으기", check: function () { return progress.quizTotal >= 100; } },
+  { id: "streak7", name: "7일 연속", how: "7일 연속 학습", check: function () { return streakDays() >= 7; } },
+  { id: "all", name: "42개 다 해보기", how: "단어 42개 모두 해 보기", check: function () { return APP_DATA.words.length > 0 && triedCount() >= APP_DATA.words.length; } }
 ];
 
 function earnedBadges() {
@@ -160,7 +161,7 @@ function announceNewBadges(before) {
   earnedBadges().forEach(function (id) {
     if (before.indexOf(id) !== -1) return;
     const badge = BADGES.find(function (b) { return b.id === id; });
-    names.push(badge.icon + " " + badge.name);
+    names.push(badge.name);
   });
   if (names.length) showToast("배지 받음: " + names.join(", "));
 }
@@ -187,12 +188,12 @@ function addRanking(name, score, stage) {
 
 function rankingHTML() {
   if (progress.ranking.length === 0) {
-    return '<p class="empty small">아직 랭킹이 없어요. 한 판 끝내고 이름을 올려 보세요!</p>';
+    return '<p class="muted">아직 랭킹이 없어요. 한 판 끝내고 이름을 올려 보세요.</p>';
   }
   return '<ol class="ranking">' + progress.ranking.map(function (r, i) {
-    const medal = ["🥇", "🥈", "🥉"][i] || (i + 1) + ".";
-    return '<li><span class="medal">' + medal + '</span><b>' + esc(r.name) + '</b>' +
-      '<small>단계 ' + esc(r.stage) + ' · ' + esc(r.date) + '</small><span class="pts">' + r.score + '점</span></li>';
+    return '<li><span class="rank">' + (i + 1) + '</span>' +
+      '<span><b>' + esc(r.name) + '</b><small>단계 ' + esc(r.stage) + ' · ' + esc(r.date) + '</small></span>' +
+      '<span class="pts">' + r.score + '점</span></li>';
   }).join("") + '</ol>';
 }
 
@@ -201,7 +202,7 @@ function rankingHTML() {
 function renderTopStatus() {
   const box = document.getElementById("top-status");
   if (!box) return;
-  box.innerHTML = 'Lv.' + levelInfo().level + ' <span class="sep">·</span> 🔥' + streakDays();
+  box.textContent = 'Lv.' + levelInfo().level + ' · ' + streakDays() + '일 연속';
   box.classList.toggle("today", learnedToday());
 }
 

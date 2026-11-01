@@ -1,5 +1,5 @@
 // [영상] 사전 mp4 주소를 <video>로 보여주고, 그 아래에 사전 출처를 붙여요.
-// 주소가 비어 있으면 "사전 영상 준비 중" 상자를 보여줘요. (유튜브·구글 드라이브 링크도 돼요)
+// 주소가 비어 있으면 "영상 준비 중" 상자를 보여줘요. (유튜브·구글 드라이브 링크도 돼요)
 
 // http/https 로 시작하는 주소만 써요. (이상한 주소가 링크로 들어가지 않게)
 function safeUrl(url) {
@@ -43,14 +43,14 @@ function makeVideoHTML(url, label) {
   }
 
   // 주소가 없을 때
-  return '<div class="video video-empty"><span>🎬</span><p>사전 영상 준비 중</p><small>' + esc(label) + '</small></div>';
+  return '<div class="video video-empty"><p>영상 준비 중</p><small>' + esc(label) + '</small></div>';
 }
 
 // 영상 아래 출처 한 줄 (국립국어원 한국수어사전 + 항목 페이지 링크)
 function dictSourceHTML(word) {
   const page = safeUrl(word && word.page);
   return '<p class="source">출처: ' + esc(CONFIG.DICT_SOURCE) +
-    (page ? ' · <a href="' + esc(page) + '" target="_blank" rel="noopener">사전에서 보기 ↗</a>' : '') +
+    (page ? ' · <a href="' + esc(page) + '" target="_blank" rel="noopener">사전에서 보기</a>' : '') +
     '</p>';
 }
 

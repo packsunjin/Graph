@@ -8,18 +8,23 @@ function showDetail(name) {
   const open = isStageOpen(word.stage);
   const box = document.getElementById("detail");
   box.innerHTML =
-    '<span class="word-category">단계 ' + word.stage + (word.category ? ' · ' + esc(word.category) : '') + '</span>' +
-    '<h2 class="detail-title">' + esc(word.name) + '</h2>' +
-    '<div class="panel">' + wordVideoHTML(word) +
+    '<h1 class="title">' + esc(word.name) + '</h1>' +
+    '<p class="subline">단계 ' + word.stage + (word.category ? ' · ' + esc(word.category) : '') +
+    (isTried(word.name) ? ' · 해 봄' : '') + '</p>' +
+    '<div class="detail-grid">' +
+    '<div class="panel">' + wordVideoHTML(word) + '</div>' +
+    '<div class="panel">' +
+    '<h2>수형 설명</h2>' +
+    '<p>' + esc(word.handshape || "-") + '</p>' +
     '<dl class="meta">' +
     '<dt>사전 표제어</dt><dd>' + esc(word.headword || "-") + '</dd>' +
-    '<dt>수형 설명</dt><dd>' + esc(word.handshape || "준비 중") + '</dd>' +
-    '</dl></div>' +
-    '<div class="row">' +
+    '<dt>AI-Hub 문장</dt><dd class="num">' + (word.aihub ? esc(word.aihub) + '개' : '-') + '</dd>' +
+    '</dl>' +
+    '<div class="row" style="margin-top:16px">' +
     (open
-      ? '<button class="primary" id="detail-lab">✋ 직접 따라 해 보기</button>'
-      : '<p class="note">🔒 단계 ' + word.stage + '이(가) 열리면 직접 해 볼 수 있어요.</p>') +
-    '</div>';
+      ? '<button class="primary" id="detail-lab">직접 따라 해 보기</button>'
+      : '<p class="muted">단계 ' + word.stage + '이(가) 열리면 직접 해 볼 수 있어요.</p>') +
+    '</div></div></div>';
 
   if (open) {
     document.getElementById("detail-lab").addEventListener("click", function () {

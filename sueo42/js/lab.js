@@ -39,18 +39,17 @@ function renderLab() {
   const stageChips = stageList().map(function (stage) {
     const open = isStageOpen(stage);
     return '<button class="chip' + (stage === lab.stage ? " active" : "") + '" data-stage="' + stage + '"' +
-      (open ? '' : ' disabled') + '>' + (open ? '' : '🔒 ') + '단계 ' + stage + '</button>';
+      (open ? '' : ' disabled') + '>단계 ' + stage + (open ? '' : ' 잠김') + '</button>';
   }).join("");
 
   const wordChips = words.map(function (name) {
-    return '<button class="chip' + (name === lab.word ? " active" : "") + '" data-word="' + esc(name) + '">' +
-      esc(name) + (isTried(name) ? ' ✓' : '') + '</button>';
+    return '<button class="chip' + (name === lab.word ? " active" : "") + (isTried(name) ? " tried" : "") +
+      '" data-word="' + esc(name) + '">' + esc(name) + '</button>';
   }).join("");
 
   box.innerHTML =
-    '<p class="privacy">🔒 카메라 영상은 이 기기 안에서만 처리하고, 어디에도 보내지 않아요.</p>' +
+    '<p class="subline">사전 영상을 보고 카메라 앞에서 따라 해요. 카메라 영상은 이 기기 안에서만 처리하고, 어디에도 보내지 않아요.</p>' +
     '<div class="chips">' + stageChips + '</div>' +
-    '<p class="lab-step">따라 할 단어</p>' +
     '<div class="chips wrap">' + wordChips + '</div>' +
     '<div class="compare">' +
     '<div class="panel">' + labVideoPanelHTML(lab.word, "사전 영상 · " + lab.word) + '</div>' +
@@ -59,7 +58,7 @@ function renderLab() {
     '<div id="cam-cover" class="cam-cover">카메라가 꺼져 있어요</div></div>' +
     '<p id="lab-msg" class="lab-msg"></p>' +
     '<div class="row"><button class="primary" id="cam-button">카메라 켜기</button>' +
-    '<button class="rec" id="rec-button" disabled>● 동작 기록 (' + CONFIG.LAB_RECORD_SECONDS + '초)</button></div>' +
+    '<button class="secondary rec" id="rec-button" disabled>동작 기록 (' + CONFIG.LAB_RECORD_SECONDS + '초)</button></div>' +
     '</div></div>';
 
   box.querySelectorAll("[data-stage]").forEach(function (chip) {
@@ -169,8 +168,8 @@ function labChoicesHTML() {
   return '<p class="lab-ask">AI는 이 동작을 \'① ' + esc(lab.ranking[0]) + '\'로 봤어요. 맞나요?</p>' +
     '<div class="choices">' +
     '<button class="primary" id="choice-yes">맞아요</button>' +
-    '<button class="ghost" id="choice-other">다른 동작이었어요</button>' +
-    '<button class="ghost" id="choice-retry">다시 해보기</button>' +
+    '<button class="secondary" id="choice-other">다른 동작이었어요</button>' +
+    '<button class="secondary" id="choice-retry">다시 해보기</button>' +
     '</div>';
 }
 
@@ -186,15 +185,15 @@ function drawLabResult() {
     rankHTML = '<p class="lab-step">AI가 추측한 가장 비슷해 보이는 동작: ' +
       lab.ranking.map(function (name, i) { return marks[i] + ' ' + esc(name); }).join(" ") +
       ' <small>(AI 추정)</small></p>' +
-      '<div class="rank">' + lab.ranking.map(function (name, i) {
+      '<div class="rank-items">' + lab.ranking.map(function (name, i) {
         return '<button class="rank-item" data-word="' + esc(name) + '">' + marks[i] + ' ' + esc(name) + '</button>';
       }).join("") + '</div>' +
       '<p class="source">순위 버튼을 누르면 그 단어의 사전 영상을 내 동작 옆에 보여줘요.</p>';
   }
 
   const banner = isModelReady()
-    ? '<p class="test-banner ok">🤖 AI 추정 — AI 허브 「수어 영상」으로 학습한 모델이 고른 순서예요. 판단은 내가 해요.</p>'
-    : '<p class="test-banner">🧪 시험용 — 아직 학습 전<br><small>아래 순위는 학습한 AI가 아니라 임시로(무작위) 정한 순서예요.</small></p>';
+    ? '<p class="notice model"><b>AI 추정</b> — AI 허브 「수어 영상」으로 학습한 모델이 고른 순서예요. 판단은 내가 해요.</p>'
+    : '<p class="notice"><b>시험용 — 아직 학습 전</b><br>아래 순위는 학습한 AI가 아니라 임시로(무작위) 정한 순서예요.</p>';
 
   box.innerHTML =
     banner +
@@ -207,7 +206,7 @@ function drawLabResult() {
     '</div>' +
     labChoicesHTML() +
     '<div id="choice-msg"></div>' +
-    '<p class="note">✋ \'' + esc(lab.word) + '\' 해 본 기록이 남았어요.</p>';
+    '<p class="note">\'' + esc(lab.word) + '\' 해 본 기록이 남았어요.</p>';
 
   drawLabCompareVideo(lab.word);
   startReplay(document.getElementById("replay-canvas"), lab.frames);
@@ -225,7 +224,7 @@ function drawLabResult() {
 function labChoiceYes() {
   document.getElementById("choice-msg").innerHTML =
     '<p class="note">확인했어요. 다음 단어도 해 볼까요?</p>' +
-    '<button class="ghost" id="choice-next">다음 단어 해보기</button>';
+    '<button class="secondary" id="choice-next" style="margin-top:8px">다음 단어 해보기</button>';
   document.getElementById("choice-next").addEventListener("click", function () {
     // 이 단계의 다음 단어, 단계 끝이면 다음 단계(열렸으면) 첫 단어
     const list = APP_DATA.words.filter(function (w) { return isStageOpen(w.stage); });

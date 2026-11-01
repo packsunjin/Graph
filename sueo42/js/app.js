@@ -11,7 +11,7 @@ function esc(text) {
 }
 
 // 화면마다 아래 탭 중 어느 탭에 불을 켤지 (detail은 들어오기 전 탭 그대로)
-const SCREEN_TAB = { search: "search", learn: "learn", quiz: "learn", lab: "lab", records: "" };
+const SCREEN_TAB = { search: "search", learn: "learn", quiz: "learn", lab: "lab", records: "records" };
 
 let currentScreen = "search";
 let previousScreen = "search";
@@ -28,7 +28,7 @@ function showScreen(name) {
   });
 
   const tab = name === "detail" ? SCREEN_TAB[previousScreen] : SCREEN_TAB[name];
-  document.querySelectorAll(".tabbar button").forEach(function (button) {
+  document.querySelectorAll(".nav button").forEach(function (button) {
     button.classList.toggle("active", button.dataset.screen === tab);
   });
 
@@ -40,8 +40,8 @@ function showScreen(name) {
   window.scrollTo(0, 0);
 }
 
-// 하단 탭 버튼 연결
-document.querySelectorAll(".tabbar button").forEach(function (button) {
+// 메뉴 버튼 연결 (아래 탭 바 / 왼쪽 메뉴)
+document.querySelectorAll(".nav button").forEach(function (button) {
   button.addEventListener("click", function () {
     if (button.dataset.screen === "lab") lab.stage = currentStage();
     showScreen(button.dataset.screen);
@@ -66,7 +66,7 @@ async function startApp() {
     renderTopStatus();
     showScreen("search");
   } catch (error) {
-    status.innerHTML = "데이터를 불러오지 못했어요 😢<br><small>" + esc(error.message) +
+    status.innerHTML = "데이터를 불러오지 못했어요.<br><small>" + esc(error.message) +
       "<br>index.html을 더블클릭해서 열었다면, README의 '실행 방법'처럼 python3 -m http.server로 열어 주세요.</small>";
     status.classList.add("error");
   }

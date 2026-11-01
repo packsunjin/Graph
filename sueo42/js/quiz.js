@@ -26,8 +26,8 @@ function startQuiz(stage) {
 
   if (quiz.questions.length === 0) {
     document.getElementById("quiz").innerHTML =
-      '<p class="empty">단계 ' + stage + '에는 아직 문제로 낼 영상·수형 설명이 없어요.<br>데이터가 채워지면 풀 수 있어요.</p>' +
-      '<button class="ghost" id="quiz-back">← 학습하기로</button>';
+      '<p class="empty">단계 ' + stage + '에는 아직 문제로 낼 영상·수형 설명이 없어요. 데이터가 채워지면 풀 수 있어요.</p>' +
+      '<button class="secondary" id="quiz-back">학습하기로</button>';
     document.getElementById("quiz-back").addEventListener("click", function () { showScreen("learn"); });
     return;
   }
@@ -49,20 +49,23 @@ function drawQuestion() {
   // 출처는 문제 아래에도 적고, 항목 페이지 링크(뜻이 보임)는 고른 뒤에 보여줘요.
   const media = (hasVideo(word)
     ? makeVideoHTML(word.video, "문제 영상")
-    : '<div class="desc-question"><small>수형 설명</small><p>' + esc(word.handshape) + '</p></div>') +
+    : '<div class="desc-question"><p class="muted">수형 설명</p>' + esc(word.handshape) + '</div>') +
     '<p class="source">출처: ' + esc(CONFIG.DICT_SOURCE) + '</p>';
 
   document.getElementById("quiz").innerHTML =
     '<div class="quiz-top">' +
     '<span>단계 ' + quiz.stage + ' · ' + (quiz.index + 1) + ' / ' + quiz.questions.length + '</span>' +
-    '<span class="score">이번 판 <b id="quiz-score">' + quiz.score + '</b>점 · 내 최고 ' + progress.quizBest + '점</span>' +
+    '<span>이번 판 <b id="quiz-score">' + quiz.score + '</b>점 · 내 최고 ' + progress.quizBest + '점</span>' +
     '</div>' +
-    '<p class="question">이 수어의 뜻은 무엇일까요?</p>' +
-    media +
+    '<div class="detail-grid">' +
+    '<div class="panel">' + media + '</div>' +
+    '<div class="panel">' +
+    '<h2 class="question">이 수어의 뜻은 무엇일까요?</h2>' +
     '<div class="answers">' + choices.map(function (w) {
       return '<button class="answer" data-name="' + esc(w.name) + '">' + esc(w.name) + '</button>';
     }).join("") + '</div>' +
-    '<div id="quiz-result"></div>';
+    '<div id="quiz-result"></div>' +
+    '</div></div>';
 
   document.querySelectorAll("#quiz .answer").forEach(function (button) {
     button.addEventListener("click", function () { checkAnswer(button.dataset.name, word); });
@@ -85,14 +88,14 @@ function checkAnswer(picked, word) {
   const isLast = quiz.index === quiz.questions.length - 1;
   document.getElementById("quiz-result").innerHTML =
     '<p class="result ' + (correct ? "ok" : "no") + '">' +
-    (correct ? "정답! +" + CONFIG.QUIZ_POINT + "점 🎉" : "아쉬워요 😅 정답은 '" + esc(word.name) + "'") + '</p>' +
+    (correct ? "정답! +" + CONFIG.QUIZ_POINT + "점" : "아쉬워요. 정답은 '" + esc(word.name) + "'") + '</p>' +
     '<div class="evidence">' +
     '<b>정답 근거</b> 사전 표제어: ' + esc(word.headword || word.name) +
     dictSourceHTML(word) +
     '</div>' +
     '<div class="row">' +
     '<button class="primary" id="quiz-next">' + (isLast ? "결과 보기" : "다음 문제") + '</button>' +
-    '<button class="ghost" id="quiz-detail">단어 자세히</button>' +
+    '<button class="secondary" id="quiz-detail">단어 자세히</button>' +
     '</div>';
 
   document.getElementById("quiz-next").addEventListener("click", function () {
@@ -110,22 +113,22 @@ function finishQuiz() {
   const box = document.getElementById("quiz");
 
   box.innerHTML =
-    '<div class="final">' +
-    '<p class="final-label">단계 ' + quiz.stage + ' 결과</p>' +
-    '<p class="final-score">' + quiz.score + '<small> / ' + full + '점</small></p>' +
-    (isBest ? '<p class="best">🎉 내 최고 점수 갱신!</p>' : '<p class="sub">내 최고 점수 ' + progress.quizBest + '점</p>') +
-    '</div>' +
+    '<div class="detail-grid">' +
     '<div class="panel">' +
-    '<h3>🏅 랭킹에 이름 올리기</h3>' +
+    '<h2>단계 ' + quiz.stage + ' 결과</h2>' +
+    '<p class="final-score">' + quiz.score + '<small> / ' + full + '점</small></p>' +
+    (isBest ? '<p class="best">내 최고 점수를 새로 세웠어요</p>' : '<p class="muted">내 최고 점수 ' + progress.quizBest + '점</p>') +
+    '<div class="row" style="margin-top:16px">' +
+    '<button class="primary" id="quiz-again">한 판 더</button>' +
+    '<button class="secondary" id="quiz-learn">학습하기로</button>' +
+    '</div></div>' +
+    '<div class="panel">' +
+    '<h2>랭킹에 이름 올리기</h2>' +
     '<p class="source">친구끼리 한 기기에서 돌려 쓰는 랭킹이에요. 이 기기에만 저장되고 어디에도 보내지 않아요.</p>' +
     '<div class="row"><input id="rank-name" class="search" maxlength="10" placeholder="이름 또는 별명">' +
     '<button class="primary" id="rank-save">올리기</button></div>' +
     '<div id="rank-box">' + rankingHTML() + '</div>' +
-    '</div>' +
-    '<div class="row">' +
-    '<button class="primary" id="quiz-again">한 판 더</button>' +
-    '<button class="ghost" id="quiz-learn">학습하기로</button>' +
-    '</div>';
+    '</div></div>';
 
   document.getElementById("rank-save").addEventListener("click", function () {
     const name = document.getElementById("rank-name").value.trim();
