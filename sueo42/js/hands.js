@@ -47,7 +47,7 @@ async function loadHandModel() {
 // 카메라 켜기. 실패하면 이유를 한국어 문장으로 던져요.
 async function startCamera(video, canvas) {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    throw new Error("이 브라우저에서는 카메라를 쓸 수 없어요. https 주소(GitHub Pages)나 localhost로 열어 주세요.");
+    throw new Error("이 브라우저에서는 카메라를 쓸 수 없어요. https 주소(Render 배포 주소)나 localhost로 열어 주세요.");
   }
   try {
     camera.stream = await navigator.mediaDevices.getUserMedia({

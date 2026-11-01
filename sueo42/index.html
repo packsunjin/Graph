@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- [화면 뼈대] 수어42 앱의 모든 화면(단어·상세·지역·퀴즈·직접 해보기)이 들어 있는 한 장짜리 페이지예요.
+<!-- [화면 뼈대] 수어42 앱의 모든 화면(검색·상세·학습하기·뜻 맞히기·직접 해보기·내 기록)이 들어 있는 한 장짜리 페이지예요.
      화면은 하단 탭을 누르면 js/app.js 가 하나씩 보여줘요. -->
 <html lang="ko">
 <head>
@@ -11,70 +11,89 @@
 </head>
 <body>
   <header class="topbar">
-    <h1 class="logo">수어<span>42</span></h1>
-    <p class="tagline">지역과 지역 <b>사이</b>의 수어</p>
+    <div>
+      <h1 class="logo">수어<span>42</span></h1>
+      <p class="tagline">카메라 앞에서 따라 하며, 게임처럼 배우는 수어</p>
+    </div>
+    <!-- 레벨·연속 학습 (누르면 내 기록) -->
+    <button id="top-status" class="top-status" aria-label="내 기록 보기">Lv.1</button>
   </header>
 
   <main>
     <!-- 불러오는 중 / 오류 안내 -->
     <p id="status" class="status">데이터를 불러오는 중…</p>
 
-    <!-- ① 단어 목록 -->
-    <section id="screen-list" class="screen">
-      <div class="progress">
-        <span id="progress-text"></span>
-        <div class="progress-bar"><div id="progress-fill"></div></div>
-      </div>
-      <input id="search" class="search" type="search" placeholder="단어 검색 (예: 감사)">
-      <div id="category-chips" class="chips"></div>
+    <!-- ① 검색 -->
+    <section id="screen-search" class="screen">
+      <!-- 홈: 레벨·연속 학습 카드 + 메뉴 타일 (js/search.js가 채움) -->
+      <div id="home"></div>
+      <input id="search" class="search" type="search" placeholder="단어 검색 (예: 괜찮다)">
+      <div id="stage-chips" class="chips"></div>
+      <p id="search-count" class="count"></p>
       <div id="word-list" class="card-grid"></div>
     </section>
 
-    <!-- ② 단어 상세 -->
+    <!-- 단어 상세 -->
     <section id="screen-detail" class="screen">
       <button id="back-button" class="back">← 뒤로</button>
       <div id="detail"></div>
     </section>
 
-    <!-- ③ 지역 모아보기 -->
-    <section id="screen-region" class="screen">
-      <h2 class="screen-title">지역별 모아보기</h2>
-      <div id="region-map"></div>
-      <div id="region-chips" class="chips"></div>
-      <div id="region-list" class="card-grid"></div>
+    <!-- ② 학습하기 (단계 지도) -->
+    <section id="screen-learn" class="screen">
+      <h2 class="screen-title">학습하기</h2>
+      <div id="learn"></div>
     </section>
 
-    <!-- ④ 퀴즈 -->
+    <!-- 학습하기 ① 뜻 맞히기 -->
     <section id="screen-quiz" class="screen">
-      <h2 class="screen-title">어느 지역 수어일까?</h2>
+      <h2 class="screen-title">뜻 맞히기 🎯</h2>
       <div id="quiz"></div>
     </section>
 
-    <!-- ⑤ 직접 해보기 (카메라 + 손 인식) -->
+    <!-- ③ 학습하기 ② 직접 해보기 (카메라 + 손 인식) -->
     <section id="screen-lab" class="screen">
       <h2 class="screen-title">직접 해보기 <span class="badge">시험용</span></h2>
       <div id="lab"></div>
     </section>
+
+    <!-- 내 기록 -->
+    <section id="screen-records" class="screen">
+      <h2 class="screen-title">내 기록</h2>
+      <div id="records"></div>
+    </section>
+
+    <!-- 출처·안내 (모든 화면 아래) -->
+    <footer class="info">
+      <p>수어 영상·설명: 국립국어원 한국수어사전 (저작자표시-비영리-변경금지)</p>
+      <p>이 앱의 손동작 인식 모델은 한국지능정보사회진흥원(NIA)의 AI 허브(aihub.or.kr) 「수어 영상」 데이터를 활용하여 학습할 예정입니다(현재 시험용).</p>
+      <p>손 좌표 찾기: Google MediaPipe Hand Landmarker · 🔒 카메라 영상은 기기 밖으로 보내지 않아요.</p>
+    </footer>
   </main>
+
+  <!-- 배지 알림 -->
+  <div id="toast" class="toast"></div>
 
   <!-- 하단 탭바 -->
   <nav class="tabbar">
-    <button data-screen="list" class="active"><span>📚</span>단어</button>
-    <button data-screen="region"><span>🗺️</span>지역</button>
-    <button data-screen="quiz"><span>🎯</span>퀴즈</button>
-    <button data-screen="lab"><span>✋</span>해보기</button>
+    <button data-screen="search" class="active"><span>🔍</span>검색</button>
+    <button data-screen="learn"><span>🎯</span>학습하기</button>
+    <button data-screen="lab"><span>✋</span>직접 해보기</button>
   </nav>
 
-  <!-- 순서 중요: 설정 → 데이터 → 각 화면 → 시작 -->
+  <!-- 순서 중요: 설정 → 데이터 → 기록 → 각 화면 → 시작 -->
   <script src="config.js"></script>
   <script src="js/data.js"></script>
+  <script src="js/progress.js"></script>
   <script src="js/video.js"></script>
-  <script src="js/list.js"></script>
+  <script src="js/search.js"></script>
   <script src="js/detail.js"></script>
-  <script src="js/region.js"></script>
+  <script src="js/learn.js"></script>
   <script src="js/quiz.js"></script>
   <script src="js/hands.js"></script>
+  <script src="js/model.js"></script>
   <script src="js/lab.js"></script>
+  <script src="js/records.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

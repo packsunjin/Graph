@@ -1,72 +1,140 @@
-// [④ 퀴즈] 지역 수어 영상을 하나 보여주고, 어느 지역 표현인지 맞히는 화면이에요.
+// [학습하기 ① 뜻 맞히기] 사전 영상을 보고 보기 4개 중 뜻을 고르는 게임이에요.
+// 정답은 국립국어원 한국수어사전에 근거한 사실이라, 정답 옆에 사전 출처를 꼭 보여줘요.
+// 점수·랭킹은 이 게임에만 있어요. (직접 해보기에는 없어요)
 
-const quizScore = { right: 0, total: 0 };
-let lastQuizId = null;
+const quiz = {
+  stage: 1,
+  questions: [], // 이번 판 문제 단어들
+  index: 0,      // 지금 몇 번째 문제인지 (0부터)
+  score: 0       // 이번 판 점수
+};
 
-function newQuestion() {
-  const box = document.getElementById("quiz");
+// 문제로 낼 수 있는 단어: 영상이 있는 단어. 영상이 하나도 없으면 수형 설명이 있는 단어로.
+function quizPool(stage) {
+  const words = stageWords(stage);
+  const withVideo = words.filter(hasVideo);
+  if (withVideo.length > 0) return withVideo;
+  return words.filter(function (w) { return w.handshape; });
+}
 
-  // 표준이 아닌 지역 표현만 문제로 내요.
-  const pool = APP_DATA.signs.filter(function (s) { return s.region !== CONFIG.STANDARD_REGION; });
-  if (pool.length === 0) {
-    box.innerHTML = '<p class="empty">퀴즈를 낼 지역 표현이 아직 없어요.</p>';
+function startQuiz(stage) {
+  quiz.stage = stage;
+  quiz.questions = shuffle(quizPool(stage));
+  quiz.index = 0;
+  quiz.score = 0;
+  showScreen("quiz");
+
+  if (quiz.questions.length === 0) {
+    document.getElementById("quiz").innerHTML =
+      '<p class="empty">단계 ' + stage + '에는 아직 문제로 낼 영상·수형 설명이 없어요.<br>데이터가 채워지면 풀 수 있어요.</p>' +
+      '<button class="ghost" id="quiz-back">← 학습하기로</button>';
+    document.getElementById("quiz-back").addEventListener("click", function () { showScreen("learn"); });
     return;
   }
+  drawQuestion();
+}
 
-  // 같은 문제가 연달아 나오지 않게 다시 뽑기
-  let sign = pool[Math.floor(Math.random() * pool.length)];
-  if (pool.length > 1 && sign.id + sign.region === lastQuizId) {
-    return newQuestion();
-  }
-  lastQuizId = sign.id + sign.region;
+// 보기 4개: 정답 1개 + 다른 단어 3개 (42개 전체에서)
+function makeChoices(answer) {
+  const others = shuffle(APP_DATA.words.filter(function (w) { return w.name !== answer.name; }))
+    .slice(0, CONFIG.QUIZ_CHOICES - 1);
+  return shuffle(others.concat([answer]));
+}
 
-  // 같은 표현 ID를 쓰는 지역은 모두 정답
-  const answers = pool.filter(function (s) { return s.id && s.id === sign.id; })
-    .map(function (s) { return s.region; });
-  if (answers.indexOf(sign.region) === -1) answers.push(sign.region);
+function drawQuestion() {
+  const word = quiz.questions[quiz.index];
+  const choices = makeChoices(word);
 
-  const buttons = CONFIG.REGIONS.map(function (region) {
-    return '<button class="answer" data-region="' + esc(region.name) + '" style="--c:' + region.color + '">' + esc(region.name) + '</button>';
-  }).join("");
+  // 영상이 있으면 영상, 없으면 수형 설명으로 문제를 내요.
+  // 출처는 문제 아래에도 적고, 항목 페이지 링크(뜻이 보임)는 고른 뒤에 보여줘요.
+  const media = (hasVideo(word)
+    ? makeVideoHTML(word.video, "문제 영상")
+    : '<div class="desc-question"><small>수형 설명</small><p>' + esc(word.handshape) + '</p></div>') +
+    '<p class="source">출처: ' + esc(CONFIG.DICT_SOURCE) + '</p>';
 
-  box.innerHTML =
-    '<p class="score">점수 ' + quizScore.right + ' / ' + quizScore.total + '</p>' +
-    '<p class="question">이 <b>"' + esc(sign.meaning) + '"</b> 표현은 어느 지역 수어일까요?</p>' +
-    makeVideoHTML(sign.video, "문제 영상") +
-    '<p class="note">영상을 보고 손 모양을 따라 해 본 다음 골라 보세요 ✋</p>' +
-    '<div class="answers">' + buttons + '</div>' +
+  document.getElementById("quiz").innerHTML =
+    '<div class="quiz-top">' +
+    '<span>단계 ' + quiz.stage + ' · ' + (quiz.index + 1) + ' / ' + quiz.questions.length + '</span>' +
+    '<span class="score">이번 판 <b id="quiz-score">' + quiz.score + '</b>점 · 내 최고 ' + progress.quizBest + '점</span>' +
+    '</div>' +
+    '<p class="question">이 수어의 뜻은 무엇일까요?</p>' +
+    media +
+    '<div class="answers">' + choices.map(function (w) {
+      return '<button class="answer" data-name="' + esc(w.name) + '">' + esc(w.name) + '</button>';
+    }).join("") + '</div>' +
     '<div id="quiz-result"></div>';
 
-  box.querySelectorAll(".answer").forEach(function (button) {
-    button.addEventListener("click", function () {
-      checkAnswer(button.dataset.region, answers, sign);
-    });
+  document.querySelectorAll("#quiz .answer").forEach(function (button) {
+    button.addEventListener("click", function () { checkAnswer(button.dataset.name, word); });
   });
 }
 
-function checkAnswer(picked, answers, sign) {
-  const correct = answers.indexOf(picked) !== -1;
-  quizScore.total++;
-  if (correct) quizScore.right++;
+function checkAnswer(picked, word) {
+  const correct = picked === word.name;
+  if (correct) quiz.score += CONFIG.QUIZ_POINT;
+  markTried(word.name, "quiz"); // 맞든 틀리든 '해 본 단어'로 기록
 
-  // 버튼에 정답·오답 색 표시하고 더 못 누르게
+  // 정답 버튼은 초록, 내가 고른 다른 버튼은 흐리게
   document.querySelectorAll("#quiz .answer").forEach(function (button) {
     button.disabled = true;
-    if (answers.indexOf(button.dataset.region) !== -1) button.classList.add("right");
-    else if (button.dataset.region === picked) button.classList.add("wrong");
+    if (button.dataset.name === word.name) button.classList.add("right");
+    else if (button.dataset.name === picked) button.classList.add("wrong");
   });
+  document.getElementById("quiz-score").textContent = quiz.score;
 
+  const isLast = quiz.index === quiz.questions.length - 1;
   document.getElementById("quiz-result").innerHTML =
     '<p class="result ' + (correct ? "ok" : "no") + '">' +
-    (correct ? "정답! 🎉" : "아쉬워요 😅 정답은 " + esc(answers.join(", "))) + '</p>' +
+    (correct ? "정답! +" + CONFIG.QUIZ_POINT + "점 🎉" : "아쉬워요 😅 정답은 '" + esc(word.name) + "'") + '</p>' +
+    '<div class="evidence">' +
+    '<b>정답 근거</b> 사전 표제어: ' + esc(word.headword || word.name) +
+    dictSourceHTML(word) +
+    '</div>' +
     '<div class="row">' +
-    '<button class="primary" id="next-question">다음 문제</button>' +
-    '<button class="ghost" id="see-detail">단어 비교하기</button>' +
+    '<button class="primary" id="quiz-next">' + (isLast ? "결과 보기" : "다음 문제") + '</button>' +
+    '<button class="ghost" id="quiz-detail">단어 자세히</button>' +
     '</div>';
 
-  document.querySelector("#quiz .score").textContent = "점수 " + quizScore.right + " / " + quizScore.total;
-  document.getElementById("next-question").addEventListener("click", newQuestion);
-  document.getElementById("see-detail").addEventListener("click", function () {
-    showDetail(sign.meaning, sign.region);
+  document.getElementById("quiz-next").addEventListener("click", function () {
+    if (isLast) { finishQuiz(); return; }
+    quiz.index++;
+    drawQuestion();
   });
+  document.getElementById("quiz-detail").addEventListener("click", function () { showDetail(word.name); });
+}
+
+// 한 판 끝: 점수·최고 점수 저장, 이름 적고 랭킹에 올리기
+function finishQuiz() {
+  const isBest = saveQuizRound(quiz.score);
+  const full = quiz.questions.length * CONFIG.QUIZ_POINT;
+  const box = document.getElementById("quiz");
+
+  box.innerHTML =
+    '<div class="final">' +
+    '<p class="final-label">단계 ' + quiz.stage + ' 결과</p>' +
+    '<p class="final-score">' + quiz.score + '<small> / ' + full + '점</small></p>' +
+    (isBest ? '<p class="best">🎉 내 최고 점수 갱신!</p>' : '<p class="sub">내 최고 점수 ' + progress.quizBest + '점</p>') +
+    '</div>' +
+    '<div class="panel">' +
+    '<h3>🏅 랭킹에 이름 올리기</h3>' +
+    '<p class="source">친구끼리 한 기기에서 돌려 쓰는 랭킹이에요. 이 기기에만 저장되고 어디에도 보내지 않아요.</p>' +
+    '<div class="row"><input id="rank-name" class="search" maxlength="10" placeholder="이름 또는 별명">' +
+    '<button class="primary" id="rank-save">올리기</button></div>' +
+    '<div id="rank-box">' + rankingHTML() + '</div>' +
+    '</div>' +
+    '<div class="row">' +
+    '<button class="primary" id="quiz-again">한 판 더</button>' +
+    '<button class="ghost" id="quiz-learn">학습하기로</button>' +
+    '</div>';
+
+  document.getElementById("rank-save").addEventListener("click", function () {
+    const name = document.getElementById("rank-name").value.trim();
+    if (!name) { document.getElementById("rank-name").focus(); return; }
+    addRanking(name, quiz.score, quiz.stage);
+    document.getElementById("rank-box").innerHTML = rankingHTML();
+    document.getElementById("rank-save").disabled = true;
+    showToast("랭킹에 올렸어요!");
+  });
+  document.getElementById("quiz-again").addEventListener("click", function () { startQuiz(quiz.stage); });
+  document.getElementById("quiz-learn").addEventListener("click", function () { showScreen("learn"); });
 }

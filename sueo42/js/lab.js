@@ -1,63 +1,33 @@
-// [⑤ 직접 해보기] 사전 영상을 보고 내 카메라 앞에서 따라 해 보는 화면이에요.
+// [학습하기 ② 직접 해보기] 사전 영상을 보고 내 카메라 앞에서 따라 해 보는 화면이에요. (핵심 기능, AI)
 // [동작 기록]을 누르면 몇 초 동안 손 좌표를 저장하고, 비슷해 보이는 동작의 "순위"와 근거(영상)만 보여줘요.
-// 중요: AI는 맞다/틀리다를 판정하지 않아요. 점수·확률도 보여주지 않아요. 고르는 건 사용자예요.
+// 중요: AI는 맞다/틀리다를 판정하지 않아요. 점수·확률도 없어요. 고르는 건 사용자예요.
+// 해 본 기록만 레벨·연속 학습·배지에 반영돼요.
 
 const lab = {
-  word: null,      // 지금 따라 하는 단어 (의미)
+  stage: 1,        // 지금 고른 단계
+  word: null,      // 지금 따라 하는 단어 이름
   frames: [],      // 기록한 손 좌표 [{ t, hands }]
-  ranking: [],     // 비슷해 보이는 단어 순위 (의미 목록)
-  showWord: null,  // 결과 화면 왼쪽에 보여주는 사전 영상 단어
+  ranking: [],     // 비슷해 보이는 단어 순위 (이름 목록)
   picked: null     // [다른 동작이었어요]에서 사용자가 고른 단어
 };
 
-// 직접 해보기 단어 목록 (config.js의 LAB_WORDS 중 데이터에 있는 단어만)
-function labWordList() {
-  const list = CONFIG.LAB_WORDS.filter(function (meaning) {
-    return APP_DATA.words.some(function (w) { return w.meaning === meaning; });
-  });
-  if (list.length > 0) return list;
-  return APP_DATA.words.slice(0, 5).map(function (w) { return w.meaning; });
-}
-
-// 단어의 대표 표현 (표준 수어가 있으면 표준, 없으면 첫 번째 표현)
-function labSignOf(meaning) {
-  const word = APP_DATA.words.find(function (w) { return w.meaning === meaning; });
-  if (!word) return null;
-  return word.signs.find(function (s) { return s.region === CONFIG.STANDARD_REGION; }) || word.signs[0];
+// 다른 화면에서 직접 해보기로 올 때 (stage: 단계, name: 단어, 없으면 단계 첫 단어)
+function openLab(stage, name) {
+  lab.stage = stage;
+  lab.word = name || null;
+  showScreen("lab");
 }
 
 // 사전 영상 칸 (영상 + 출처)
-function labVideoPanelHTML(meaning, title) {
-  const sign = labSignOf(meaning);
-  const source = sign ? (sign.source || "-") : "-";
-  const region = sign ? sign.region : "";
-  return '<h3>' + esc(title) + '</h3>' +
-    makeVideoHTML(sign ? sign.video : "", meaning) +
-    '<p class="source">출처: ' + esc(source) + (region ? ' · ' + esc(region) : '') + '</p>';
+function labVideoPanelHTML(name, title) {
+  return '<h3>' + esc(title) + '</h3>' + wordVideoHTML(findWord(name));
 }
 
-// AI가 비슷해 보이는 단어를 순서대로 고르는 자리예요.
-// ★ 지금은 학습한 모델이 없어서 손이 잡혔는지만 보고, 순서는 무작위로 정해요. (시험용)
-// ★ 나중에 AI-Hub 수어 영상으로 학습한 모델로 바꿀 자리예요. 바꿔도 "순위(의미 목록)"만 돌려주세요.
-//   점수·확률은 돌려주지도, 화면에 보여주지도 않아요.
-function guessSimilar(frames) {
-  const handFrames = frames.filter(function (f) { return f.hands.length > 0; });
-  if (handFrames.length === 0) return [];
-
-  const words = labWordList().slice();
-  for (let i = words.length - 1; i > 0; i--) { // 섞기
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = words[i];
-    words[i] = words[j];
-    words[j] = temp;
-  }
-  return words.slice(0, 2);
-}
-
-// 처음 그리기 (app.js가 데이터를 불러온 뒤 불러요)
+// 처음 그리기 (탭을 누를 때마다 app.js가 불러요)
 function renderLab() {
   stopCamera();
-  const words = labWordList();
+  if (!isStageOpen(lab.stage)) lab.stage = currentStage();
+  const words = stageWords(lab.stage).map(function (w) { return w.name; });
   if (words.indexOf(lab.word) === -1) lab.word = words[0] || null;
 
   const box = document.getElementById("lab");
@@ -66,14 +36,22 @@ function renderLab() {
     return;
   }
 
-  const chips = words.map(function (meaning) {
-    return '<button class="chip' + (meaning === lab.word ? " active" : "") + '" data-word="' + esc(meaning) + '">' + esc(meaning) + '</button>';
+  const stageChips = stageList().map(function (stage) {
+    const open = isStageOpen(stage);
+    return '<button class="chip' + (stage === lab.stage ? " active" : "") + '" data-stage="' + stage + '"' +
+      (open ? '' : ' disabled') + '>' + (open ? '' : '🔒 ') + '단계 ' + stage + '</button>';
+  }).join("");
+
+  const wordChips = words.map(function (name) {
+    return '<button class="chip' + (name === lab.word ? " active" : "") + '" data-word="' + esc(name) + '">' +
+      esc(name) + (isTried(name) ? ' ✓' : '') + '</button>';
   }).join("");
 
   box.innerHTML =
-    '<p class="privacy">🔒 카메라 영상은 이 기기 안에서만 처리하고, 서버로 보내지 않아요.</p>' +
+    '<p class="privacy">🔒 카메라 영상은 이 기기 안에서만 처리하고, 어디에도 보내지 않아요.</p>' +
+    '<div class="chips">' + stageChips + '</div>' +
     '<p class="lab-step">따라 할 단어</p>' +
-    '<div class="chips">' + chips + '</div>' +
+    '<div class="chips wrap">' + wordChips + '</div>' +
     '<div class="compare">' +
     '<div class="panel">' + labVideoPanelHTML(lab.word, "사전 영상 · " + lab.word) + '</div>' +
     '<div class="panel"><h3>내 카메라</h3>' +
@@ -84,7 +62,14 @@ function renderLab() {
     '<button class="rec" id="rec-button" disabled>● 동작 기록 (' + CONFIG.LAB_RECORD_SECONDS + '초)</button></div>' +
     '</div></div>';
 
-  box.querySelectorAll(".chip").forEach(function (chip) {
+  box.querySelectorAll("[data-stage]").forEach(function (chip) {
+    chip.addEventListener("click", function () {
+      lab.stage = parseInt(chip.dataset.stage, 10);
+      lab.word = null;
+      renderLab();
+    });
+  });
+  box.querySelectorAll("[data-word]").forEach(function (chip) {
     chip.addEventListener("click", function () {
       lab.word = chip.dataset.word;
       renderLab();
@@ -101,7 +86,7 @@ function setLabMessage(text, isError) {
   msg.classList.toggle("error", !!isError);
 }
 
-// [카메라 켜기] → 카메라 켜고 손 인식 모델 불러오기
+// [카메라 켜기] → 카메라 켜고 손 인식 모델(MediaPipe) + 학습된 모델(있으면) 불러오기
 async function turnOnLabCamera() {
   const camButton = document.getElementById("cam-button");
   const cover = document.getElementById("cam-cover");
@@ -121,6 +106,7 @@ async function turnOnLabCamera() {
   try {
     setLabMessage("손 인식 모델 불러오는 중… (처음 한 번은 몇 초 걸려요)");
     await loadHandModel();
+    await loadModel();
     if (!camera.stream) return; // 그 사이 다른 탭으로 갔으면 멈춤
     setLabMessage("손을 화면 안에 보여 주세요. 준비되면 [동작 기록]을 눌러요.");
     document.getElementById("rec-button").disabled = false;
@@ -138,7 +124,6 @@ function recordMotion() {
   recButton.classList.add("on");
   lab.frames = [];
   const startTime = performance.now();
-  const seconds = CONFIG.LAB_RECORD_SECONDS;
 
   camera.onHands = function (hands) {
     lab.frames.push({
@@ -149,7 +134,7 @@ function recordMotion() {
     });
   };
 
-  let left = seconds;
+  let left = CONFIG.LAB_RECORD_SECONDS;
   setLabMessage("기록 중… " + left + "초");
   const timer = setInterval(function () {
     left--;
@@ -161,19 +146,19 @@ function recordMotion() {
     clearInterval(timer);
     stopCamera();
     lab.ranking = guessSimilar(lab.frames);
+    markTried(lab.word, "lab"); // 해 본 기록만 남겨요 (판정 없음)
     drawLabResult();
   }, 1000);
 }
 
-// 결과 화면 왼쪽에 사전 영상 보여주기 (meaning: 보여줄 단어)
-function drawLabCompareVideo(meaning) {
-  lab.showWord = meaning;
-  const rank = lab.ranking.indexOf(meaning);
-  let title = "사전 영상 · " + meaning;
-  if (meaning === lab.picked) title += " (내가 고른 동작)";
-  else if (meaning === lab.word) title += " (따라 한 단어)";
+// 결과 화면 왼쪽에 사전 영상 보여주기 (name: 보여줄 단어)
+function drawLabCompareVideo(name) {
+  const rank = lab.ranking.indexOf(name);
+  let title = "사전 영상 · " + name;
+  if (name === lab.picked) title += " (내가 고른 동작)";
+  else if (name === lab.word) title += " (따라 한 단어)";
   else if (rank !== -1) title += " (" + (rank + 1) + "번째로 비슷해 보이는 동작)";
-  document.getElementById("result-video").innerHTML = labVideoPanelHTML(meaning, title);
+  document.getElementById("result-video").innerHTML = labVideoPanelHTML(name, title);
 }
 
 // 결과 화면 아래 선택 버튼 칸 (1순위가 없으면 [다시 해보기]만)
@@ -198,14 +183,21 @@ function drawLabResult() {
   if (lab.ranking.length === 0) {
     rankHTML = '<p class="note">기록하는 동안 손이 화면에 잡히지 않았어요. 손이 화면 안에 들어오게 하고 다시 해 보세요.</p>';
   } else {
-    rankHTML = '<p class="lab-step">가장 비슷해 보이는 동작 <small>(AI 추정)</small></p>' +
-      '<div class="rank">' + lab.ranking.map(function (meaning, i) {
-        return '<button class="rank-item" data-word="' + esc(meaning) + '">' + marks[i] + ' ' + esc(meaning) + '</button>';
-      }).join("") + '</div>';
+    rankHTML = '<p class="lab-step">AI가 추측한 가장 비슷해 보이는 동작: ' +
+      lab.ranking.map(function (name, i) { return marks[i] + ' ' + esc(name); }).join(" ") +
+      ' <small>(AI 추정)</small></p>' +
+      '<div class="rank">' + lab.ranking.map(function (name, i) {
+        return '<button class="rank-item" data-word="' + esc(name) + '">' + marks[i] + ' ' + esc(name) + '</button>';
+      }).join("") + '</div>' +
+      '<p class="source">순위 버튼을 누르면 그 단어의 사전 영상을 내 동작 옆에 보여줘요.</p>';
   }
 
+  const banner = isModelReady()
+    ? '<p class="test-banner ok">🤖 AI 추정 — AI 허브 「수어 영상」으로 학습한 모델이 고른 순서예요. 판단은 내가 해요.</p>'
+    : '<p class="test-banner">🧪 시험용 — 아직 학습 전<br><small>아래 순위는 학습한 AI가 아니라 임시로(무작위) 정한 순서예요.</small></p>';
+
   box.innerHTML =
-    '<p class="test-banner">🧪 시험용 — 아직 학습 전<br><small>아래 순위는 학습한 AI가 아니라 임시로(무작위) 정한 순서예요.</small></p>' +
+    banner +
     rankHTML +
     '<div class="compare">' +
     '<div class="panel" id="result-video"></div>' +
@@ -214,7 +206,8 @@ function drawLabResult() {
     '<p class="source">이 기기에만 잠깐 저장된 좌표예요 · 장면 ' + lab.frames.length + '개</p></div>' +
     '</div>' +
     labChoicesHTML() +
-    '<div id="choice-msg"></div>';
+    '<div id="choice-msg"></div>' +
+    '<p class="note">✋ \'' + esc(lab.word) + '\' 해 본 기록이 남았어요.</p>';
 
   drawLabCompareVideo(lab.word);
   startReplay(document.getElementById("replay-canvas"), lab.frames);
@@ -228,22 +221,26 @@ function drawLabResult() {
   document.getElementById("choice-other").addEventListener("click", labChoiceOther);
 }
 
-// [맞아요] → 확인 문구 + 다음 단어 버튼 (칭찬·점수 없이)
+// [맞아요] → 확인 문구 + 다음 단어 버튼 (칭찬·평가 없이)
 function labChoiceYes() {
   document.getElementById("choice-msg").innerHTML =
     '<p class="note">확인했어요. 다음 단어도 해 볼까요?</p>' +
     '<button class="ghost" id="choice-next">다음 단어 해보기</button>';
   document.getElementById("choice-next").addEventListener("click", function () {
-    const words = labWordList();
-    lab.word = words[(words.indexOf(lab.word) + 1) % words.length];
+    // 이 단계의 다음 단어, 단계 끝이면 다음 단계(열렸으면) 첫 단어
+    const list = APP_DATA.words.filter(function (w) { return isStageOpen(w.stage); });
+    const index = list.findIndex(function (w) { return w.name === lab.word; });
+    const next = list[(index + 1) % list.length];
+    lab.stage = next.stage;
+    lab.word = next.name;
     renderLab();
   });
 }
 
 // [다른 동작이었어요] → 단어 목록에서 내가 실제로 한 동작을 고르면, 그 사전 영상을 내 동작 옆에 보여줌
 function labChoiceOther() {
-  const chips = labWordList().map(function (meaning) {
-    return '<button class="chip" data-word="' + esc(meaning) + '">' + esc(meaning) + '</button>';
+  const chips = APP_DATA.words.map(function (w) {
+    return '<button class="chip" data-word="' + esc(w.name) + '">' + esc(w.name) + '</button>';
   }).join("");
   const msg = document.getElementById("choice-msg");
   msg.innerHTML = '<p class="lab-step">내가 실제로 한 동작을 골라 주세요</p>' +
