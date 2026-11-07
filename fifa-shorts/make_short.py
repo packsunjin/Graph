@@ -71,14 +71,13 @@ def main():
     if not outro:
         g.append(f"[{n}:v]format=rgba[tt];[vc][tt]overlay=0:0:shortest=1,format=yuv420p[vout]")
     else:
-        # 마지막 강조 장면: 스쿼드 사진(폭 1080, y=600)이 천천히 커지고, 위에 강조 자막
+        # 마지막 강조 장면: 스쿼드 사진(폭 1080, y=600) 고정, 위에 강조 자막
         sec = outro["seconds"]
         outro_text = os.path.join(os.path.dirname(a.title), "outro_text.png")
         inputs += ["-loop", "1", "-framerate", "30", "-t", f"{sec}", "-i", outro_img,
                    "-loop", "1", "-framerate", "30", "-t", f"{sec}", "-i", outro_text]
         g.append(f"[{n}:v]format=rgba[tt];[vc][tt]overlay=0:0:shortest=1,format=yuv420p,setsar=1[vmain]")
-        g.append(f"[{n + 1}:v]scale=w='2*trunc(540*(1+0.05*t/{sec}))':h=-2:eval=frame:flags=lanczos,"
-                 f"crop=1080:min(ih\\,1300),setsar=1[img]")
+        g.append(f"[{n + 1}:v]scale=1080:-2:flags=lanczos,setsar=1[img]")
         g.append(f"color=c=0x0a0a0a:s={W}x{H}:r=30:d={sec}[obk]")
         g.append(f"[obk][img]overlay=0:600:shortest=1[o1]")
         g.append(f"[{n + 2}:v]format=rgba[otxt];[o1][otxt]overlay=0:0:shortest=1,"
