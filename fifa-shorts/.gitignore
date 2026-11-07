@@ -1,0 +1,5 @@
+clips/
+build/
+package/
+pretendard-*.tgz
+__pycache__/
