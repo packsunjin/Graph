@@ -25,16 +25,23 @@ WIFI="#dtoverlay=disable-wifi"
 
 sudo tee -a "$CFG" >/dev/null <<EOF
 $BEGIN
-[all]
 # 빨간 전원 LED 끄기 (초록 LED는 전원이 꺼졌는지 확인하는 데 쓰므로 그대로 둠)
+[pi2]
 dtparam=pwr_led_trigger=none
 dtparam=pwr_led_activelow=off
-# 랜선 단자 LED 끄기
+[pi3]
+dtparam=pwr_led_trigger=none
+dtparam=pwr_led_activelow=off
+[pi4]
+dtparam=pwr_led_trigger=default-on
+dtparam=pwr_led_activelow=off
+# 랜선 단자 LED 끄기 (Pi 4)
 dtparam=eth_led0=4
 dtparam=eth_led1=4
-# 최고 속도 낮추기 (음악 재생에는 충분하고, 열과 전기 사용이 줄어듦)
+# 최고 속도 낮추기 (Pi 4만. Pi 2, 3은 원래 느려서 그대로 둠)
 arm_freq=1000
-# 와이파이 끄기 (켜려면 ./power-save.sh 를 옵션 없이 다시 실행)
+[all]
+# 내장 와이파이 끄기 (Pi 3, 4만 해당. USB 와이파이 동글은 해당 없음)
 $WIFI
 $END
 EOF
