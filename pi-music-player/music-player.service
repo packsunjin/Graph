@@ -1,0 +1,12 @@
+[Unit]
+Description=Raspberry Pi Bluetooth music player
+After=pipewire.service pipewire-pulse.service wireplumber.service
+Wants=pipewire-pulse.service wireplumber.service
+
+[Service]
+ExecStart=/usr/bin/python3 @DIR@/player.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
