@@ -1,0 +1,28 @@
+# 아두이노 키트에 들어 있는 "Car mp3" 적외선 리모컨(버튼 21개, NEC 방식) 키 배치
+# setup.sh가 /etc/rc_keymaps/ 에 복사한다.
+[[protocols]]
+name = "carmp3"
+protocol = "nec"
+variant = "nec"
+[protocols.scancodes]
+0x45 = "KEY_CHANNELDOWN"   # CH-
+0x46 = "KEY_CHANNEL"       # CH
+0x47 = "KEY_CHANNELUP"     # CH+
+0x44 = "KEY_PREVIOUSSONG"  # PREV
+0x40 = "KEY_NEXTSONG"      # NEXT
+0x43 = "KEY_PLAYPAUSE"     # PLAY/PAUSE
+0x07 = "KEY_VOLUMEDOWN"    # VOL-
+0x15 = "KEY_VOLUMEUP"      # VOL+
+0x09 = "KEY_MODE"          # EQ
+0x16 = "KEY_0"
+0x19 = "KEY_F1"            # 100+
+0x0d = "KEY_F2"            # 200+
+0x0c = "KEY_1"
+0x18 = "KEY_2"
+0x5e = "KEY_3"
+0x08 = "KEY_4"
+0x1c = "KEY_5"
+0x5a = "KEY_6"
+0x42 = "KEY_7"
+0x52 = "KEY_8"
+0x4a = "KEY_9"

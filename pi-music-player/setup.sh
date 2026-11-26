@@ -13,12 +13,12 @@ fi
 echo "== 1/5 필요한 프로그램 설치 =="
 sudo apt-get update
 sudo apt-get install -y mpv bluez pipewire pipewire-pulse wireplumber \
-  libspa-0.2-bluetooth python3-gpiozero python3-lgpio
+  libspa-0.2-bluetooth python3-gpiozero python3-lgpio python3-evdev ir-keytable
 
 echo "== 2/5 블루투스 켜기, 권한 설정 =="
 sudo rfkill unblock bluetooth || true
 sudo systemctl enable --now bluetooth
-sudo usermod -aG bluetooth,gpio,audio "$USER"
+sudo usermod -aG bluetooth,gpio,audio,input "$USER"
 # 재생 버튼 길게 누르기로 전원을 끌 수 있게 허용 (poweroff 명령만 허용)
 RULE="/etc/sudoers.d/010-music-player-poweroff"
 echo "$USER ALL=(root) NOPASSWD: /usr/sbin/poweroff" | sudo tee "$RULE" >/dev/null
@@ -40,6 +40,21 @@ wireplumber.profiles = {
   }
 }
 EOF
+
+echo "== 적외선 리모컨 설정 (수신기: GPIO18) =="
+BOOTCFG=/boot/firmware/config.txt
+[ -f "$BOOTCFG" ] || BOOTCFG=/boot/config.txt
+if ! grep -q "^dtoverlay=gpio-ir" "$BOOTCFG"; then
+  printf '\n[all]\n# pi-music-player 적외선 리모컨 수신기\ndtoverlay=gpio-ir,gpio_pin=18\n' | sudo tee -a "$BOOTCFG" >/dev/null
+fi
+sudo mkdir -p /etc/rc_keymaps
+sudo cp "$DIR/carmp3-remote.toml" /etc/rc_keymaps/carmp3.toml
+# 리모컨 수신기가 켜질 때 이 키 배치를 쓰도록 등록 (맨 위 줄이 먼저 적용됨)
+if ! grep -q "carmp3.toml" /etc/rc_maps.cfg 2>/dev/null; then
+  { echo "gpio_ir_recv * /etc/rc_keymaps/carmp3.toml"; cat /etc/rc_maps.cfg 2>/dev/null || true; } \
+    | sudo tee /etc/rc_maps.cfg.new >/dev/null
+  sudo mv /etc/rc_maps.cfg.new /etc/rc_maps.cfg
+fi
 
 echo "== 4/5 음악 폴더 만들기 =="
 mkdir -p ~/Music

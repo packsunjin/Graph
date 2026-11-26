@@ -208,6 +208,20 @@ class Player:
             log("이전 곡")
         self.mpv.set("pause", False)
 
+    def seek(self, seconds):
+        self.mpv.command("seek", seconds, "relative")
+        log("%+d초" % seconds)
+
+    def play_number(self, n):
+        """재생목록의 n번째 곡 재생 (1부터 시작)"""
+        count = self.mpv.get("playlist-count") or 0
+        if not 1 <= n <= count:
+            log("%d번 곡은 없습니다 (전체 %d곡)" % (n, count))
+            return
+        self.mpv.set("playlist-pos", n - 1)
+        self.mpv.set("pause", False)
+        log("%d번 곡" % n)
+
     def volume(self, delta):
         vol = (self.mpv.get("volume") or 50) + delta
         vol = max(0, min(100, vol))
@@ -356,7 +370,134 @@ def setup_buttons(player, cfg):
     return buttons
 
 
-KEY_HELP = "키보드: p=재생/일시정지  n=다음  b=이전  +=볼륨업  -=볼륨다운  s=셔플  r=다시읽기  q=종료"
+class RemoteControl(threading.Thread):
+    """적외선 리모컨 입력을 읽는다 (carmp3-remote.toml 키 배치 기준).
+
+    PLAY/PAUSE=재생/일시정지  NEXT/PREV=다음/이전 곡  VOL+/VOL-=볼륨
+    CH+/CH-=10초 앞으로/뒤로  EQ=셔플  숫자=그 번호의 곡으로 이동
+    CH를 3초 누르고 있기=전원 끄기
+    """
+
+    DEVICE_NAME = "gpio_ir_recv"
+    SHUTDOWN_HOLD = 3.0
+    NUMBER_WAIT = 1.5      # 숫자를 다 누를 때까지 기다리는 시간
+    REPEAT_GAP = 0.2       # 누르고 있을 때 볼륨이 바뀌는 간격
+
+    def __init__(self, player, evdev):
+        super().__init__(daemon=True)
+        self.player = player
+        self.evdev = evdev
+        self.hold_start = {}
+        self.last_repeat = 0
+        self.shutdown_fired = False
+        self.number = 0
+        self.number_timer = None
+
+    def find_device(self):
+        for path in self.evdev.list_devices():
+            try:
+                dev = self.evdev.InputDevice(path)
+            except OSError:
+                continue
+            if self.DEVICE_NAME in dev.name:
+                return dev
+            dev.close()
+        return None
+
+    def run(self):
+        announced = False
+        while not self.player.stop_event.is_set():
+            dev = self.find_device()
+            if dev is None:
+                if not announced:
+                    log("리모컨 수신기를 찾지 못했습니다 (없으면 무시해도 됨)")
+                    announced = True
+                self.player.stop_event.wait(10)
+                continue
+            log("리모컨 준비 완료")
+            try:
+                for ev in dev.read_loop():
+                    if ev.type == self.evdev.ecodes.EV_KEY:
+                        name = self.evdev.ecodes.KEY.get(ev.code)
+                        if isinstance(name, list):
+                            name = name[0]
+                        try:
+                            self.handle(name, ev.value)
+                        except Exception as e:
+                            log("리모컨 처리 오류:", e)
+            except OSError:
+                self.player.stop_event.wait(2)
+
+    def handle(self, key, value, now=None):
+        """value: 1=누름, 2=누르고 있음(반복), 0=뗌"""
+        now = time.monotonic() if now is None else now
+        p = self.player
+        if value == 1:
+            self.hold_start[key] = now
+            self.shutdown_fired = False
+        elif value == 0:
+            self.hold_start.pop(key, None)
+            return
+
+        if key in ("KEY_VOLUMEUP", "KEY_VOLUMEDOWN"):
+            if value == 2 and now - self.last_repeat < self.REPEAT_GAP:
+                return
+            self.last_repeat = now
+            p.volume(p.step if key == "KEY_VOLUMEUP" else -p.step)
+            return
+        if key == "KEY_CHANNEL":
+            held = now - self.hold_start.get(key, now)
+            if value == 2 and held >= self.SHUTDOWN_HOLD and not self.shutdown_fired:
+                self.shutdown_fired = True
+                p.shutdown_device()
+            return
+        if value != 1:
+            return  # 나머지 버튼은 누르고 있어도 한 번만 동작
+
+        if key == "KEY_PLAYPAUSE":
+            p.toggle_pause()
+        elif key == "KEY_NEXTSONG":
+            p.next()
+        elif key == "KEY_PREVIOUSSONG":
+            p.prev()
+        elif key == "KEY_CHANNELUP":
+            p.seek(10)
+        elif key == "KEY_CHANNELDOWN":
+            p.seek(-10)
+        elif key == "KEY_MODE":
+            p.toggle_shuffle()
+        elif key in ("KEY_F1", "KEY_F2") or (key and key[:4] == "KEY_" and key[4:].isdigit()):
+            if key == "KEY_F1":
+                self.number += 100
+            elif key == "KEY_F2":
+                self.number += 200
+            else:
+                self.number = self.number * 10 + int(key[4:])
+            log("번호 입력:", self.number)
+            if self.number_timer:
+                self.number_timer.cancel()
+            self.number_timer = threading.Timer(self.NUMBER_WAIT, self.finish_number)
+            self.number_timer.daemon = True
+            self.number_timer.start()
+
+    def finish_number(self):
+        n, self.number = self.number, 0
+        if n:
+            self.player.play_number(n)
+
+
+def setup_remote(player, cfg):
+    if not cfg.has_section("remote") or not cfg["remote"].getboolean("enabled", True):
+        return
+    try:
+        import evdev
+    except ImportError:
+        log("python3-evdev가 없어서 리모컨을 쓰지 않습니다")
+        return
+    RemoteControl(player, evdev).start()
+
+
+KEY_HELP ="키보드: p=재생/일시정지  n=다음  b=이전  +=볼륨업  -=볼륨다운  s=셔플  r=다시읽기  q=종료"
 
 
 def keyboard_loop(player):
@@ -404,6 +545,7 @@ def main():
         log("config.ini에 이어폰 주소(mac)가 없습니다. ./pair.sh 로 먼저 페어링하세요.")
 
     buttons = setup_buttons(player, cfg)  # 변수를 잡아 둬야 버튼이 계속 동작함
+    setup_remote(player, cfg)
     threading.Thread(target=player.run_saver, daemon=True).start()
     if sys.stdin.isatty():
         threading.Thread(target=keyboard_loop, args=(player,), daemon=True).start()
