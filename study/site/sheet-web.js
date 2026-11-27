@@ -12,11 +12,15 @@
 
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
 
+  var A4 = document.body.classList.contains('a4');
   function fit() {
-    var w = (state.page === 'both' ? 420 : 210) * MMPX;
+    var w = (A4 || state.page !== 'both' ? 210 : 420) * MMPX;
     document.documentElement.style.zoom = (window.innerWidth / w).toFixed(4);
+    // 부모가 iframe 높이를 맞추도록 실제 세로/가로 비율을 알린다 (A4 여러 쪽 대응)
+    parent.postMessage({ type: 'sheet-size', sheet: SHEET, ratio: spread.offsetHeight / spread.offsetWidth }, '*');
   }
   function applyPage() {
+    if (A4) { fit(); return; }
     if (state.page === 'both') {
       spread.style.width = '420mm'; spread.style.gridTemplateColumns = '210mm 210mm';
       pages.forEach(function (p) { p.style.display = ''; });

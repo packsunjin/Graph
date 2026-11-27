@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="ko">
+<head><meta name="viewport" content="width=device-width, initial-scale=1"><meta charset="utf-8"><title>한글 맞춤법 교과서 부록</title><style>/* 원본 학습지 그대로 복원 (크기·양식·줄 위치 동일) + 근거 있는 필기
+ *
+ * ── 필기 규칙 (근거) ──
+ * 1) 위치: 필기는 해당 단어 "바로 위"(ruby) 또는 그 줄 "바로 옆"(.n)에 쓴다. 멀리 떨어진 여백 칸 금지.
+ *    근거: 공간 근접 원리(Mayer) / 주의 분산 효과 — 관련 정보가 떨어져 있으면 눈이 오가며 학습이 떨어짐
+ *    (Ginns 2006 메타분석 d=0.85).
+ * 2) 색: 작성자가 아니라 "의미"로 색을 고정하고, 4색 이내로 쓴다 (색이 일관된 의미를 가질 때 기억 단서가 됨).
+ *      파랑 .c-b = 뜻 풀이·해석      초록 .c-g = 표현법·개념어(+뜻)
+ *      보라 .c-p = 구조·정서 흐름     빨강 .c-r = 시험 함정·정답 근거 (아껴 씀)
+ *      노란 형광 .hl = 핵심 문장 몇 개만 / 회색 = 밑줄·네모 표시
+ * 3) 강조는 드물게: 다른 것과 달라야 기억됨(폰 레스토프 효과). 형광펜 남발은 효과 낮음(Dunlosky 2013).
+ * 4) 빨강 최소화: 시험 맥락에서 빨강은 실패·회피를 떠올리게 함(Elliot 2007) → "틀리기 쉬운 곳" 경고에만.
+ *
+ * 용지: 원본 A4 두 쪽 펼침 = A3 가로 한 장 (.spread 안 .pg 두 개)
+ * 빈 학습지: body.mode-blank → 필기 전부 숨김
+ */
+@import url("https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap");
+/* 5) 필기 글꼴 = 익숙한 고딕(본고딕). 익숙한 글꼴일수록 빨리 읽히고(시선 추적 연구), 화면에선 고딕이 명조보다 잘 읽히는 조건이 있으며(2016 스마트폰 타이포그래피),
+ *    "읽기 어려운 글꼴이 기억에 좋다"(disfluency)는 재현 실패로 근거가 약함 → 손글씨체를 쓰지 않는다. */
+:root { --note:"Noto Sans KR","Noto Sans CJK KR","Nanum Gothic",sans-serif; }
+
+:root { --ink:#111; --b:#1f4fc4; --g:#0d8a3e; --p:#7a35b8; --r:#d6202a; --mark:#777; --hl:#fff176; }
+@page { size: A3 landscape; margin: 0; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin:0; background:#fff; color:var(--ink);
+  font-family:"Nanum Myeongjo","NanumMyeongjo",serif; font-size:10.5pt; line-height:1.4; word-break:keep-all; }
+
+.spread { width:420mm; height:297mm; display:grid; grid-template-columns:210mm 210mm; overflow:hidden; }
+.pg { position:relative; height:297mm; padding:11mm 9mm 12mm 9mm; }
+.pg.left { border-right:0.3mm dashed #ccc; }
+.pno { position:absolute; bottom:6mm; left:0; right:0; text-align:center; font-size:9.5pt; }
+.hd { display:grid; grid-template-columns:14mm 1fr; margin-bottom:3mm; }
+.hd .tx { display:flex; gap:9mm; white-space:nowrap; }
+
+.r { display:grid; grid-template-columns:14mm 1fr; align-items:end; min-height:5.75mm; }
+.r .tx { white-space:nowrap; }
+.lm { text-align:right; padding-right:2mm; }
+
+/* 필기 글씨 */
+.n, rt, .lm { font-family:var(--note); line-height:1.15; letter-spacing:-0.2px; }
+.n, .lm { font-size:8.4pt; font-weight:500; }
+.n { margin-left:2.5mm; }
+rt { font-size:7.4pt; }
+.c-b, rt.c-b { color:var(--b); }  .c-g, rt.c-g { color:var(--g); }
+.c-p, rt.c-p { color:var(--p); }  .c-r, rt.c-r { color:var(--r); }
+.big { font-size:10.5pt; font-weight:700; }
+.oval { border:1.3px solid currentColor; border-radius:999px; padding:0 6px; }
+
+/* 표시 (회색 = 위치 표시일 뿐) */
+.u  { text-decoration:underline 1px var(--mark); text-underline-offset:3px; }
+.bx { outline:1px solid var(--mark); outline-offset:1px; }
+.ci { border:1px solid var(--mark); border-radius:999px; padding:0 2px; }
+.hl { background:linear-gradient(transparent 50%, var(--hl) 50%); }
+.ans { border:1.6px solid var(--r); border-radius:999px; padding:0 2px; }
+
+/* 2쪽 인쇄 요소 */
+.prbox { display:inline-block; border:1px solid #333; padding:0 4px; line-height:1.2; }
+.q { margin:4.5mm 0 1mm; }
+.opt { margin:0.7mm 0 0.7mm 3mm; }
+.bogi { border:1px solid #333; padding:2mm 4mm; margin:2mm 0 2mm 3mm; line-height:1.7; }
+.bogi .t { text-align:center; }
+.legend { font-family:var(--note); font-size:8.6pt; font-weight:500; border:1px dashed #aaa; border-radius:6px; padding:1.5mm 3mm; display:inline-block; line-height:1.15; }
+.right-top { display:flex; justify-content:space-between; align-items:flex-start; }
+
+body.mode-blank .n, body.mode-blank .lm, body.mode-blank rt, body.mode-blank .legend, body.mode-blank .note-only { visibility:hidden; }
+body.mode-blank .u { text-decoration:none; }
+body.mode-blank .bx { outline:none; }
+body.mode-blank .ci, body.mode-blank .ans { border-color:transparent; }
+body.mode-blank .hl { background:none; }
+
+/* 글자 위 필기: <span class="ov ov-b" data-o="필기">원문</span> — 원문 글자 간격을 건드리지 않음 */
+.ov { position:relative; }
+.ov::before { content:attr(data-o); position:absolute; left:0; bottom:88%; white-space:nowrap;
+  font-family:var(--note); font-size:7.6pt; font-weight:500; letter-spacing:-0.2px; line-height:1; }
+.ov-b::before { color:var(--b); } .ov-g::before { color:var(--g); } .ov-p::before { color:var(--p); } .ov-r::before { color:var(--r); }
+body.mode-blank .ov::before { visibility:hidden; }
+.pg.left { padding-top:9mm; }
+.r { min-height:5.6mm; }
+.r { min-height:0; line-height:1.38; }
+.r.has-ov { padding-top:2.6mm; }
+.ov::before { font-size:7.6pt; bottom:98%; }
+.r { line-height:1.5; }
+.bogi { line-height:2.15; }
+.bogi { line-height:1.95; }
+.q { margin:3.2mm 0 0.8mm; }
+.opt { margin:0.4mm 0 0.4mm 3mm; }
+
+/* ═══ 공통 확장 (여러 학습지 양식) ═══ */
+body.oldhangul { font-family:"Noto Serif CJK KR","Nanum Myeongjo",serif; }   /* 아래아(ㆍ) 등 옛한글 */
+body.sans { font-family:"Noto Sans CJK KR","Nanum Gothic",sans-serif; }
+.oh { font-family:"Noto Serif CJK KR",serif; }
+/* 빈칸에 손으로 쓴 답 = 검정 펜 (내용 자체이므로 본문과 같은 검정 계열) */
+.fill { font-family:var(--note); font-size:9.6pt; font-weight:700; color:#222; line-height:1.1; }
+body.mode-blank .fill { visibility:hidden; }
+.blank { display:inline-block; min-width:22mm; border-bottom:1px solid #555; text-align:center; }
+.sq { display:inline-block; width:4.2mm; height:4.2mm; border:1px solid #333; vertical-align:-0.6mm; margin:0 0.3mm; }
+.tb { width:100%; border-collapse:collapse; margin:1.5mm 0 4mm; font-size:10pt; }
+.tb th, .tb td { border-bottom:1px solid #999; padding:1.4mm 2mm; text-align:left; vertical-align:middle; }
+.tb th { background:#d9d9d9; text-align:center; font-weight:700; white-space:nowrap; }
+.tb.grid th, .tb.grid td { border:1px solid #888; }
+.tb thead th { background:#cfcfcf; }
+.sec { font-weight:700; margin:4mm 0 1mm; }
+.ttl { font-size:15pt; font-weight:800; border-bottom:2px solid #333; padding-bottom:1mm; margin:3mm 0 3mm; }
+.ttl small { font-size:10.5pt; font-weight:400; }
+.box { border:1px solid #777; margin:2mm 0; }
+.box > .bh { background:#d0d0d0; text-align:center; font-weight:700; padding:1.5mm; line-height:1.35; }
+.box > .bb { padding:2mm 3mm; line-height:1.6; }
+.prt-red { color:#b3262e; font-size:9pt; font-family:"Noto Sans CJK KR","Nanum Gothic",sans-serif; }   /* 원본에 인쇄된 빨간 글씨 */
+.prt-blue { background:#dde8f6; }
+.p { margin:1mm 0; }
+.ind { margin-left:5mm; }
+.qn { font-weight:700; margin-right:1.5mm; }
+.ox { display:inline-block; min-width:9mm; text-align:center; }
+.fold { line-height:1.75; }
+
+/* ═══ A4 세로 학습지 (한 장 = A4 한 쪽, 여러 쪽은 세로로 이어짐) ═══ */
+body.a4 .spread { width:210mm; height:auto; grid-template-columns:210mm; }
+body.a4 .pg { height:297mm; border-right:0; border-bottom:0.3mm dashed #ccc; padding:9mm 12mm 8mm; overflow:hidden; }
+body.a4 .pg:last-child { border-bottom:0; }
+.mark { font-family:var(--note); color:var(--p); border:1.3px solid var(--p); border-radius:50%; width:5.5mm; height:5.5mm; display:inline-grid; place-items:center; font-size:8.5pt; font-weight:700; }
+body.mode-blank .mark { visibility:hidden; }
+
+@font-face { font-family:"OldHangul"; src:url(data:font/woff2;base64,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) format("woff2"); }
+.oh { font-family:"OldHangul","Noto Serif CJK KR",serif; }
+body.oldhangul { font-family:"Nanum Myeongjo","Noto Serif CJK KR",serif; }
+body.sans { font-family:"Noto Sans KR","Noto Sans CJK KR","Nanum Gothic",sans-serif; }
+html, body { background:#fff; overflow-x:hidden; }
+.spread { margin:0; }
+/* 빈칸 채우기 모드 */
+body.mode-quiz .n, body.mode-quiz .lm, body.mode-quiz .fill { color:transparent !important; }
+body.mode-quiz .n *:not(.qin):not(.qcover), body.mode-quiz .fill *:not(.qin):not(.qcover) { color:transparent !important; border-color:transparent !important; }
+body.mode-quiz .n.oval { border-color:#c9cfdb !important; }
+body.mode-quiz .ov::before { visibility:hidden; }
+body.mode-quiz .qrev, body.mode-quiz .qrev * { color:revert !important; }
+body.mode-quiz .n.qrev.c-b, body.mode-quiz .lm.qrev.c-b { color:var(--b) !important; }
+body.mode-quiz .qrev.c-g { color:var(--g) !important; } body.mode-quiz .qrev.c-p { color:var(--p) !important; }
+body.mode-quiz .qrev.c-r { color:var(--r) !important; } body.mode-quiz .fill.qrev { color:#222 !important; }
+body.mode-quiz .ov.qrev::before { visibility:visible; }
+body.mode-quiz .ans { border-color:transparent; }
+.qin, .qcover { display:none; }
+body.mode-quiz .qin, body.mode-quiz .qcover { display:block; }
+body.mode-quiz .qin { color:#1f2a44 !important; }
+body.mode-quiz .qin.ok { color:#0d5f33 !important; } body.mode-quiz .qin.shown { color:#2953c6 !important; }
+body.mode-quiz .qcover { color:#5d6472 !important; }
+.qin { position:absolute; left:0; top:0; width:100%; height:100%; min-width:3em; box-sizing:border-box;
+  font:inherit; font-family:"Noto Sans KR","Noto Sans CJK KR",sans-serif; font-size:8.6pt; font-weight:500; color:#1f2a44; padding:0 3px;
+  background:#fff8d6; border:1.3px dashed #c9a227; border-radius:3px; outline:none; }
+.qin:focus { border-style:solid; border-color:#2953c6; background:#fff; }
+.qin.ok { background:#e5f6ec; border:1.3px solid #138a4a; color:#0d5f33; }
+.qin.bad { background:#fdeaea; border:1.3px solid #cf2f37; }
+.qin.shown { background:#eef2ff; border:1.3px solid #2953c6; color:#2953c6; }
+.qin-ov { top:auto; bottom:92%; height:1.6em; font-size:7.8pt; }
+.qcover { position:absolute; inset:0; min-width:4em; cursor:pointer; border:1.3px dashed #9aa3b5; border-radius:3px;
+  background:repeating-linear-gradient(135deg,#eef1f6 0 6px,#e3e7ef 6px 12px); color:#5d6472;
+  font:11px "Noto Sans KR",sans-serif; padding:0; }
+.qcover:hover { border-color:#2953c6; color:#2953c6; }
+.qcover-ov { top:auto; bottom:92%; height:1.4em; right:auto; }
+</style>
+<style>
+@page { size: A4; margin: 0; }
+.pg { font-size:8.9pt; line-height:1.5; }
+body.a4 .pg { padding:9mm 10mm 8mm; }
+.cols { display:grid; grid-template-columns:1fr 1fr; gap:6mm; }
+.cols > div { min-width:0; }
+.hang { margin:2.6mm 0 1mm; padding-bottom:0.8mm; border-bottom:1px solid #b3262e; }
+.hang b { color:#b3262e; margin-right:1.5mm; }
+.hang.ch { border:0; font-size:10.5pt; font-weight:800; margin-top:3mm; }
+.jeol { font-weight:700; margin:2mm 0 0.5mm; font-size:9.4pt; }
+.sub { margin:1.4mm 0 0.6mm; }
+.w { display:grid; gap:0.4mm 2mm; margin:0.6mm 0 1mm 3mm; }
+.w3 { grid-template-columns:repeat(3,1fr); } .w4 { grid-template-columns:repeat(4,1fr); } .w5 { grid-template-columns:repeat(5,1fr); } .w2 { grid-template-columns:repeat(2,1fr); }
+.gn { display:grid; grid-template-columns:1.2fr 1fr 1.2fr 1fr; gap:0.3mm 2mm; margin:0.8mm 0 1.2mm 3mm; }
+.gn .h { text-align:center; color:#555; }
+.gn .div { border-left:1px dotted #999; padding-left:2mm; }
+.tag { display:inline-block; font-size:7.8pt; font-weight:700; color:#fff; background:#555; border-radius:2px; padding:0 1.5mm; margin-right:1.5mm; vertical-align:0.3mm; }
+.tag.red { background:#c0392b; }
+.toc { border:1px solid #999; border-radius:3mm; padding:2mm 4mm; display:grid; grid-template-columns:1fr 1fr; gap:0 6mm; font-size:8.6pt; margin-bottom:3mm; }
+.toc div { display:flex; justify-content:space-between; }
+.toc .c { font-weight:700; }
+.pno2 { position:absolute; bottom:5mm; font-size:9pt; }
+.t14 { display:grid; grid-template-columns:repeat(5,1fr); gap:0.2mm 1.5mm; margin:1mm 0 1mm 3mm; }
+.t15 { display:grid; grid-template-columns:repeat(4,1fr); gap:0.2mm 1.5mm; margin:1mm 0 1mm 3mm; }
+.star { color:var(--r); font-family:var(--note); font-weight:700; }
+</style></head>
+<body data-sheet="matchum" class="sans a4">
+<!-- 원본: study/worksheets/2026-11-27_국어_맞춤법부록_원본.pdf (교과서 부록 211~214쪽, 한글 맞춤법 발췌) -->
+<div class="spread">
+
+<!-- ═══ 211쪽 ═══ -->
+<div class="pg">
+<div class="toc">
+  <div><span class="c">제1장 | 총칙</span><span>제1항 ~ 제3항</span></div><div><span>제2절 어간과 어미</span><span>제15항 ~ 제18항</span></div>
+  <div><span class="c">제2장 | 자모</span><span>제4항</span></div><div><span>제3절 접미사가 붙어서 된 말</span><span>제19항 ~ 제26항</span></div>
+  <div><span class="c">제3장 | 소리에 관한 것</span><span></span></div><div><span>제4절 합성어 및 접두사가 붙은 말</span><span>제27항 ~ 제31항</span></div>
+  <div><span>제1절 된소리</span><span>제5항</span></div><div><span>제5절 준말</span><span>제32항 ~ 제40항</span></div>
+  <div><span>제2절 구개음화</span><span>제6항</span></div><div><span class="c">제5장 | 띄어쓰기</span><span></span></div>
+  <div><span>제3절 'ㄷ' 소리 받침</span><span>제7항</span></div><div><span>제1절 조사</span><span>제41항</span></div>
+  <div><span>제4절 모음</span><span>제8항 ~ 제9항</span></div><div><span>제2절 의존 명사, 단위를 나타내는 명사 및 열거하는 말 등</span><span>제42항 ~ 제46항</span></div>
+  <div><span>제5절 두음 법칙</span><span>제10항 ~ 제12항</span></div><div><span>제3절 보조 용언</span><span>제47항</span></div>
+  <div><span>제6절 겹쳐 나는 소리</span><span>제13항</span></div><div><span>제4절 고유 명사 및 전문 용어</span><span>제48항 ~ 제50항</span></div>
+  <div><span class="c">제4장 | 형태에 관한 것</span><span></span></div><div><span class="c">제6장 | 그 밖의 것</span><span>제51항 ~ 제57항</span></div>
+  <div><span>제1절 체언과 조사</span><span>제14항</span></div><div></div>
+</div>
+<div class="cols">
+<div>
+  <div class="hang ch">제1장 총칙</div>
+  <div class="hang"><b>제1항</b>한글 맞춤법은 표준어를 <span class="ov ov-b" data-o="소리 나는 대로(발음)">소리대로</span> 적되, <span class="ci">어법</span>에 맞도록 함을 원칙으로 한다.</div>
+  <div><span class="n c-b" style="margin-left:0">어법에 맞도록 = 형태를 밝혀 적기: 꽃이·꽃과·꽃을 (소리대로면 꼬치·꼳꽈·꼬츨) → 뜻 구별 O, 의사소통 원활</span></div>
+  <div><span class="n c-g" style="margin-left:0">#표준어 = 교양 있는 사람들이 두루 쓰는 현대 서울말 → 계층적·시대적·지역적 조건</span></div>
+  <div class="hang"><b>제2항</b>문장의 각 <span class="ci">단어</span>는 띄어 씀을 원칙으로 한다.<span class="n c-b">단어 = 품사 단위, 조사는 붙인다!</span></div>
+  <div class="hang"><b>제3항</b>외래어는 '외래어 표기법'에 따라 적는다.</div>
+  <div class="hang ch">제3장 소리에 관한 것</div>
+  <div class="jeol">제1절 된소리</div>
+  <div class="hang"><b>제5항</b><span class="ov ov-b" data-o="한 형태소에서">한 단어</span> 안에서 <span class="u">뚜렷한 까닭 없이 나는 된소리</span>는 다음 음절의 첫소리를 된소리로 적는다.</div>
+  <div class="sub">1. <span class="ci">두 모음 사이에서 나는 된소리</span></div>
+  <div class="w w5"><span>소쩍새</span><span>어깨</span><span>오빠</span><span>으뜸</span><span>아끼다</span><span>기쁘다</span><span>깨끗하다</span><span>어떠하다</span><span>해쓱하다</span><span>가끔</span><span>거꾸로</span><span>부썩</span><span>어찌</span><span class="ci">이따금</span><span></span></div>
+  <div class="sub">2. <span class="ci">'ㄴ, ㄹ, ㅁ, ㅇ' 받침 뒤에서 나는 된소리</span></div>
+  <div class="w w4"><span>산뜻하다</span><span>잔뜩</span><span>살짝</span><span>훨씬</span><span>담뿍</span><span>움찔</span><span>몽땅</span><span>엉뚱하다</span></div>
+  <div class="sub"><span class="tag red">다만</span><span class="u">'ㄱ, ㅂ' 받침 뒤에서 나는 된소리는</span>, 같은 음절이나 비슷한 음절이 겹쳐 나는 경우가 아니면 된소리로 적지 아니한다.</div>
+  <div class="w w4"><span>국수</span><span>깍두기</span><span>딱지</span><span>색시</span><span>싹둑(~싹둑)</span><span>법석</span><span>갑자기</span><span>몹시</span></div>
+  <div><span class="n c-r" style="margin-left:0">국밥[국빱] → 예사소리로 적음 / 같은·비슷한 음절 겹침은 된소리로: 똑똑하다·쓱싹·씁쓸하다</span><span class="n c-p">→ 제13항(겹쳐 나는 소리)</span></div>
+</div>
+<div>
+  <div class="jeol" style="margin-top:3mm">제2절 구개음화</div>
+  <div class="hang"><b>제6항</b>'ㄷ, ㅌ' 받침 뒤에 종속적 관계를 가진 '-이(-)'나 '-히-'가 올 적에는 그 'ㄷ, ㅌ'이 'ㅈ, ㅊ'으로 소리 나더라도 'ㄷ, ㅌ'으로 적는다.(ㄱ을 취하고, ㄴ을 버림.)</div>
+  <div><span class="n c-g" style="margin-left:0">#형태소 = 뜻을 가진 가장 작은 말의 단위 / 실질 형태소(맏·해돋) + 형식 형태소(-이·-히)</span></div>
+  <div class="gn"><span class="h">ㄱ</span><span class="h">ㄴ</span><span class="h div">ㄱ</span><span class="h">ㄴ</span>
+    <span>맏이</span><span>마지</span><span class="div">핥이다</span><span>할치다</span>
+    <span>해돋이</span><span>해도지</span><span class="div">걷히다</span><span>거치다</span>
+    <span>굳이</span><span>구지</span><span class="div">닫히다</span><span>다치다</span>
+    <span>같이</span><span>가치</span><span class="div">묻히다</span><span>무치다</span>
+    <span>끝이</span><span>끄치</span><span class="div"></span><span></span></div>
+  <div><span class="n c-b" style="margin-left:0">나는 집에 간다 → 나/는/집/에/가/ㄴ/다 = 실·형·실·형·실·형·형</span></div>
+  <div><span class="n c-g" style="margin-left:0">#자립 형태소 = 혼자 쓰임 / 의존 형태소 = 어미·조사·접사</span></div>
+  <div class="jeol">제4절 모음</div>
+  <div class="hang"><b>제8항</b>'계, 례, 몌, 폐, 혜'의 'ㅖ'는 'ㅔ'로 소리 나는 경우가 있더라도 'ㅖ'로 적는다.(ㄱ을 취하고, ㄴ을 버림.)<span class="n c-b">이중 모음은 이중 모음대로 (발음대로 X)</span></div>
+  <div class="gn"><span class="h">ㄱ</span><span class="h">ㄴ</span><span class="h div">ㄱ</span><span class="h">ㄴ</span>
+    <span>계수(桂樹)</span><span>게수</span><span class="div">혜택(惠澤)</span><span>헤택</span>
+    <span>사례(謝禮)</span><span>사레</span><span class="div">계집</span><span>게집</span>
+    <span>연몌(連袂)</span><span>연메</span><span class="div">핑계</span><span>핑게</span>
+    <span>폐품(廢品)</span><span>페품</span><span class="div">계시다</span><span>게시다</span></div>
+  <div class="sub"><span class="tag red">다만</span>다음 말은 본음대로 적는다.</div>
+  <div class="w w3"><span>게송(偈頌)</span><span>게시판(揭示板)</span><span>휴게실(休憩室)</span></div>
+  <div><span class="n c-r" style="margin-left:0">게시판·휴게실은 원래 'ㅔ' → 계시판·휴계실 X</span></div>
+  <div class="hang"><b>제9항</b>'의'나, 자음을 첫소리로 가지고 있는 음절의 'ㅢ'는 'ㅣ'로 소리 나는 경우가 있더라도 'ㅢ'로 적는다.(ㄱ을 취하고, ㄴ을 버림.)</div>
+</div>
+</div>
+<div class="pno2" style="right:10mm">부록 211</div>
+</div>
+
+<!-- ═══ 212쪽 ═══ -->
+<div class="pg">
+<div><span class="n c-b" style="margin-left:0">민주주의의 의의 → [민주주이에 의이] 로 발음해도 적을 땐 '의'</span></div>
+<div class="cols">
+<div>
+  <div class="gn"><span class="h">ㄱ</span><span class="h">ㄴ</span><span class="h div">ㄱ</span><span class="h">ㄴ</span>
+    <span>의의(意義)</span><span>의이</span><span class="div">닁큼</span><span>닝큼</span>
+    <span>본의(本義)</span><span>본이</span><span class="div">띄어쓰기</span><span>띠어쓰기</span>
+    <span>무늬[紋]</span><span>무니</span><span class="div">씌어</span><span>씨어</span>
+    <span>보늬</span><span>보니</span><span class="div">틔어</span><span>티어</span>
+    <span>오늬</span><span>오니</span><span class="div">희망(希望)</span><span>히망</span>
+    <span>하늬바람</span><span>하니바람</span><span class="div">희다</span><span>히다</span>
+    <span>늴리리</span><span>닐리리</span><span class="div">유희(遊戲)</span><span>유히</span></div>
+  <div class="jeol"><span class="star">★</span> 제5절 두음 법칙<span class="n c-g">#두음 법칙 = 단어 첫머리에 ㄴ·ㄹ이 오는 것을 피함</span></div>
+  <div class="hang"><b>제10항</b>한자음 '녀, 뇨, 뉴, 니'가 단어 첫머리에 올 적에는, 두음 법칙에 따라 '여, 요, 유, 이'로 적는다.(ㄱ을 취하고, ㄴ을 버림.)</div>
+  <div class="gn"><span class="h">ㄱ</span><span class="h">ㄴ</span><span class="h div">ㄱ</span><span class="h">ㄴ</span>
+    <span>여자(女子)</span><span>녀자</span><span class="div">유대(紐帶)</span><span>뉴대</span>
+    <span>연세(年歲)</span><span>년세</span><span class="div">이토(泥土)</span><span>니토</span>
+    <span>요소(尿素)</span><span>뇨소</span><span class="div">익명(匿名)</span><span>닉명</span></div>
+  <div class="sub"><span class="tag red">다만</span>다음과 같은 의존 명사에서는 '냐, 녀' 음을 인정한다.</div>
+  <div class="w w3"><span>냥(兩)</span><span>냥쭝(兩-)</span><span>년(年)(몇 년)</span></div>
+  <div class="sub"><span class="tag">붙임 1</span>단어의 첫머리 이외의 경우에는 본음대로 적는다.</div>
+  <div class="w w4"><span>남녀(男女)</span><span>당뇨(糖尿)</span><span>결뉴(結紐)</span><span>은닉(隱匿)</span></div>
+  <div class="sub"><span class="tag">붙임 2</span>접두사처럼 쓰이는 한자가 붙어서 된 말이나 합성어에서, 뒷말의 첫소리가 'ㄴ' 소리로 나더라도 두음 법칙에 따라 적는다.</div>
+  <div class="w w3"><span>신여성(新女性)</span><span>공염불(空念佛)</span><span>남존여비(男尊女卑)</span></div>
+  <div class="sub"><span class="tag">붙임 3</span>둘 이상의 단어로 이루어진 고유 명사를 붙여 쓰는 경우에도 붙임 2에 준하여 적는다.</div>
+  <div class="w w2"><span>한국여자대학</span><span>대한요소비료회사</span></div>
+  <div class="hang"><span class="star">★</span><b>제11항</b>한자음 '라, 려, 례, 료, 류, 리'가 단어의 첫머리에 올 적에는, 두음 법칙에 따라 '야, 여, 예, 요, 유, 이'로 적는다.(ㄱ을 취하고, ㄴ을 버림.)</div>
+  <div class="gn"><span class="h">ㄱ</span><span class="h">ㄴ</span><span class="h div">ㄱ</span><span class="h">ㄴ</span>
+    <span>양심(良心)</span><span>량심</span><span class="div">용궁(龍宮)</span><span>룡궁</span>
+    <span>역사(歷史)</span><span>력사</span><span class="div">유행(流行)</span><span>류행</span>
+    <span>예의(禮儀)</span><span>례의</span><span class="div">이발(理髮)</span><span>리발</span></div>
+  <div class="sub"><span class="tag red">다만</span>다음과 같은 의존 명사는 본음대로 적는다.</div>
+  <div class="w w2"><span>리(里): 몇 리냐?</span><span>리(理): 그럴 리가 없다.</span></div>
+  <div class="sub"><span class="tag">붙임 1</span>단어의 첫머리 이외의 경우에는 본음대로 적는다.</div>
+  <div class="w w4"><span>개량(改良)</span><span>선량(善良)</span><span>수력(水力)</span><span>협력(協力)</span><span>사례(謝禮)</span><span>혼례(婚禮)</span><span>와룡(臥龍)</span><span>쌍룡(雙龍)</span><span>하류(下流)</span><span>급류(急流)</span><span>도리(道理)</span><span>진리(眞理)</span></div>
+</div>
+<div>
+  <div class="sub"><span class="tag red">다만</span><span class="u">모음이나 'ㄴ' 받침 뒤에 이어지는 '렬, 률'은 '열, 율'로 적는다.</span>(ㄱ을 취하고, ㄴ을 버림.)</div>
+  <div class="gn"><span class="h">ㄱ</span><span class="h">ㄴ</span><span class="h div">ㄱ</span><span class="h">ㄴ</span>
+    <span>나열(羅列)</span><span>나렬</span><span class="div">분열(分裂)</span><span>분렬</span>
+    <span>치열(齒列)</span><span>치렬</span><span class="div">선열(先烈)</span><span>선렬</span>
+    <span>비열(卑劣)</span><span>비렬</span><span class="div">진열(陳列)</span><span>진렬</span>
+    <span>규율(規律)</span><span>규률</span><span class="div">선율(旋律)</span><span>선률</span>
+    <span>비율(比率)</span><span>비률</span><span class="div">전율(戰慄)</span><span>전률</span>
+    <span>실패율(失敗率)</span><span>실패률</span><span class="div"><span class="ci">백분율(百分率)</span></span><span>백분률 <span class="star">★</span></span></div>
+  <div><span class="n c-r" style="margin-left:0">모음·ㄴ 뒤 = 열/율 (비율, 백분율) / 그 밖 = 렬/률 (합격률, 성공률) ← 자주 나옴!</span></div>
+  <div class="sub"><span class="tag">붙임 2</span>외자로 된 이름을 성에 붙여 쓸 경우에도 본음대로 적을 수 있다.</div>
+  <div class="w w4"><span>신립(申砬)</span><span>최린(崔麟)</span><span>채륜(蔡倫)</span><span>하륜(河崙)</span></div>
+  <div class="sub"><span class="tag">붙임 3</span>준말에서 본음으로 소리 나는 것은 본음대로 적는다.</div>
+  <div class="w w2"><span>국련(국제 연합)</span><span>한시련(한국 시각 장애인 연합회)</span></div>
+  <div class="sub"><span class="tag">붙임 4</span>접두사처럼 쓰이는 한자가 붙어서 된 말이나 합성어에서, 뒷말의 첫소리가 'ㄴ' 또는 'ㄹ' 소리로 나더라도 두음 법칙에 따라 적는다.</div>
+  <div class="w w2"><span>역이용(逆利用)</span><span>연이율(年利率)</span><span>열역학(熱力學)</span><span>해외여행(海外旅行)</span></div>
+  <div class="sub"><span class="tag">붙임 5</span>둘 이상의 단어로 이루어진 고유 명사를 붙여 쓰는 경우나 십진법에 따라 쓰는 수(數)도 붙임 4에 준하여 적는다.</div>
+  <div class="w w2"><span>서울여관</span><span>신흥이발관</span><span>육천육백육십육(六千六百六十六)</span><span></span></div>
+  <div class="hang" style="margin-top:4mm"><span class="star">★</span><b>제12항</b>한자음 '라, 래, 로, 뢰, 루, 르'가 단어의 첫머리에 올 적에는, 두음 법칙에 따라 '나, <span class="ci">내, 노, 뇌</span>, 누, 느'로 적는다.(ㄱ을 취하고, ㄴ을 버림.)</div>
+  <div class="gn"><span class="h">ㄱ</span><span class="h">ㄴ</span><span class="h div">ㄱ</span><span class="h">ㄴ</span>
+    <span>낙원(樂園)</span><span>락원</span><span class="div">뇌성(雷聲)</span><span>뢰성</span>
+    <span>내일(來日)</span><span>래일</span><span class="div">누각(樓閣)</span><span>루각</span>
+    <span>노인(老人)</span><span>로인</span><span class="div">능묘(陵墓)</span><span>릉묘</span></div>
+  <div class="sub"><span class="tag">붙임 1</span>단어의 첫머리 이외의 경우에는 본음대로 적는다.</div>
+  <div class="w w4"><span>쾌락(快樂)</span><span>극락(極樂)</span><span>거래(去來)</span><span>왕래(往來)</span><span>부로(父老)</span><span>연로(年老)</span><span>지뢰(地雷)</span><span>낙뢰(落雷)</span><span>고루(高樓)</span><span>광한루(廣寒樓)</span><span>동구릉(東九陵)</span><span>가정란(家庭欄)</span></div>
+  <div class="sub"><span class="tag">붙임 2</span>접두사처럼 쓰이는 한자가 붙어서 된 단어는 뒷말을 두음 법칙에 따라 적는다.</div>
+  <div class="w w2"><span>내내월(來來月)</span><span>상노인(上老人)</span><span>중노동(重勞動)</span><span>비논리적(非論理的)</span></div>
+</div>
+</div>
+<div class="pno2" style="left:10mm">212 부록</div>
+</div>
+
+<!-- ═══ 213쪽 ═══ -->
+<div class="pg">
+<div class="cols">
+<div>
+  <div class="hang ch">제4장 형태에 관한 것</div>
+  <div class="jeol">제1절 체언과 조사<span class="n c-g">#체언 = 명사(고유·보통, 자립·의존)·대명사·수사</span></div>
+  <div class="hang"><b>제14항</b>체언은 조사와 구별하여 적는다.<span class="n c-b">떡이 (떠기 X)</span></div>
+  <div class="t14">
+    <span>떡이</span><span>떡을</span><span>떡에</span><span>떡도</span><span>떡만</span>
+    <span>손이</span><span>손을</span><span>손에</span><span>손도</span><span>손만</span>
+    <span>팔이</span><span>팔을</span><span>팔에</span><span>팔도</span><span>팔만</span>
+    <span>밤이</span><span>밤을</span><span>밤에</span><span>밤도</span><span>밤만</span>
+    <span>집이</span><span>집을</span><span>집에</span><span>집도</span><span>집만</span>
+    <span>옷이</span><span>옷을</span><span>옷에</span><span>옷도</span><span>옷만</span>
+    <span>콩이</span><span>콩을</span><span>콩에</span><span>콩도</span><span>콩만</span>
+    <span>낮이</span><span>낮을</span><span>낮에</span><span>낮도</span><span>낮만</span>
+    <span>꽃이</span><span>꽃을</span><span>꽃에</span><span>꽃도</span><span>꽃만</span>
+    <span>밭이</span><span>밭을</span><span>밭에</span><span>밭도</span><span>밭만</span>
+    <span>앞이</span><span>앞을</span><span>앞에</span><span>앞도</span><span>앞만</span>
+    <span>밖이</span><span>밖을</span><span>밖에</span><span>밖도</span><span>밖만</span>
+    <span>넋이</span><span>넋을</span><span>넋에</span><span>넋도</span><span>넋만</span>
+    <span>흙이</span><span>흙을</span><span>흙에</span><span>흙도</span><span>흙만</span>
+    <span>삶이</span><span>삶을</span><span>삶에</span><span>삶도</span><span>삶만</span>
+    <span>여덟이</span><span>여덟을</span><span>여덟에</span><span>여덟도</span><span>여덟만</span>
+    <span>곬이</span><span>곬을</span><span>곬에</span><span>곬도</span><span>곬만</span>
+    <span>값이</span><span>값을</span><span>값에</span><span>값도</span><span>값만</span>
+  </div>
+  <div><span class="n c-g" style="margin-left:0">#조사 = 격조사 / 보조사(은·는, 도, 만, 조차, 까지) / 접속 조사(와·과, 하고, 이랑)</span></div>
+  <div class="jeol" style="margin-top:3mm">제2절 어간과 어미</div>
+  <div class="hang"><b>제15항</b>용언의 어간과 어미는 구별하여 적는다.<span class="n c-b">먹으니 (머그니 X)</span></div>
+  <div class="t15">
+    <span>먹다</span><span>먹고</span><span>먹어</span><span>먹으니</span>
+    <span>신다</span><span>신고</span><span>신어</span><span>신으니</span>
+    <span>믿다</span><span>믿고</span><span>믿어</span><span>믿으니</span>
+    <span>울다</span><span>울고</span><span>울어</span><span>(우니)</span>
+    <span>넘다</span><span>넘고</span><span>넘어</span><span>넘으니</span>
+    <span>입다</span><span>입고</span><span>입어</span><span>입으니</span>
+    <span>웃다</span><span>웃고</span><span>웃어</span><span>웃으니</span>
+    <span>찾다</span><span>찾고</span><span>찾아</span><span>찾으니</span>
+    <span>좇다</span><span>좇고</span><span>좇아</span><span>좇으니</span>
+    <span>같다</span><span>같고</span><span>같아</span><span>같으니</span>
+    <span>높다</span><span>높고</span><span>높아</span><span>높으니</span>
+    <span>좋다</span><span>좋고</span><span>좋아</span><span>좋으니</span>
+    <span>깎다</span><span>깎고</span><span>깎아</span><span>깎으니</span>
+    <span>앉다</span><span>앉고</span><span>앉아</span><span>앉으니</span>
+    <span>많다</span><span>많고</span><span>많아</span><span>많으니</span>
+    <span>늙다</span><span>늙고</span><span>늙어</span><span>늙으니</span>
+    <span>젊다</span><span>젊고</span><span>젊어</span><span>젊으니</span>
+    <span>넓다</span><span>넓고</span><span>넓어</span><span>넓으니</span>
+  </div>
+  <div><span class="n c-r" style="margin-left:0">울다 → '우니'(ㄹ 탈락)는 괄호 = 예외적 활용</span></div>
+</div>
+<div>
+  <div class="t15" style="margin-top:3mm">
+    <span>훑다</span><span>훑고</span><span>훑어</span><span>훑으니</span>
+    <span>읊다</span><span>읊고</span><span>읊어</span><span>읊으니</span>
+    <span>옳다</span><span>옳고</span><span>옳아</span><span>옳으니</span>
+    <span>없다</span><span>없고</span><span>없어</span><span>없으니</span>
+    <span>있다</span><span>있고</span><span>있어</span><span>있으니</span>
+  </div>
+  <div class="sub"><span class="tag">붙임 1</span>두 개의 용언이 어울려 한 개의 용언이 될 적에, 앞말의 본뜻이 유지되고 있는 것은 그 원형을 밝히어 적고, 그 본뜻에서 멀어진 것은 밝히어 적지 아니한다.</div>
+  <div class="sub">(1) 앞말의 본뜻이 유지되고 있는 것</div>
+  <div class="w w4"><span>넘어지다</span><span>늘어나다</span><span>늘어지다</span><span>돌아가다</span><span>되짚어가다</span><span>들어가다</span><span>떨어지다</span><span>벌어지다</span><span>엎어지다</span><span>접어들다</span><span>틀어지다</span><span>흩어지다</span></div>
+  <div class="sub">(2) 본뜻에서 멀어진 것</div>
+  <div class="w w3"><span>드러나다</span><span>사라지다</span><span>쓰러지다</span></div>
+  <div><span class="n c-b" style="margin-left:0">드러나다(들다 뜻 X), 사라지다(살다 뜻 X) → 소리대로</span></div>
+  <div class="sub"><span class="tag">붙임 2</span><span class="u">종결형에서 사용되는 어미 '-오'는 '요'로 소리 나는 경우가 있더라도 그 원형을 밝혀 '오'로 적는다.</span>(ㄱ을 취하고, ㄴ을 버림.)</div>
+  <div class="gn" style="grid-template-columns:1fr 1fr"><span class="h">ㄱ</span><span class="h">ㄴ</span>
+    <span>이것은 책이오.</span><span>이것은 책이요.</span>
+    <span>이리로 오시오.</span><span>이리로 오시요.</span>
+    <span>이것은 책이 아니오.</span><span>이것은 책이 아니요.</span></div>
+  <div class="sub"><span class="tag">붙임 3</span>연결형에서 사용되는 '이요'는 '이요'로 적는다.(ㄱ을 취하고, ㄴ을 버림.)</div>
+  <div class="gn" style="grid-template-columns:1fr 1fr"><span class="h">ㄱ</span><span class="h">ㄴ</span>
+    <span>이것은 책이요, 저것은 붓이요, 또 저것은 먹이다.</span><span>이것은 책이오, 저것은 붓이오, 또 저것은 먹이다.</span></div>
+  <div><span class="n c-r" style="margin-left:0">문장 끝(종결) = -오 / 문장 중간(연결) = -이요 ← 헷갈림 주의</span></div>
+  <div><span class="n c-g" style="margin-left:0">#격조사 7가지 = 주격·목적격·보격·서술격(이다)·관형격·부사격·호격</span></div>
+  <div class="hang" style="margin-top:3mm"><b>제23항</b>'-하다'나 '-거리다'가 붙는 어근에 '-이'가 붙어서 명사가 된 것은 <span class="ci">그 원형을 밝히어</span> 적는다.(ㄱ을 취하고, ㄴ을 버림.)</div>
+  <div class="gn"><span class="h">ㄱ</span><span class="h">ㄴ</span><span class="h div">ㄱ</span><span class="h">ㄴ</span>
+    <span>깔쭉이</span><span>깔쭈기</span><span class="div">살살이</span><span>살사리</span>
+    <span>꿀꿀이</span><span>꿀꾸리</span><span class="div">쌕쌕이</span><span>쌕쌔기</span>
+    <span>눈깜짝이</span><span>눈깜짜기</span><span class="div"><span class="ci">오뚝이</span></span><span>오뚜기</span>
+    <span>더펄이</span><span>더퍼리</span><span class="div">코납작이</span><span>코납자기</span>
+    <span>배불뚝이</span><span>배불뚜기</span><span class="div">푸석이</span><span>푸서기</span>
+    <span>삐죽이</span><span>삐주기</span><span class="div">홀쭉이</span><span>홀쭈기</span></div>
+  <div class="sub"><span class="tag">붙임</span>'-하다'나 '-거리다'가 붙을 수 없는 어근에 '-이'나 또는 다른 모음으로 시작되는 접미사가 붙어서 명사가 된 것은 그 원형을 밝히어 적지 아니한다.</div>
+  <div class="w w5"><span>개구리</span><span>귀뚜라미</span><span>기러기</span><span>깍두기</span><span>꽹과리</span><span>날라리</span><span>누더기</span><span>동그라미</span><span>두드러기</span><span>딱따구리</span><span>매미</span><span>부스러기</span><span>뻐꾸기</span><span>얼루기</span><span>칼싹두기</span></div>
+  <div><span class="n c-r" style="margin-left:0">오뚝하다 O → 오뚝이 / 개굴하다 X → 개구리</span></div>
+</div>
+</div>
+<div class="pno2" style="right:10mm">부록 213</div>
+</div>
+
+<!-- ═══ 214쪽 ═══ -->
+<div class="pg">
+<div class="cols">
+<div>
+  <div class="hang"><b>제25항</b>'-하다'가 붙는 어근에 '-히'나 '-이'가 붙어서 부사가 되거나, 부사에 '-이'가 붙어서 뜻을 더하는 경우에는 그 어근이나 부사의 원형을 밝히어 적는다.</div>
+  <div class="sub">1. <span class="u">'-하다'가 붙는 어근에 '-히'나 '-이'가 붙는 경우</span></div>
+  <div class="w w3"><span>급히</span><span>꾸준히</span><span>도저히</span><span>딱히</span><span>어렴풋이</span><span>깨끗이</span></div>
+  <div class="sub"><span class="tag">붙임</span><span class="u">'-하다'가 붙지 않는 경우에는 소리대로 적는다.</span></div>
+  <div class="w w3"><span>갑자기</span><span>반드시(꼭)</span><span>슬며시</span></div>
+  <div class="sub">2. 부사에 '-이'가 붙어서 역시 부사가 되는 경우</div>
+  <div class="w w3"><span>곰곰이</span><span>더욱이</span><span>생긋이</span><span>오뚝이</span><span>일찍이</span><span>해죽이</span></div>
+  <div class="hang" style="margin-top:3mm"><b>제30항</b>사이시옷은 다음과 같은 경우에 받치어 적는다.</div>
+  <div><span class="n c-r" style="margin-left:0">사이시옷 조건: ① 합성어 ② 순우리말 포함 ③ 앞말이 모음으로 끝 ④ 된소리 or ㄴ(ㄴㄴ) 소리 덧남</span></div>
+  <div class="sub">1. <span class="ci">순우리말</span>로 된 <span class="ci">합성어</span>로서 <span class="ci">앞말이 모음으로 끝난</span> 경우</div>
+  <div class="sub">(1) 뒷말의 첫소리가 <span class="ci">된소리</span>로 나는 것</div>
+  <div class="w w5"><span>고랫재</span><span>귓밥</span><span>나룻배</span><span>나뭇가지</span><span>냇가</span><span>댓가지</span><span>뒷갈망</span><span>맷돌</span><span>머릿기름</span><span>모깃불</span><span>못자리</span><span>바닷가</span><span>뱃길</span><span>볏가리</span><span>부싯돌</span><span>선짓국</span><span>쇳조각</span><span>아랫집</span><span>우렁잇속</span><span>잇자국</span><span>잿더미</span><span>조갯살</span><span>찻집</span><span>쳇바퀴</span><span>킷값</span><span>핏대</span><span>햇볕</span><span>혓바늘</span></div>
+  <div class="sub">(2) 뒷말의 첫소리 'ㄴ, ㅁ' 앞에서 'ㄴ' 소리가 덧나는 것<span class="n c-b">빗물[빈물]</span></div>
+  <div class="w w5"><span>멧나물</span><span>아랫니</span><span>텃마당</span><span>아랫마을</span><span>뒷머리</span><span>잇몸</span><span>깻묵</span><span>냇물</span><span>빗물</span></div>
+  <div class="sub">(3) 뒷말의 첫소리 모음 앞에서 'ㄴㄴ' 소리가 덧나는 것</div>
+  <div class="w w5"><span>도리깻열</span><span>뒷윷</span><span>두렛일</span><span>뒷일</span><span>뒷입맛</span><span>베갯잇</span><span>욧잇</span><span>깻잎</span><span>나뭇잎</span><span>댓잎</span></div>
+  <div class="sub">2. <span class="ci">순우리말과 한자어</span>로 된 합성어로서 앞말이 모음으로 끝난 경우</div>
+  <div class="sub">(1) 뒷말의 첫소리가 된소리로 나는 것</div>
+  <div class="w w5"><span>귓병</span><span>머릿방</span><span>뱃병</span><span>봇둑</span><span>사잣밥</span><span>샛강</span><span>아랫방</span><span>자릿세</span><span>전셋집</span><span>찻잔</span><span>찻종</span><span>촛국</span><span>콧병</span><span>탯줄</span><span>텃세</span><span>핏기</span><span>햇수</span><span>횟가루</span><span>횟배</span><span></span></div>
+  <div class="sub">(2) 뒷말의 첫소리 'ㄴ, ㅁ' 앞에서 'ㄴ' 소리가 덧나는 것<span class="n c-b">양칫물[양친물]</span></div>
+  <div class="w w5"><span>곗날</span><span>제삿날</span><span>훗날</span><span>툇마루</span><span>양칫물</span></div>
+  <div class="sub">(3) 뒷말의 첫소리 모음 앞에서 'ㄴㄴ' 소리가 덧나는 것<span class="n c-b">훗일[훈닐]</span></div>
+  <div class="w w4"><span>가욋일</span><span>사삿일</span><span>예삿일</span><span>훗일</span></div>
+  <div class="sub"><span class="star">★</span> 3. 두 음절로 된 다음 한자어</div>
+  <div class="w w4"><span>곳간(庫間)</span><span>셋방(貰房)</span><span>숫자(數字)</span><span>찻간(車間)</span><span>툇간(退間)</span><span>횟수(回數)</span></div>
+  <div><span class="n c-r" style="margin-left:0">한자어+한자어엔 사이시옷 X — 이 6개만 예외! (곳간·셋방·숫자·찻간·툇간·횟수)</span></div>
+</div>
+<div>
+  <div class="hang ch">제5장 띄어쓰기</div>
+  <div class="jeol">제1절 조사</div>
+  <div class="hang"><b>제41항</b>조사는 그 앞말에 붙여 쓴다.</div>
+  <div class="w w4"><span>꽃이</span><span>꽃마저</span><span>꽃밖에</span><span>꽃에서부터</span><span>꽃으로만</span><span>꽃이나마</span><span>꽃이다</span><span>꽃입니다</span><span>꽃처럼</span><span>어디까지나</span><span>거기도</span><span>멀리는</span><span>웃고만</span></div>
+  <div class="jeol">제2절 의존 명사, 단위를 나타내는 명사 및 열거하는 말 등</div>
+  <div class="hang"><b>제42항</b>의존 명사는 띄어 쓴다.</div>
+  <div class="w w2"><span>아는 것이 힘이다.</span><span>나도 할 수 있다.</span><span>먹을 만큼 먹어라.</span><span>아는 이를 만났다.</span><span>네가 뜻한 바를 알겠다.</span><span>그가 떠난 지가 오래다.</span></div>
+  <div class="hang"><b>제43항</b>단위를 나타내는 명사는 띄어 쓴다.</div>
+  <div class="w w4"><span>한 개</span><span>차 한 대</span><span>금 서 돈</span><span>소 한 마리</span><span>옷 한 벌</span><span>열 살</span><span>조기 한 손</span><span>연필 한 자루</span><span>버선 한 죽</span><span>집 한 채</span><span>신 두 켤레</span><span>북어 한 쾌</span></div>
+  <div class="sub"><span class="tag red">다만</span>순서를 나타내는 경우나 숫자와 어울리어 쓰이는 경우에는 붙여 쓸 수 있다.</div>
+  <div class="w w3"><span>두시 삼십분 오초</span><span>제일과</span><span>삼학년</span><span>육층</span><span>1446년 10월 9일</span><span>2대대</span><span>16동 502호</span><span>제1실습실</span><span>80원</span><span>10개</span><span>7미터</span><span></span></div>
+  <div><span class="n c-p" style="margin-left:0">→ 앞서 배운 띄어쓰기 학습지(제41~47항)와 같은 내용</span></div>
+  <div class="hang ch" style="margin-top:5mm">제6장 그 밖의 것</div>
+  <div class="hang"><b>제51항</b><span class="u">부사</span>의 끝음절이 분명히 '이'로만 나는 것은 '-이'로 적고, <span class="ci">'히'로만</span> 나거나 '이'나 '히'로 나는 것은 '-히'로 적는다.</div>
+  <div class="sub">1. '이'로만 나는 것</div>
+  <div class="w w5"><span>가붓이</span><span>깨끗이</span><span>나붓이</span><span>느긋이</span><span>둥긋이</span><span>따뜻이</span><span>반듯이</span><span>버젓이</span><span>산뜻이</span><span>의젓이</span><span>가까이</span><span>고이</span><span>날카로이</span><span>대수로이</span><span>번거로이</span><span>많이</span><span>적이</span><span>헛되이</span><span></span><span></span><span>겹겹이</span><span>번번이</span><span>일일이</span><span>집집이</span><span>틈틈이</span></div>
+  <div class="sub">2. '히'로만 나는 것</div>
+  <div class="w w5"><span>극히</span><span>급히</span><span>딱히</span><span>속히</span><span>작히</span><span>족히</span><span>특히</span><span>엄격히</span><span>정확히</span></div>
+  <div class="sub">3. '이, 히'로 나는 것</div>
+  <div class="w w5"><span>솔직히</span><span>가만히</span><span>간편히</span><span>나른히</span><span>무단히</span><span>각별히</span><span>소홀히</span><span>쓸쓸히</span><span>정결히</span><span>과감히</span></div>
+  <div><span class="n c-r" style="margin-left:0">'-하다' 어근이 ㅅ 받침이면 대개 '-이'(깨끗이), 그 밖은 '-히'(솔직히) — 외우기 팁</span></div>
+</div>
+</div>
+<div class="pno2" style="left:10mm">214 부록</div>
+</div>
+
+</div>
+<script>/* 사이트용 학습지 스크립트 — 부모 페이지(index.html)와 postMessage로 대화한다.
+ * 모드: notes(필기 보기) / quiz(필기 자리 빈칸 채우기) / clean(깨끗한 원본)
+ * 쪽:   both(펼침) / 1 / 2
+ */
+(function () {
+  var SHEET = document.body.getAttribute('data-sheet') || location.pathname;
+  var spread = document.querySelector('.spread');
+  var pages = Array.prototype.slice.call(document.querySelectorAll('.pg'));
+  var state = { mode: 'notes', page: 'both', zoom: 1 };
+  var built = false, items = [];
+  var MMPX = 96 / 25.4;
+
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+
+  var A4 = document.body.classList.contains('a4');
+  function fit() {
+    var w = (A4 || state.page !== 'both' ? 210 : 420) * MMPX;
+    document.documentElement.style.zoom = (window.innerWidth / w).toFixed(4);
+    // 부모가 iframe 높이를 맞추도록 실제 세로/가로 비율을 알린다 (A4 여러 쪽 대응)
+    parent.postMessage({ type: 'sheet-size', sheet: SHEET, ratio: spread.offsetHeight / spread.offsetWidth }, '*');
+  }
+  function applyPage() {
+    if (A4) { fit(); return; }
+    if (state.page === 'both') {
+      spread.style.width = '420mm'; spread.style.gridTemplateColumns = '210mm 210mm';
+      pages.forEach(function (p) { p.style.display = ''; });
+    } else {
+      spread.style.width = '210mm'; spread.style.gridTemplateColumns = '210mm';
+      pages.forEach(function (p, i) { p.style.display = String(i + 1) === state.page ? '' : 'none'; });
+    }
+    fit();
+  }
+
+  function norm(s) { return (s || '').replace(/[\s#()\[\]{}·,.\/→←↔=!?'"‘’“”~\-:;…<>*★✔]/g, '').toLowerCase(); }
+  function textOf(el) { return el.classList.contains('ov') ? el.getAttribute('data-o') || '' : el.textContent; }
+
+  function build() {
+    if (built) return; built = true;
+    var els = document.querySelectorAll('.n, .lm, .fill, .ov');
+    var idx = 0;
+    els.forEach(function (el) {
+      if (el.closest('.legend')) return;
+      if (el.parentElement && el.parentElement.closest('.n, .fill')) return;   // 바깥 필기 하나로 처리
+      var ans = textOf(el).trim();
+      if (!/[가-힣A-Za-z0-9ㄱ-ㅎ○×]/.test(ans)) return;
+      var key = 'blank:' + SHEET + ':' + (idx++);
+      var isOv = el.classList.contains('ov');
+      var short = norm(ans).length <= 14 && !el.querySelector('s, .bx, .ci');
+      if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+      var item = { el: el, ans: ans, key: key, ok: false, input: null, cover: null, ov: isOv };
+      if (short) {
+        var inp = document.createElement('input');
+        inp.className = 'qin' + (isOv ? ' qin-ov' : '');
+        inp.setAttribute('aria-label', '필기 빈칸');
+        inp.autocomplete = 'off';
+        if (isOv) inp.style.width = Math.max(3, ans.length * 0.75 + 1.2) + 'em';
+        var saved = store(key); if (saved) inp.value = saved;
+        inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { check(item, true); inp.blur(); } });
+        inp.addEventListener('change', function () { store(key, inp.value); check(item, true); });
+        item.input = inp; el.appendChild(inp);
+        if (saved) check(item, false);
+      } else {
+        var cv = document.createElement('button');
+        cv.type = 'button'; cv.className = 'qcover' + (isOv ? ' qcover-ov' : '');
+        cv.textContent = '눌러서 확인';
+        if (isOv) cv.style.width = Math.max(3, ans.length * 0.7 + 1) + 'em';
+        cv.addEventListener('click', function () { item.el.classList.add('qrev'); cv.remove(); report(); });
+        item.cover = cv; el.appendChild(cv);
+      }
+      items.push(item);
+    });
+  }
+
+  function check(item, rep) {
+    var v = norm(item.input.value), a = norm(item.ans);
+    item.ok = v.length > 0 && (v === a || (a.length > 3 && v.length >= a.length * 0.8 && a.indexOf(v) >= 0));
+    item.input.classList.toggle('ok', item.ok);
+    item.input.classList.toggle('bad', !!v && !item.ok);
+    if (rep) report();
+  }
+  function report() {
+    var total = 0, ok = 0, covers = 0, opened = 0;
+    items.forEach(function (it) {
+      if (it.input) { total++; if (it.ok) ok++; } else { covers++; if (it.el.classList.contains('qrev')) opened++; }
+    });
+    parent.postMessage({ type: 'sheet-score', sheet: SHEET, ok: ok, total: total, covers: covers, opened: opened }, '*');
+  }
+  function reveal() {
+    items.forEach(function (it) {
+      if (it.input && !it.ok) { it.input.classList.add('shown'); it.input.value = it.ans; it.input.classList.remove('bad'); }
+      if (it.cover) { it.el.classList.add('qrev'); it.cover.remove(); }
+    });
+  }
+  function reset() {
+    items.forEach(function (it) {
+      if (it.input) { it.input.value = ''; it.ok = false; it.input.className = 'qin' + (it.ov ? ' qin-ov' : ''); store(it.key, ''); }
+      if (it.el.classList.contains('qrev')) { it.el.classList.remove('qrev'); if (it.cover) it.el.appendChild(it.cover); }
+    });
+    report();
+  }
+
+  function setMode(m) {
+    state.mode = m;
+    document.body.classList.toggle('mode-blank', m === 'clean');
+    document.body.classList.toggle('mode-quiz', m === 'quiz');
+    if (m === 'quiz') { build(); report(); }
+  }
+
+  window.addEventListener('message', function (e) {
+    var d = e.data || {};
+    if (d.cmd === 'mode') setMode(d.mode);
+    if (d.cmd === 'page') { state.page = d.page; applyPage(); }
+    if (d.cmd === 'reveal') { reveal(); report(); }
+    if (d.cmd === 'reset') reset();
+  });
+  window.addEventListener('resize', fit);
+  applyPage();
+  parent.postMessage({ type: 'sheet-ready', sheet: SHEET }, '*');
+})();
+</script></body></html>

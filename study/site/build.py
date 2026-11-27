@@ -16,6 +16,9 @@ SHEETS = {
     'climate-1': '2026-11-27_국어_기후위기보도_정리.html',
     'climate-2': '2026-11-27_국어_기후위기보도_문제.html',
     'spacing': '2026-11-27_국어_띄어쓰기.html',
+    'sanup': '2026-11-27_국어_산업화시대의시.html',
+    'haru': '2026-11-27_국어_하루의축.html',
+    'matchum': '2026-11-27_국어_맞춤법부록.html',
 }
 
 css = (ROOT / 'study/tools/sheet.css').read_text()

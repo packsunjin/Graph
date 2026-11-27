@@ -234,7 +234,8 @@ function renderWork() {
 function renderSheet(wid, quiz) {
   const w = WORKS[wid], sh = w.sheets[route.sheet || 0];
   const tabs = w.sheets.length > 1 ? w.sheets.map((s,i)=>`<button class="btn" data-sheet="${i}" ${i===(route.sheet||0)?'aria-pressed="true" style="border-color:var(--ink)"':''}>${esc(s.label)}</button>`).join("") : "";
-  const pageBtn = narrow() ? `<button class="btn" data-flip>${page === "1" ? "오른쪽 쪽 보기" : "왼쪽 쪽 보기"}</button>` : "";
+  sheetRatio = null;
+  const pageBtn = narrow() && !w.a4 ? `<button class="btn" data-flip>${page === "1" ? "오른쪽 쪽 보기" : "왼쪽 쪽 보기"}</button>` : "";
   $("#panel").innerHTML = `<div class="bar">${tabs}
       ${quiz ? `<span id="bscore" class="num">노란 칸에 쓰고 Enter · 줄무늬 칸은 눌러서 확인</span>`
              : `<span class="legend"><span style="--sw:var(--c-b)">뜻 풀이</span><span style="--sw:var(--c-g)">표현법·개념어</span><span style="--sw:var(--c-p)">구조·흐름</span><span style="--sw:var(--c-r)">함정</span><span style="--sw:var(--hl)">핵심</span></span>`}
@@ -247,11 +248,13 @@ function renderSheet(wid, quiz) {
 }
 const curPage = () => narrow() ? page : "both";
 function post(m) { const f = $("#sheet"); if (f && f.contentWindow) f.contentWindow.postMessage(m, "*"); }
-function size() { const f = $("#sheet"); if (f) f.style.height = Math.ceil(f.parentElement.clientWidth * 297 / (curPage() === "both" ? 420 : 210)) + "px"; }
+let sheetRatio = null;
+function size() { const f = $("#sheet"); if (f) f.style.height = Math.ceil(f.parentElement.clientWidth * (sheetRatio || 297 / (curPage() === "both" ? 420 : 210))) + "px"; }
 let lastNarrow = narrow();
 addEventListener("resize", () => { size(); if (narrow() !== lastNarrow) { lastNarrow = narrow(); if (route.view === "work" && route.step < 2) renderWork(); } });
 addEventListener("message", e => {
   const d = e.data || {};
+  if (d.type === "sheet-size") { sheetRatio = d.ratio; size(); }
   if (d.type === "sheet-ready") { post({ cmd:"page", page:curPage() }); post({ cmd:"mode", mode: route.step === 1 ? "quiz" : (hideNotes ? "clean" : "notes") }); }
   if (d.type === "sheet-score" && route.view === "work" && route.step === 1) {
     W(route.id).blanks[d.sheet] = { ok:d.ok, total:d.total }; save();
