@@ -121,3 +121,24 @@ body.mode-blank .hl, body.mode-blank .hl-p, body.mode-blank .hl-g { background: 
 body.mode-blank .key { color: inherit; }
 body.mode-blank .ul { text-decoration: none; }
 body.mode-blank .circle { border-color: transparent; }
+
+/* ── 시가(운문) 본문 ── 한 줄 = <div class="vl">본문 <span class="memo">필기</span></div> */
+.poem { border-left: 3px solid var(--line); padding-left: 10px; margin: 6px 0 10px; }
+.vl { margin: 1px 0; line-height: 1.85; }
+.vl .no { display: inline-block; width: 1.6em; color: #aaa; font-size: 8pt; }
+.mk { color: var(--red); font-weight: 800; }                 /* ㉠ ㉡ 기호 */
+.part { display: inline-block; margin: 10px 0 2px; font-weight: 800; font-size: 9.5pt; color: #fff; background: #555; border-radius: 4px; padding: 1px 8px; }
+.part + .part-sum { font-weight: 700; color: var(--sub); font-size: 9.5pt; margin-left: 6px; }
+body.mode-blank .part-sum { display: none; }
+/* 문제 */
+.q { margin: 10px 0 4px; font-weight: 700; break-after: avoid; }
+.opt { margin: 1px 0 1px 14px; }
+.opt.ans { color: var(--red); font-weight: 800; }
+.opt.ans::after { content: "  ◀ 정답"; font-size: 8.5pt; }
+body.mode-blank .opt.ans { color: inherit; font-weight: inherit; }
+body.mode-blank .opt.ans::after { content: ""; }
+.bogi { border: 1px solid #888; padding: 6px 12px; margin: 6px 0; font-size: 10pt; break-inside: avoid; }
+.bogi .t { text-align: center; font-weight: 800; margin-bottom: 2px; }
+.write { border: 1px solid #bbb; border-radius: 6px; min-height: 26mm; margin: 6px 0; padding: 6px 10px; }
+body.mode-blank .part { display: none; }
+body.mode-blank .circle { border: 0; padding: 0; }
