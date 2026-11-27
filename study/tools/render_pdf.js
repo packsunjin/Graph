@@ -18,7 +18,7 @@ const { chromium } = require('playwright');
   await page.goto('file://' + abs, { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
 
-  const opts = { format: 'A4', printBackground: true, preferCSSPageSize: true };
+  const opts = { printBackground: true, preferCSSPageSize: true };
   await page.evaluate(() => document.body.classList.remove('mode-blank'));
   await page.pdf({ ...opts, path: base + '_자습서.pdf' });
   await page.evaluate(() => document.body.classList.add('mode-blank'));

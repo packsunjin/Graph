@@ -1,0 +1,56 @@
+/* 원본 학습지 그대로 복원 (크기·양식·줄 위치 동일) + 같은 자리에 필기
+ *
+ * 용지: 원본처럼 A4 두 쪽 펼침 = A3 가로 한 장 (.spread 안에 .pg 두 개)
+ * 한 줄: <div class="r"><div class="lm">왼쪽 여백</div><div class="tx">본문</div><div class="rm">오른쪽 여백</div></div>
+ * 글자 위 필기: <ruby>원문<rt>필기</rt></ruby>
+ * 파란 펜 = 원래 학습지에 있던 필기 / 빨간 펜(.add) = 100점용 추가 필기·용어 뜻(📌)
+ * 빈 학습지: body.mode-blank → 필기 전부 숨김 (render_pdf.js가 자동 처리)
+ */
+@import url("https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Nanum+Pen+Script&display=swap");
+
+:root { --ink:#111; --pen:#1f4fc4; --red:#d6202a; }
+@page { size: A3 landscape; margin: 0; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin:0; background:#fff; color:var(--ink);
+  font-family:"Nanum Myeongjo","NanumMyeongjo",serif; font-size:10.5pt; line-height:1.4; word-break:keep-all; }
+
+.spread { width:420mm; height:297mm; display:grid; grid-template-columns:210mm 210mm; overflow:hidden; }
+.pg { position:relative; height:297mm; padding:11mm 9mm 12mm 9mm; }
+.pg.left { border-right:0.3mm dashed #ccc; }
+.pno { position:absolute; bottom:6mm; left:0; right:0; text-align:center; font-size:9.5pt; }
+
+.hd { display:grid; grid-template-columns:16mm 1fr; font-size:10.5pt; margin-bottom:3mm; }
+.hd .tx { display:flex; gap:9mm; white-space:nowrap; }
+
+.r  { display:grid; grid-template-columns:16mm 98mm 1fr; align-items:end; min-height:5.75mm; }
+.r2 { display:grid; grid-template-columns:1fr 40mm; align-items:start; }
+.tx { white-space:nowrap; }
+.r2 > .tx { white-space:normal; }
+.lm { text-align:right; padding-right:2mm; }
+.rm { padding-left:2mm; }
+
+.pen, rt, .lm, .rm { font-family:"Nanum Pen Script",cursive; color:var(--pen); }
+.lm, .rm, .pen { font-size:12pt; line-height:1; }
+.pg.left .rm { white-space:nowrap; }
+rt { font-size:9.5pt; line-height:1; }
+.add, .add rt, rt.add { color:var(--red) !important; }
+.big { font-size:15pt; }
+.oval { border:1.4px solid var(--pen); border-radius:999px; padding:0 7px; display:inline-block; }
+
+.u  { text-decoration:underline 1.2px var(--pen); text-underline-offset:3px; }
+.bx { outline:1.2px solid var(--pen); outline-offset:1px; }
+.ci { border:1.2px solid var(--pen); border-radius:999px; padding:0 2px; }
+.ans { border:1.6px solid var(--red); border-radius:999px; padding:0 2px; }
+
+.prbox { display:inline-block; border:1px solid #333; padding:0 4px; line-height:1.2; }
+.q { margin:5mm 0 1mm; }
+.opt { margin:0.6mm 0 0.6mm 3mm; }
+.bogi { border:1px solid #333; padding:2mm 4mm; margin:2mm 0 2mm 3mm; line-height:1.65; }
+.bogi .t { text-align:center; }
+
+body.mode-blank .lm, body.mode-blank .rm, body.mode-blank .pen { visibility:hidden; }
+body.mode-blank rt { visibility:hidden; }
+body.mode-blank .u { text-decoration:none; }
+body.mode-blank .bx { outline:none; }
+body.mode-blank .ci, body.mode-blank .ans, body.mode-blank .oval { border-color:transparent; }
