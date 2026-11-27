@@ -49,7 +49,13 @@ h1, h2 { text-wrap:balance; letter-spacing:-0.3px; margin:0; }
 .btn:active { transform:translateY(1px) scale(.985); }
 
 /* 홈: 과목 구역 */
-.subj { margin-bottom:28px; }
+.subjects { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; }
+@media (max-width:640px) { .subjects { grid-template-columns:repeat(2, minmax(0,1fr)); } .subject { min-height:100px; padding:16px; } }
+.subject { display:flex; flex-direction:column; justify-content:space-between; gap:6px; min-height:120px; text-align:left; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md); padding:18px 20px; cursor:pointer; transition:transform 180ms var(--ease), border-color 120ms var(--ease); }
+.subject b { font-size:24px; letter-spacing:-0.3px; }
+.subject small { font-size:14px; color:var(--muted); }
+@media (hover:hover) and (pointer:fine) { .subject:hover { transform:translateY(-2px); border-color:color-mix(in srgb, var(--ink) 30%, transparent); } }
+.whead + .unit { margin-top:6px; }
 .subj-head { display:flex; align-items:baseline; gap:10px; margin-bottom:10px; }
 .subj-head h2 { font-size:20px; }
 .subj-head span { font-size:14px; color:var(--muted); }
@@ -144,8 +150,8 @@ const SUBJECTS = [
   { id:"math",    name:"수학",     course:"공통수학2", units:[] },
   { id:"english", name:"영어",     course:"공통영어2", units:[] },
   { id:"history", name:"한국사",   course:"한국사2",   units:[] },
-  { id:"social",  name:"통합사회", course:"통합사회2", units:[] },
-  { id:"science", name:"통합과학", course:"통합과학2", units:[] },
+  { id:"social",  name:"사회",     course:"통합사회2", units:[] },
+  { id:"science", name:"과학",     course:"통합과학2", units:[] },
 ];
 
 /* ───────── 저장 (이 기기 브라우저) · 간격 반복: 틀리면 내일, 맞히면 1·3·7·14·30일 뒤 ───────── */
@@ -184,28 +190,34 @@ let route = { view:"home" }, page = "1", hideNotes = false, review = null;
 
 function renderTop() {
   const c = [`<button class="home" data-go="home">기말 학습지 바인더</button>`];
-  if (route.view === "work") { const s = subjectOf(route.id); c.push(`<span class="sep">/</span><button data-go="home" data-anchor="${s.id}">${esc(s.name)}</button><span class="sep">/</span><span class="here">${esc(WORKS[route.id].title)}</span>`); }
+  if (route.view === "subject") c.push(`<span class="sep">/</span><span class="here">${esc(SUBJECTS.find(x=>x.id===route.id).name)}</span>`);
+  if (route.view === "work") { const s = subjectOf(route.id); c.push(`<span class="sep">/</span><button data-subj="${s.id}">${esc(s.name)}</button><span class="sep">/</span><span class="here">${esc(WORKS[route.id].title)}</span>`); }
   if (route.view === "review") c.push(`<span class="sep">/</span><span class="here">오늘 복습</span>`);
   $("#crumbs").innerHTML = c.join("");
   const n = dueList().length; $("#dueN").textContent = n;
   $("#reviewBtn").classList.toggle("primary", n > 0); $("#reviewBtn").hidden = route.view === "review";
 }
-function show(r, anchor) {
-  route = r; history.replaceState(null, "", "#" + (r.view === "work" ? r.id : r.view));
-  renderTop(); ({ home:renderHome, work:renderWork, review:renderReview })[r.view]();
-  const el = anchor && document.getElementById("s-" + anchor); el ? el.scrollIntoView() : scrollTo({ top:0 });
+const VIEWS = () => ({ home:renderHome, subject:renderSubject, work:renderWork, review:renderReview });
+function show(r) {
+  route = r; history.replaceState(null, "", "#" + (r.view === "work" ? r.id : r.view === "subject" ? "s-" + r.id : r.view));
+  renderTop(); VIEWS()[r.view](); scrollTo({ top:0 });
 }
 
+/* 홈: 과목만. 과목을 누르면 그 과목의 단원·학습지로 들어간다 */
 function renderHome() {
-  $("#main").innerHTML = SUBJECTS.map(s => {
-    const n = s.units.reduce((a,u) => a + u.items.length, 0);
-    return `<section class="subj" id="s-${s.id}"><div class="subj-head"><h2>${esc(s.name)}</h2><span>${esc(s.course)} · 학습지 ${n}개</span></div>
-      ${n ? s.units.map(u => `<p class="unit">${esc(u.name)}</p><div class="grid">${u.items.map(w => {
+  $("#main").innerHTML = `<div class="subjects">${SUBJECTS.map(s => {
+    const ws = s.units.flatMap(u => u.items), done = ws.filter(w => stepsDone(w).every(Boolean)).length;
+    return `<button class="subject" data-subj="${s.id}"><b>${esc(s.name)}</b><small>${ws.length ? `학습지 ${ws.length}개 · 완료 ${done}` : "학습지 없음"}</small></button>`;
+  }).join("")}</div>`;
+}
+function renderSubject() {
+  const s = SUBJECTS.find(x => x.id === route.id);
+  $("#main").innerHTML = `<div class="whead"><h1>${esc(s.name)}</h1><p>${esc(s.course)}</p></div>` + (s.units.length
+    ? s.units.map(u => `<p class="unit">${esc(u.name)}</p><div class="grid">${u.items.map(w => {
         const d = stepsDone(w);
         return `<button class="tile" data-open="${w}"><b>${esc(WORKS[w].title)}</b><small>${esc(WORKS[w].sub)}</small><span class="dots" aria-label="${d.filter(Boolean).length}/4단계">${d.map(x=>`<i class="${x?'on':''}"></i>`).join("")}</span></button>`;
       }).join("")}</div>`).join("")
-      : `<div class="slot">학습지 사진을 보내면 여기에 추가돼요.</div>`}</section>`;
-  }).join("");
+    : `<div class="slot">아직 학습지가 없어요. ${esc(s.name)} 학습지 사진을 보내면 여기에 단원별로 들어가요.</div>`);
 }
 
 function renderWork() {
@@ -265,7 +277,7 @@ function renderQuiz(wid, kind) {
   const list = WORKS[wid][kind];
   $("#panel").innerHTML = list.map((q,i)=>qHTML(wid, kind, i, q, (i+1)+".")).join("")
     + (kind==="practice" ? `<div class="notes">참고 유형: 2015학년도 9월 고3 모의고사 「탄궁가」, 수능 「만흥」 &lt;보기&gt; 유형, 국립국어원 띄어쓰기 판별 원리(<a href="https://www.korean.go.kr/nkview/nknews/200210/51_5.html" target="_blank" rel="noopener">새국어생활</a>). 기출 원문은 싣지 않고 같은 형식으로 새로 만들었어요.</div>` : "")
-    + `<div class="next">${kind==="concept" ? `<button class="btn primary" data-step="3">다음 단계: 4. 실전 →</button>` : `<button class="btn primary" data-go="home" data-anchor="${subjectOf(wid).id}">${esc(subjectOf(wid).name)} 학습지 목록으로</button>`}</div>`;
+    + `<div class="next">${kind==="concept" ? `<button class="btn primary" data-step="3">다음 단계: 4. 실전 →</button>` : `<button class="btn primary" data-subj="${subjectOf(wid).id}">${esc(subjectOf(wid).name)} 학습지 목록으로</button>`}</div>`;
 }
 
 /* 복습: 모든 과목 문제를 섞어 한 문제씩 */
@@ -292,7 +304,8 @@ function answer(art, ok, q) {
 }
 document.addEventListener("click", e => {
   const t = e.target.closest("button"); if (!t) return;
-  if (t.dataset.go) { if (t.dataset.go === "review") review = null; show({ view:t.dataset.go }, t.dataset.anchor); return; }
+  if (t.dataset.go) { if (t.dataset.go === "review") review = null; show({ view:t.dataset.go }); return; }
+  if (t.dataset.subj) { show({ view:"subject", id:t.dataset.subj }); return; }
   if (t.dataset.open) { show({ view:"work", id:t.dataset.open, step: W(t.dataset.open).step || 0 }); return; }
   if (t.dataset.step !== undefined && route.view === "work") {
     if (t.dataset.read) W(t.dataset.read).read = true;
@@ -325,6 +338,7 @@ function fromHash() {
   const h = location.hash.slice(1);
   if (WORKS[h]) return { view:"work", id:h, step:W(h).step || 0 };
   if (h === "review") return { view:"review" };
+  if (h.startsWith("s-") && SUBJECTS.some(x => x.id === h.slice(2))) return { view:"subject", id:h.slice(2) };
   return { view:"home" };
 }
 addEventListener("hashchange", () => { const r = fromHash(); if (r.view !== route.view || r.id !== route.id) show(r); });
