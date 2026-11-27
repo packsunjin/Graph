@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="ko">
+<head><meta name="viewport" content="width=device-width, initial-scale=1"><meta charset="utf-8"><title>띄어쓰기 개념 정리</title><style>/* 원본 학습지 그대로 복원 (크기·양식·줄 위치 동일) + 근거 있는 필기
+ *
+ * ── 필기 규칙 (근거) ──
+ * 1) 위치: 필기는 해당 단어 "바로 위"(ruby) 또는 그 줄 "바로 옆"(.n)에 쓴다. 멀리 떨어진 여백 칸 금지.
+ *    근거: 공간 근접 원리(Mayer) / 주의 분산 효과 — 관련 정보가 떨어져 있으면 눈이 오가며 학습이 떨어짐
+ *    (Ginns 2006 메타분석 d=0.85).
+ * 2) 색: 작성자가 아니라 "의미"로 색을 고정하고, 4색 이내로 쓴다 (색이 일관된 의미를 가질 때 기억 단서가 됨).
+ *      파랑 .c-b = 뜻 풀이·해석      초록 .c-g = 표현법·개념어(+뜻)
+ *      보라 .c-p = 구조·정서 흐름     빨강 .c-r = 시험 함정·정답 근거 (아껴 씀)
+ *      노란 형광 .hl = 핵심 문장 몇 개만 / 회색 = 밑줄·네모 표시
+ * 3) 강조는 드물게: 다른 것과 달라야 기억됨(폰 레스토프 효과). 형광펜 남발은 효과 낮음(Dunlosky 2013).
+ * 4) 빨강 최소화: 시험 맥락에서 빨강은 실패·회피를 떠올리게 함(Elliot 2007) → "틀리기 쉬운 곳" 경고에만.
+ *
+ * 용지: 원본 A4 두 쪽 펼침 = A3 가로 한 장 (.spread 안 .pg 두 개)
+ * 빈 학습지: body.mode-blank → 필기 전부 숨김
+ */
+@import url("https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Nanum+Pen+Script&display=swap");
+
+:root { --ink:#111; --b:#1f4fc4; --g:#0d8a3e; --p:#7a35b8; --r:#d6202a; --mark:#777; --hl:#fff176; }
+@page { size: A3 landscape; margin: 0; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin:0; background:#fff; color:var(--ink);
+  font-family:"Nanum Myeongjo","NanumMyeongjo",serif; font-size:10.5pt; line-height:1.4; word-break:keep-all; }
+
+.spread { width:420mm; height:297mm; display:grid; grid-template-columns:210mm 210mm; overflow:hidden; }
+.pg { position:relative; height:297mm; padding:11mm 9mm 12mm 9mm; }
+.pg.left { border-right:0.3mm dashed #ccc; }
+.pno { position:absolute; bottom:6mm; left:0; right:0; text-align:center; font-size:9.5pt; }
+.hd { display:grid; grid-template-columns:14mm 1fr; margin-bottom:3mm; }
+.hd .tx { display:flex; gap:9mm; white-space:nowrap; }
+
+.r { display:grid; grid-template-columns:14mm 1fr; align-items:end; min-height:5.75mm; }
+.r .tx { white-space:nowrap; }
+.lm { text-align:right; padding-right:2mm; }
+
+/* 필기 글씨 */
+.n, rt, .lm { font-family:"Nanum Pen Script",cursive; line-height:1; }
+.n, .lm { font-size:12.5pt; }
+.n { margin-left:2.5mm; }
+rt { font-size:9.5pt; }
+.c-b, rt.c-b { color:var(--b); }  .c-g, rt.c-g { color:var(--g); }
+.c-p, rt.c-p { color:var(--p); }  .c-r, rt.c-r { color:var(--r); }
+.big { font-size:15pt; }
+.oval { border:1.3px solid currentColor; border-radius:999px; padding:0 6px; }
+
+/* 표시 (회색 = 위치 표시일 뿐) */
+.u  { text-decoration:underline 1px var(--mark); text-underline-offset:3px; }
+.bx { outline:1px solid var(--mark); outline-offset:1px; }
+.ci { border:1px solid var(--mark); border-radius:999px; padding:0 2px; }
+.hl { background:linear-gradient(transparent 50%, var(--hl) 50%); }
+.ans { border:1.6px solid var(--r); border-radius:999px; padding:0 2px; }
+
+/* 2쪽 인쇄 요소 */
+.prbox { display:inline-block; border:1px solid #333; padding:0 4px; line-height:1.2; }
+.q { margin:4.5mm 0 1mm; }
+.opt { margin:0.7mm 0 0.7mm 3mm; }
+.bogi { border:1px solid #333; padding:2mm 4mm; margin:2mm 0 2mm 3mm; line-height:1.7; }
+.bogi .t { text-align:center; }
+.legend { font-family:"Nanum Pen Script",cursive; font-size:12pt; border:1px dashed #aaa; border-radius:6px; padding:1.5mm 3mm; display:inline-block; line-height:1.15; }
+.right-top { display:flex; justify-content:space-between; align-items:flex-start; }
+
+body.mode-blank .n, body.mode-blank .lm, body.mode-blank rt, body.mode-blank .legend, body.mode-blank .note-only { visibility:hidden; }
+body.mode-blank .u { text-decoration:none; }
+body.mode-blank .bx { outline:none; }
+body.mode-blank .ci, body.mode-blank .ans { border-color:transparent; }
+body.mode-blank .hl { background:none; }
+
+/* 글자 위 필기: <span class="ov ov-b" data-o="필기">원문</span> — 원문 글자 간격을 건드리지 않음 */
+.ov { position:relative; }
+.ov::before { content:attr(data-o); position:absolute; left:0; bottom:88%; white-space:nowrap;
+  font-family:"Nanum Pen Script",cursive; font-size:10pt; line-height:1; }
+.ov-b::before { color:var(--b); } .ov-g::before { color:var(--g); } .ov-p::before { color:var(--p); } .ov-r::before { color:var(--r); }
+body.mode-blank .ov::before { visibility:hidden; }
+.pg.left { padding-top:9mm; }
+.r { min-height:5.6mm; }
+.r { min-height:0; line-height:1.38; }
+.r.has-ov { padding-top:2.6mm; }
+.ov::before { font-size:9.5pt; bottom:92%; }
+.r { line-height:1.5; }
+.bogi { line-height:2.15; }
+.bogi { line-height:1.95; }
+.q { margin:3.2mm 0 0.8mm; }
+.opt { margin:0.4mm 0 0.4mm 3mm; }
+
+/* ═══ 공통 확장 (여러 학습지 양식) ═══ */
+body.oldhangul { font-family:"Noto Serif CJK KR","Nanum Myeongjo",serif; }   /* 아래아(ㆍ) 등 옛한글 */
+body.sans { font-family:"Noto Sans CJK KR","Nanum Gothic",sans-serif; }
+.oh { font-family:"Noto Serif CJK KR",serif; }
+/* 빈칸에 손으로 쓴 답 = 검정 펜 (내용 자체이므로 본문과 같은 검정 계열) */
+.fill { font-family:"Nanum Pen Script",cursive; font-size:14pt; color:#222; line-height:1; }
+body.mode-blank .fill { visibility:hidden; }
+.blank { display:inline-block; min-width:22mm; border-bottom:1px solid #555; text-align:center; }
+.sq { display:inline-block; width:4.2mm; height:4.2mm; border:1px solid #333; vertical-align:-0.6mm; margin:0 0.3mm; }
+.tb { width:100%; border-collapse:collapse; margin:1.5mm 0 4mm; font-size:10pt; }
+.tb th, .tb td { border-bottom:1px solid #999; padding:1.4mm 2mm; text-align:left; vertical-align:middle; }
+.tb th { background:#d9d9d9; text-align:center; font-weight:700; white-space:nowrap; }
+.tb.grid th, .tb.grid td { border:1px solid #888; }
+.tb thead th { background:#cfcfcf; }
+.sec { font-weight:700; margin:4mm 0 1mm; }
+.ttl { font-size:15pt; font-weight:800; border-bottom:2px solid #333; padding-bottom:1mm; margin:3mm 0 3mm; }
+.ttl small { font-size:10.5pt; font-weight:400; }
+.box { border:1px solid #777; margin:2mm 0; }
+.box > .bh { background:#d0d0d0; text-align:center; font-weight:700; padding:1.5mm; line-height:1.35; }
+.box > .bb { padding:2mm 3mm; line-height:1.6; }
+.prt-red { color:#b3262e; font-size:9pt; font-family:"Noto Sans CJK KR","Nanum Gothic",sans-serif; }   /* 원본에 인쇄된 빨간 글씨 */
+.prt-blue { background:#dde8f6; }
+.p { margin:1mm 0; }
+.ind { margin-left:5mm; }
+.qn { font-weight:700; margin-right:1.5mm; }
+.ox { display:inline-block; min-width:9mm; text-align:center; }
+.fold { line-height:1.75; }
+
+@font-face { font-family:"OldHangul"; src:url(data:font/woff2;base64,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) format("woff2"); }
+.oh { font-family:"OldHangul","Noto Serif CJK KR",serif; }
+body.oldhangul { font-family:"Nanum Myeongjo","Noto Serif CJK KR",serif; }
+body.sans { font-family:"Noto Sans KR","Noto Sans CJK KR","Nanum Gothic",sans-serif; }
+html, body { background:#fff; overflow-x:hidden; }
+.spread { margin:0; }
+/* 빈칸 채우기 모드 */
+body.mode-quiz .n, body.mode-quiz .lm, body.mode-quiz .fill { color:transparent !important; }
+body.mode-quiz .n *:not(.qin):not(.qcover), body.mode-quiz .fill *:not(.qin):not(.qcover) { color:transparent !important; border-color:transparent !important; }
+body.mode-quiz .n.oval { border-color:#c9cfdb !important; }
+body.mode-quiz .ov::before { visibility:hidden; }
+body.mode-quiz .qrev, body.mode-quiz .qrev * { color:revert !important; }
+body.mode-quiz .n.qrev.c-b, body.mode-quiz .lm.qrev.c-b { color:var(--b) !important; }
+body.mode-quiz .qrev.c-g { color:var(--g) !important; } body.mode-quiz .qrev.c-p { color:var(--p) !important; }
+body.mode-quiz .qrev.c-r { color:var(--r) !important; } body.mode-quiz .fill.qrev { color:#222 !important; }
+body.mode-quiz .ov.qrev::before { visibility:visible; }
+body.mode-quiz .ans { border-color:transparent; }
+.qin, .qcover { display:none; }
+body.mode-quiz .qin, body.mode-quiz .qcover { display:block; }
+body.mode-quiz .qin { color:#1f2a44 !important; }
+body.mode-quiz .qin.ok { color:#0d5f33 !important; } body.mode-quiz .qin.shown { color:#2953c6 !important; }
+body.mode-quiz .qcover { color:#5d6472 !important; }
+.qin { position:absolute; left:0; top:0; width:100%; height:100%; min-width:3em; box-sizing:border-box;
+  font:inherit; font-family:"Nanum Pen Script",cursive; font-size:12.5pt; color:#1f2a44; padding:0 3px;
+  background:#fff8d6; border:1.3px dashed #c9a227; border-radius:3px; outline:none; }
+.qin:focus { border-style:solid; border-color:#2953c6; background:#fff; }
+.qin.ok { background:#e5f6ec; border:1.3px solid #138a4a; color:#0d5f33; }
+.qin.bad { background:#fdeaea; border:1.3px solid #cf2f37; }
+.qin.shown { background:#eef2ff; border:1.3px solid #2953c6; color:#2953c6; }
+.qin-ov { top:auto; bottom:92%; height:1.5em; font-size:10pt; }
+.qcover { position:absolute; inset:0; min-width:4em; cursor:pointer; border:1.3px dashed #9aa3b5; border-radius:3px;
+  background:repeating-linear-gradient(135deg,#eef1f6 0 6px,#e3e7ef 6px 12px); color:#5d6472;
+  font:11px "Noto Sans KR",sans-serif; padding:0; }
+.qcover:hover { border-color:#2953c6; color:#2953c6; }
+.qcover-ov { top:auto; bottom:92%; height:1.4em; right:auto; }
+</style>
+<style>.pg{font-size:10pt;line-height:1.55}.rule{margin:3mm 0 1mm}.ex{margin-left:6mm}.tb td,.tb th{padding:1mm 2mm}.tb td{font-size:9.6pt}.yi{display:inline-block;border:1px solid #333;border-radius:50%;font-size:7.5pt;width:4.2mm;height:4.2mm;line-height:4mm;text-align:center;margin-right:1mm}.fixrow td{height:8.5mm}</style></head>
+<body data-sheet="spacing" class="sans">
+<!-- 원본: study/worksheets/2026-11-27_국어_띄어쓰기_원본.pdf (빨간 작은 글씨 = 원본에 인쇄된 빨간 글씨) -->
+<div class="spread">
+
+<div class="pg left">
+<div class="hd" style="grid-template-columns:0 1fr"><div></div><div class="tx" style="font-size:9.5pt;justify-content:space-between;width:100%"><span>3. 국어의 어제와 오늘</span><span>1학년 &nbsp;&nbsp;반 &nbsp;&nbsp;번 &nbsp;&nbsp;&nbsp;이름</span></div></div>
+<div class="ttl" style="border-bottom:2px solid #b3262e"><span style="color:#b3262e">개념 정리 |</span> 02 한글 맞춤법과 오늘날의 국어생활</div>
+<div style="font-size:9.5pt">▌한글 맞춤법의 띄어쓰기 규정</div>
+<div style="color:#b3262e;font-weight:700">(5) 띄어쓰기</div>
+<div class="rule">① <b>제2항</b> 문장의 각 단어는 띄어 씀을 원칙으로 한다.<span class="prt-red">(<span class="ci">조사</span>는 단어이지만, 의존 형태소이므로 앞 단어에 붙여 쓴다.)</span><span class="n c-g">#의존 형태소 = 혼자 못 쓰는 말</span></div>
+<div class="rule">② <b>제41항</b> <span class="ci">조사</span>는 그 앞말에 <span class="ci">붙여</span> 쓴다.</div>
+<div class="ex">(예) 꽃이, 꽃밖에, 꽃에서부터, 들어가기는커녕</div>
+<div class="ex prt-red">↱ 조사가 어미 뒤에 붙는 경우에도 붙여 쓴다.('-기'가 어미) &nbsp; ↳ 조사가 둘 이상 겹쳐지는 경우에도 붙여 쓴다.(에서 + 부터)</div>
+<div class="rule">③ <b>제42항</b> <span class="ci">의존 명사</span>는 <span class="u">띄어</span> 쓴다.<span class="n c-g">#의존 명사 = 꾸미는 말(관형어) 뒤에만 오는 명사</span></div>
+<div class="ex">(예) 아는 것이 힘이다, 나도 할 수 있다, 먹을 만큼 먹어라, 네가 뜻한 바를 알겠다</div>
+
+<div style="margin-top:3mm;color:#1f3c8a"><b>&lt;참 고&gt;</b> 동일한 형태가 경우에 따라 다르게 쓰이는 예 (띄어쓰기의 차이-품사가 다르기 때문)</div>
+<div class="p"><span class="n c-r" style="margin-left:0">구별법: 앞에 체언(명사) → 조사 → 붙여 / 앞에 관형어(~ㄴ, ~ㄹ) → 의존 명사 → 띄어</span></div>
+<table class="tb grid">
+<thead><tr><th style="width:14mm">구분</th><th style="width:20mm">품사</th><th>의미와 예</th></tr></thead>
+<tr><td rowspan="2" style="text-align:center">같이</td><td style="text-align:center">부사</td><td>단독으로 쓰이며 '함께', '다름이 없이'의 뜻을 지님.<br><span class="yi">예</span>시간이 화살과 같이 간다.<span class="n c-b">띄어</span></td></tr>
+<tr><td style="text-align:center">조사</td><td><span class="ci">체언</span>에 붙어 '앞말의 전형적인 특징처럼'의 뜻을 나타냄.<br><span class="yi">예</span>얼음같이 차갑다.<span class="n c-b">붙여</span></td></tr>
+<tr><td rowspan="2" style="text-align:center"><span class="ci">대로</span></td><td style="text-align:center"><span class="ci">의존 명사</span></td><td><span class="ci">관형어</span> 뒤에서 '이와 같이', '즉시' 등의 뜻을 나타냄.<br><span class="yi">예</span>약속한 대로 이야기해라.</td></tr>
+<tr><td style="text-align:center"><span class="u">조사</span></td><td><span class="ci">체언</span>에 붙어 앞말과 같음을 나타냄.<br><span class="yi">예</span>약속대로 가 보자.</td></tr>
+<tr><td rowspan="2" style="text-align:center">만</td><td style="text-align:center">의존 명사</td><td><span class="ci">관형어</span> 뒤에서 '동안', '거리' 등을 나타냄.<br><span class="yi">예</span>택배가 하루 만에 왔다.<span class="n c-r">'하루' 뒤인데도 시간 경과 → 띄어!</span></td></tr>
+<tr><td style="text-align:center">조사</td><td><span class="ci">체언</span>에 붙어 한정, 비교의 뜻을 나타냄.<br><span class="yi">예</span>하루만 쉬고 싶다.</td></tr>
+<tr><td rowspan="2" style="text-align:center">만큼</td><td style="text-align:center">의존 명사</td><td>관형어 뒤에서 수량, 정도, 원인의 뜻을 나타냄.<br><span class="yi">예</span>노력한 만큼 얻는다.</td></tr>
+<tr><td style="text-align:center">조사</td><td><span class="ci">체언에</span> 붙어 앞말과 비슷한 정도나 한도임을 나타냄.<br><span class="yi">예</span>키가 전봇대만큼 크다.</td></tr>
+<tr><td rowspan="2" style="text-align:center">뿐</td><td style="text-align:center">의존 명사</td><td>관형어 뒤에서 '따름'의 뜻을 나타냄.<br><span class="yi">예</span>미소 지을 <span class="ci">뿐</span>이다.</td></tr>
+<tr><td style="text-align:center">조사</td><td><span class="ci">체언</span>에 붙어 한정, 비교의 뜻을 나타냄.<br><span class="yi">예</span>하나뿐인 동생</td></tr>
+<tr><td rowspan="2" style="text-align:center">지</td><td style="text-align:center">어미</td><td>어간과 <span class="u">결합하여</span> <span class="ci">의문</span>, 추측의 뜻을 나타냄.<br><span class="yi">예</span>추운지 입술이 파랗다.<span class="n c-b">'-ㄴ지' 통째로 어미 → 붙여</span></td></tr>
+<tr><td style="text-align:center">의존 명사</td><td>관형어 뒤에서 <span class="ci">'동안'</span>의 뜻을 나타냄.<br><span class="yi">예</span>친구를 본 지 오래되었다.<span class="n c-b">시간 경과 → 띄어</span></td></tr>
+</table>
+</div>
+
+<div class="pg">
+<div class="hd" style="grid-template-columns:0 1fr"><div></div><div class="tx" style="font-size:9.5pt;justify-content:space-between;width:100%"><span>3. 국어의 어제와 오늘</span><span>1학년 &nbsp;&nbsp;반 &nbsp;&nbsp;번 &nbsp;&nbsp;&nbsp;이름</span></div></div>
+<div class="rule" style="margin-top:6mm">④ <b>제43항</b> 단위를 나타내는 명사는 띄어 쓴다.<span class="n c-g">#단위 명사 = 개, 대, 마리처럼 세는 말</span></div>
+<div class="ex">(예) 한 개, 차 한 대, 강아지 한 마리</div>
+<div class="ex"><b>다만</b>, 순서를 나타내는 경우나 숫자와 어울리어 쓰이는 경우에는 붙여 쓸 수 있다.</div>
+<div class="ex">(예) 두 시 삼십 분 오 초/두시 삼십분 오초, 제일 과/제일과, 육 층/육층, 10 월 20 일/10월 20일</div>
+<div class="rule"><span class="ci">⑤</span> <b>제45항</b> 두 말을 이어 주거나 열거할 적에 쓰이는 말들은 띄어 쓴다.</div>
+<div class="ex">(예) 사장 <u>겸</u> 대표, 청군 <u>대</u> 백군, 열 <u>내지</u> 스물, 사과 <u>및</u> 배, 과자, 과일, 식혜 <u>등</u>이 많다</div>
+<div class="rule">⑥ <b>제47항</b> 보조 용언은 띄어 씀을 원칙으로 하되, 경우에 따라 붙여 씀도 허용한다.<span class="n c-g">#보조 용언 = 앞 용언을 돕는 말(간다, 드린다)</span></div>
+<div class="ex">(예) 불이 꺼져 간다.(원칙) - 불이 꺼져간다.(허용)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;어머니를 도와 드린다.(원칙) - 어머니를 도와드린다.(허용)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;비가 올 <u>듯하다</u>.(원칙) - 비가 올듯하다.(허용) / 잘 아는 <u>척하다</u>.(원칙) - 잘 아는척하다.(허용)</div>
+<div class="ex prt-red">↳ 의존 명사 '양, 성, 척, 만, 법, 듯' 등에 '-싶다'나 '-하다'가 결합하여 된 보조 용언에 해당한다.</div>
+<div class="ex"><b>다만</b>, 앞말에 조사가 붙거나 앞말이 합성 용언인 경우, 그리고 중간에 조사가 들어갈 적에는 그 뒤에 오는 보조 용언은 띄어 쓴다.</div>
+<div class="ex">(예) 책을 읽어<u>도</u> 보고, <u>떠내려가</u> 버렸다, 이런 기회는 <u>다시없을</u> 듯하다. 잘난 체<u>를</u> 한다.</div>
+<div class="ex prt-red">앞말(본용언)에 조사가 붙음 &nbsp;·&nbsp; 합성 동사 &nbsp;·&nbsp; 합성 형용사 &nbsp;·&nbsp; 보조 용언 중간에 조사가 들어감</div>
+<div class="p"><span class="n c-r" style="margin-left:0">'다만' 3가지 = 무조건 띄어! (조사 붙음 / 합성 용언 / 중간에 조사)</span></div>
+
+<div class="prt-blue" style="padding:2mm 4mm;margin:4mm 0">
+<div><b style="color:#1f3c8a">&lt;참 고&gt;</b> <b>띄어쓰기 시 주의할 점</b></div>
+<div>① 띄어쓰기 : <b>의존 명사도 단어(명사)이므로 띄어 쓴다.</b> (예) 아는∨것이 힘이다. 할∨수 있다</div>
+<div>② 붙여쓰기 : <b>조사, 어미, 접사는 붙여 쓴다.</b> (예) <u>집에서부터</u>, <u>잡았다</u>, <u>풋사과</u>, <u>장난꾸러기</u></div>
+<div class="prt-red" style="margin-left:42mm">조사 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 어미 &nbsp;&nbsp; 접사 &nbsp;&nbsp;&nbsp;&nbsp; 접사</div>
+<div>③ 둘 다 허용 : <b>보조 용언</b> (예) 불이 <u>꺼져∨간다</u>.(원칙), 불이 <u>꺼져간다</u>(허용)</div>
+<div class="prt-red" style="margin-left:40mm">본용언 &nbsp; 보조 용언</div>
+</div>
+
+<div style="font-weight:700;margin-top:4mm">▣ 띄어쓰기에 관한 규정을 참고하여 제시된 문장의 띄어쓰기를 바르게 고쳐 보자.</div>
+<table class="tb grid fixrow" style="margin-top:2mm">
+<tr><td><span style="color:#1f3c8a">(예)</span> 나무<span class="c-r">∨</span>한<span class="c-r">∨</span>그루<span class="c-r">⌒</span>가 있다.</td></tr>
+<tr><td>① 이사건은 모두가 놀랄 일이다.<span class="n c-b">→ 이∨사건은</span><span class="n c-g">(관형사 '이'는 한 단어, 제2항)</span></td></tr>
+<tr><td>② 강아지 다섯마리가 차한대를 쫓아서 뛰었다.<span class="n c-b">→ 다섯∨마리가, 차∨한∨대를</span><span class="n c-g">(단위 명사, 제43항)</span></td></tr>
+<tr><td>③ 그가 공부를 잘하는줄은 알았다.<span class="n c-b">→ 잘하는∨줄은</span><span class="n c-g">(의존 명사 '줄', 제42항)</span></td></tr>
+<tr><td>④ 가진 것은 체력 뿐이다.<span class="n c-b">→ 체력뿐이다</span><span class="n c-r">(체언 뒤 '뿐' = 조사 → 붙여!)</span></td></tr>
+<tr><td>⑤ 비가 올 확률은 50%내지60%이다.<span class="n c-b">→ 50%∨내지∨60%이다</span><span class="n c-g">(제45항)</span></td></tr>
+<tr><td>⑥ 방학이 시작된지 이틀이 지났다.<span class="n c-b">→ 시작된∨지</span><span class="n c-g">('동안' 의존 명사)</span></td></tr>
+<tr><td>⑦ 아는대로 답을 쓰고 나왔다.<span class="n c-b">→ 아는∨대로</span><span class="n c-g">(관형어 뒤 의존 명사)</span></td></tr>
+</table>
+</div>
+
+</div>
+<script>/* 사이트용 학습지 스크립트 — 부모 페이지(index.html)와 postMessage로 대화한다.
+ * 모드: notes(필기 보기) / quiz(필기 자리 빈칸 채우기) / clean(깨끗한 원본)
+ * 쪽:   both(펼침) / 1 / 2
+ */
+(function () {
+  var SHEET = document.body.getAttribute('data-sheet') || location.pathname;
+  var spread = document.querySelector('.spread');
+  var pages = Array.prototype.slice.call(document.querySelectorAll('.pg'));
+  var state = { mode: 'notes', page: 'both', zoom: 1 };
+  var built = false, items = [];
+  var MMPX = 96 / 25.4;
+
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+
+  function fit() {
+    var w = (state.page === 'both' ? 420 : 210) * MMPX;
+    document.documentElement.style.zoom = (window.innerWidth / w).toFixed(4);
+  }
+  function applyPage() {
+    if (state.page === 'both') {
+      spread.style.width = '420mm'; spread.style.gridTemplateColumns = '210mm 210mm';
+      pages.forEach(function (p) { p.style.display = ''; });
+    } else {
+      spread.style.width = '210mm'; spread.style.gridTemplateColumns = '210mm';
+      pages.forEach(function (p, i) { p.style.display = String(i + 1) === state.page ? '' : 'none'; });
+    }
+    fit();
+  }
+
+  function norm(s) { return (s || '').replace(/[\s#()\[\]{}·,.\/→←↔=!?'"‘’“”~\-:;…<>*★✔]/g, '').toLowerCase(); }
+  function textOf(el) { return el.classList.contains('ov') ? el.getAttribute('data-o') || '' : el.textContent; }
+
+  function build() {
+    if (built) return; built = true;
+    var els = document.querySelectorAll('.n, .lm, .fill, .ov');
+    var idx = 0;
+    els.forEach(function (el) {
+      if (el.closest('.legend')) return;
+      if (el.parentElement && el.parentElement.closest('.n, .fill')) return;   // 바깥 필기 하나로 처리
+      var ans = textOf(el).trim();
+      if (!/[가-힣A-Za-z0-9ㄱ-ㅎ○×]/.test(ans)) return;
+      var key = 'blank:' + SHEET + ':' + (idx++);
+      var isOv = el.classList.contains('ov');
+      var short = norm(ans).length <= 14 && !el.querySelector('s, .bx, .ci');
+      if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+      var item = { el: el, ans: ans, key: key, ok: false, input: null, cover: null, ov: isOv };
+      if (short) {
+        var inp = document.createElement('input');
+        inp.className = 'qin' + (isOv ? ' qin-ov' : '');
+        inp.setAttribute('aria-label', '필기 빈칸');
+        inp.autocomplete = 'off';
+        if (isOv) inp.style.width = Math.max(3, ans.length * 0.75 + 1.2) + 'em';
+        var saved = store(key); if (saved) inp.value = saved;
+        inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { check(item, true); inp.blur(); } });
+        inp.addEventListener('change', function () { store(key, inp.value); check(item, true); });
+        item.input = inp; el.appendChild(inp);
+        if (saved) check(item, false);
+      } else {
+        var cv = document.createElement('button');
+        cv.type = 'button'; cv.className = 'qcover' + (isOv ? ' qcover-ov' : '');
+        cv.textContent = '눌러서 확인';
+        if (isOv) cv.style.width = Math.max(3, ans.length * 0.7 + 1) + 'em';
+        cv.addEventListener('click', function () { item.el.classList.add('qrev'); cv.remove(); report(); });
+        item.cover = cv; el.appendChild(cv);
+      }
+      items.push(item);
+    });
+  }
+
+  function check(item, rep) {
+    var v = norm(item.input.value), a = norm(item.ans);
+    item.ok = v.length > 0 && (v === a || (a.length > 3 && v.length >= a.length * 0.8 && a.indexOf(v) >= 0));
+    item.input.classList.toggle('ok', item.ok);
+    item.input.classList.toggle('bad', !!v && !item.ok);
+    if (rep) report();
+  }
+  function report() {
+    var total = 0, ok = 0, covers = 0, opened = 0;
+    items.forEach(function (it) {
+      if (it.input) { total++; if (it.ok) ok++; } else { covers++; if (it.el.classList.contains('qrev')) opened++; }
+    });
+    parent.postMessage({ type: 'sheet-score', sheet: SHEET, ok: ok, total: total, covers: covers, opened: opened }, '*');
+  }
+  function reveal() {
+    items.forEach(function (it) {
+      if (it.input && !it.ok) { it.input.classList.add('shown'); it.input.value = it.ans; it.input.classList.remove('bad'); }
+      if (it.cover) { it.el.classList.add('qrev'); it.cover.remove(); }
+    });
+  }
+  function reset() {
+    items.forEach(function (it) {
+      if (it.input) { it.input.value = ''; it.ok = false; it.input.className = 'qin' + (it.ov ? ' qin-ov' : ''); store(it.key, ''); }
+      if (it.el.classList.contains('qrev')) { it.el.classList.remove('qrev'); if (it.cover) it.el.appendChild(it.cover); }
+    });
+    report();
+  }
+
+  function setMode(m) {
+    state.mode = m;
+    document.body.classList.toggle('mode-blank', m === 'clean');
+    document.body.classList.toggle('mode-quiz', m === 'quiz');
+    if (m === 'quiz') { build(); report(); }
+  }
+
+  window.addEventListener('message', function (e) {
+    var d = e.data || {};
+    if (d.cmd === 'mode') setMode(d.mode);
+    if (d.cmd === 'page') { state.page = d.page; applyPage(); }
+    if (d.cmd === 'reveal') { reveal(); report(); }
+    if (d.cmd === 'reset') reset();
+  });
+  window.addEventListener('resize', fit);
+  applyPage();
+  parent.postMessage({ type: 'sheet-ready', sheet: SHEET }, '*');
+})();
+</script></body></html>
