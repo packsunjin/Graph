@@ -53,6 +53,9 @@
 ## 학습 사이트 (study/site)
 
 모든 학습지를 한곳에서 보는 사이트: https://claude.ai/artifact/9e9ZeUBNgsqtszNq3cPrhn
-- 학습지마다 탭 4개: 필기 학습지(필기 보기/깨끗한 원본) · 빈칸 채우기(필기 자리가 입력칸, 자동 채점) · 개념 문제 · 실전 문제.
-- 새 학습지를 복원하면: ① `study/site/build.py`의 `SHEETS`에 추가 ② `study/site/index.html`의 `UNITS`·`WORKS`에 작품 정보와 개념 문제(학습지 필기를 그대로 묻는 OX·단답·선택), 실전 문제(기출·모의고사 유형을 참고해 새로 만든 5지선다, `src`에 참고 유형)를 추가 ③ `python3 study/site/build.py` ④ 같은 아티팩트 URL로 다시 배포(`files`에 sheets/*.html 포함).
+- 구조: 과목 → 단원 → 학습지. 홈 = 오늘 복습(간격 반복: 틀리면 내일, 맞히면 1·3·7·14·30일 뒤) + 이어서 하기 + 과목별 진도.
+- 학습지마다 4단계 순서: ① 읽기(필기 학습지) → ② 빈칸(필기 자리 입력, 80% 이상이면 완료) → ③ 개념(OX·단답·선택) → ④ 실전(기출 유형 참고 5지선다). 모든 문제는 오답 뒤 해설을 보여 준다.
+- 근거: 시험 효과(인출 연습), 간격 효과, 오답 피드백 필수. 글꼴은 익숙한 고딕 한 가지(Noto Sans KR), 손글씨체·읽기 어려운 글꼴 금지(disfluency 효과는 재현 실패), 글줄 66자 이내.
+- 파일: `app.html`(화면) + `data.js`(UNITS·WORKS 문제 데이터) → `build.py`가 `index.html`과 `sheets/*.html`을 만든다.
+- 새 학습지: ① `build.py`의 `SHEETS`에 추가 ② `data.js`의 `UNITS`·`WORKS`에 작품·문제 추가 ③ 다른 과목이면 `app.html`의 `SUBJECTS`에 과목 추가(units 배열은 그 과목 데이터) ④ `python3 study/site/build.py` ⑤ 같은 아티팩트 URL로 다시 배포(`files`에 sheets/*.html 포함).
 - 기출 원문은 저작권 때문에 그대로 싣지 않고 같은 형식으로 새로 만든다.

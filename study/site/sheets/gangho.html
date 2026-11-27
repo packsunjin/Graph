@@ -16,7 +16,10 @@
  * 용지: 원본 A4 두 쪽 펼침 = A3 가로 한 장 (.spread 안 .pg 두 개)
  * 빈 학습지: body.mode-blank → 필기 전부 숨김
  */
-@import url("https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Nanum+Pen+Script&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap");
+/* 5) 필기 글꼴 = 익숙한 고딕(본고딕). 익숙한 글꼴일수록 빨리 읽히고(시선 추적 연구), 화면에선 고딕이 명조보다 잘 읽히는 조건이 있으며(2016 스마트폰 타이포그래피),
+ *    "읽기 어려운 글꼴이 기억에 좋다"(disfluency)는 재현 실패로 근거가 약함 → 손글씨체를 쓰지 않는다. */
+:root { --note:"Noto Sans KR","Noto Sans CJK KR","Nanum Gothic",sans-serif; }
 
 :root { --ink:#111; --b:#1f4fc4; --g:#0d8a3e; --p:#7a35b8; --r:#d6202a; --mark:#777; --hl:#fff176; }
 @page { size: A3 landscape; margin: 0; }
@@ -37,13 +40,13 @@ body { margin:0; background:#fff; color:var(--ink);
 .lm { text-align:right; padding-right:2mm; }
 
 /* 필기 글씨 */
-.n, rt, .lm { font-family:"Nanum Pen Script",cursive; line-height:1; }
-.n, .lm { font-size:12.5pt; }
+.n, rt, .lm { font-family:var(--note); line-height:1.15; letter-spacing:-0.2px; }
+.n, .lm { font-size:8.4pt; font-weight:500; }
 .n { margin-left:2.5mm; }
-rt { font-size:9.5pt; }
+rt { font-size:7.4pt; }
 .c-b, rt.c-b { color:var(--b); }  .c-g, rt.c-g { color:var(--g); }
 .c-p, rt.c-p { color:var(--p); }  .c-r, rt.c-r { color:var(--r); }
-.big { font-size:15pt; }
+.big { font-size:10.5pt; font-weight:700; }
 .oval { border:1.3px solid currentColor; border-radius:999px; padding:0 6px; }
 
 /* 표시 (회색 = 위치 표시일 뿐) */
@@ -59,7 +62,7 @@ rt { font-size:9.5pt; }
 .opt { margin:0.7mm 0 0.7mm 3mm; }
 .bogi { border:1px solid #333; padding:2mm 4mm; margin:2mm 0 2mm 3mm; line-height:1.7; }
 .bogi .t { text-align:center; }
-.legend { font-family:"Nanum Pen Script",cursive; font-size:12pt; border:1px dashed #aaa; border-radius:6px; padding:1.5mm 3mm; display:inline-block; line-height:1.15; }
+.legend { font-family:var(--note); font-size:8.6pt; font-weight:500; border:1px dashed #aaa; border-radius:6px; padding:1.5mm 3mm; display:inline-block; line-height:1.15; }
 .right-top { display:flex; justify-content:space-between; align-items:flex-start; }
 
 body.mode-blank .n, body.mode-blank .lm, body.mode-blank rt, body.mode-blank .legend, body.mode-blank .note-only { visibility:hidden; }
@@ -71,14 +74,14 @@ body.mode-blank .hl { background:none; }
 /* 글자 위 필기: <span class="ov ov-b" data-o="필기">원문</span> — 원문 글자 간격을 건드리지 않음 */
 .ov { position:relative; }
 .ov::before { content:attr(data-o); position:absolute; left:0; bottom:88%; white-space:nowrap;
-  font-family:"Nanum Pen Script",cursive; font-size:10pt; line-height:1; }
+  font-family:var(--note); font-size:7.6pt; font-weight:500; letter-spacing:-0.2px; line-height:1; }
 .ov-b::before { color:var(--b); } .ov-g::before { color:var(--g); } .ov-p::before { color:var(--p); } .ov-r::before { color:var(--r); }
 body.mode-blank .ov::before { visibility:hidden; }
 .pg.left { padding-top:9mm; }
 .r { min-height:5.6mm; }
 .r { min-height:0; line-height:1.38; }
 .r.has-ov { padding-top:2.6mm; }
-.ov::before { font-size:9.5pt; bottom:92%; }
+.ov::before { font-size:7.6pt; bottom:98%; }
 .r { line-height:1.5; }
 .bogi { line-height:2.15; }
 .bogi { line-height:1.95; }
@@ -90,7 +93,7 @@ body.oldhangul { font-family:"Noto Serif CJK KR","Nanum Myeongjo",serif; }   /* 
 body.sans { font-family:"Noto Sans CJK KR","Nanum Gothic",sans-serif; }
 .oh { font-family:"Noto Serif CJK KR",serif; }
 /* 빈칸에 손으로 쓴 답 = 검정 펜 (내용 자체이므로 본문과 같은 검정 계열) */
-.fill { font-family:"Nanum Pen Script",cursive; font-size:14pt; color:#222; line-height:1; }
+.fill { font-family:var(--note); font-size:9.6pt; font-weight:700; color:#222; line-height:1.1; }
 body.mode-blank .fill { visibility:hidden; }
 .blank { display:inline-block; min-width:22mm; border-bottom:1px solid #555; text-align:center; }
 .sq { display:inline-block; width:4.2mm; height:4.2mm; border:1px solid #333; vertical-align:-0.6mm; margin:0 0.3mm; }
@@ -136,13 +139,13 @@ body.mode-quiz .qin { color:#1f2a44 !important; }
 body.mode-quiz .qin.ok { color:#0d5f33 !important; } body.mode-quiz .qin.shown { color:#2953c6 !important; }
 body.mode-quiz .qcover { color:#5d6472 !important; }
 .qin { position:absolute; left:0; top:0; width:100%; height:100%; min-width:3em; box-sizing:border-box;
-  font:inherit; font-family:"Nanum Pen Script",cursive; font-size:12.5pt; color:#1f2a44; padding:0 3px;
+  font:inherit; font-family:"Noto Sans KR","Noto Sans CJK KR",sans-serif; font-size:8.6pt; font-weight:500; color:#1f2a44; padding:0 3px;
   background:#fff8d6; border:1.3px dashed #c9a227; border-radius:3px; outline:none; }
 .qin:focus { border-style:solid; border-color:#2953c6; background:#fff; }
 .qin.ok { background:#e5f6ec; border:1.3px solid #138a4a; color:#0d5f33; }
 .qin.bad { background:#fdeaea; border:1.3px solid #cf2f37; }
 .qin.shown { background:#eef2ff; border:1.3px solid #2953c6; color:#2953c6; }
-.qin-ov { top:auto; bottom:92%; height:1.5em; font-size:10pt; }
+.qin-ov { top:auto; bottom:92%; height:1.6em; font-size:7.8pt; }
 .qcover { position:absolute; inset:0; min-width:4em; cursor:pointer; border:1.3px dashed #9aa3b5; border-radius:3px;
   background:repeating-linear-gradient(135deg,#eef1f6 0 6px,#e3e7ef 6px 12px); color:#5d6472;
   font:11px "Noto Sans KR",sans-serif; padding:0; }

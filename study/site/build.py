@@ -45,13 +45,13 @@ body.mode-quiz .qin { color:#1f2a44 !important; }
 body.mode-quiz .qin.ok { color:#0d5f33 !important; } body.mode-quiz .qin.shown { color:#2953c6 !important; }
 body.mode-quiz .qcover { color:#5d6472 !important; }
 .qin { position:absolute; left:0; top:0; width:100%%; height:100%%; min-width:3em; box-sizing:border-box;
-  font:inherit; font-family:"Nanum Pen Script",cursive; font-size:12.5pt; color:#1f2a44; padding:0 3px;
+  font:inherit; font-family:"Noto Sans KR","Noto Sans CJK KR",sans-serif; font-size:8.6pt; font-weight:500; color:#1f2a44; padding:0 3px;
   background:#fff8d6; border:1.3px dashed #c9a227; border-radius:3px; outline:none; }
 .qin:focus { border-style:solid; border-color:#2953c6; background:#fff; }
 .qin.ok { background:#e5f6ec; border:1.3px solid #138a4a; color:#0d5f33; }
 .qin.bad { background:#fdeaea; border:1.3px solid #cf2f37; }
 .qin.shown { background:#eef2ff; border:1.3px solid #2953c6; color:#2953c6; }
-.qin-ov { top:auto; bottom:92%%; height:1.5em; font-size:10pt; }
+.qin-ov { top:auto; bottom:92%%; height:1.6em; font-size:7.8pt; }
 .qcover { position:absolute; inset:0; min-width:4em; cursor:pointer; border:1.3px dashed #9aa3b5; border-radius:3px;
   background:repeating-linear-gradient(135deg,#eef1f6 0 6px,#e3e7ef 6px 12px); color:#5d6472;
   font:11px "Noto Sans KR",sans-serif; padding:0; }
@@ -76,3 +76,9 @@ for sid, name in SHEETS.items():
     src = src.replace('</body>', '<script>' + js + '</script></body>')
     (SITE / 'sheets' / (sid + '.html')).write_text(src)
     print('built', sid)
+
+# 사이트 본문: app.html(화면) + data.js(학습지·문제) → index.html
+app = (SITE / 'app.html').read_text()
+data = (SITE / 'data.js').read_text()
+(SITE / 'index.html').write_text(app.replace('/*DATA*/', data))
+print('built index.html')
