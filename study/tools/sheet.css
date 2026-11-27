@@ -82,3 +82,31 @@ body.mode-blank .ov::before { visibility:hidden; }
 .bogi { line-height:1.95; }
 .q { margin:3.2mm 0 0.8mm; }
 .opt { margin:0.4mm 0 0.4mm 3mm; }
+
+/* ═══ 공통 확장 (여러 학습지 양식) ═══ */
+body.oldhangul { font-family:"Noto Serif CJK KR","Nanum Myeongjo",serif; }   /* 아래아(ㆍ) 등 옛한글 */
+body.sans { font-family:"Noto Sans CJK KR","Nanum Gothic",sans-serif; }
+.oh { font-family:"Noto Serif CJK KR",serif; }
+/* 빈칸에 손으로 쓴 답 = 검정 펜 (내용 자체이므로 본문과 같은 검정 계열) */
+.fill { font-family:"Nanum Pen Script",cursive; font-size:14pt; color:#222; line-height:1; }
+body.mode-blank .fill { visibility:hidden; }
+.blank { display:inline-block; min-width:22mm; border-bottom:1px solid #555; text-align:center; }
+.sq { display:inline-block; width:4.2mm; height:4.2mm; border:1px solid #333; vertical-align:-0.6mm; margin:0 0.3mm; }
+.tb { width:100%; border-collapse:collapse; margin:1.5mm 0 4mm; font-size:10pt; }
+.tb th, .tb td { border-bottom:1px solid #999; padding:1.4mm 2mm; text-align:left; vertical-align:middle; }
+.tb th { background:#d9d9d9; text-align:center; font-weight:700; white-space:nowrap; }
+.tb.grid th, .tb.grid td { border:1px solid #888; }
+.tb thead th { background:#cfcfcf; }
+.sec { font-weight:700; margin:4mm 0 1mm; }
+.ttl { font-size:15pt; font-weight:800; border-bottom:2px solid #333; padding-bottom:1mm; margin:3mm 0 3mm; }
+.ttl small { font-size:10.5pt; font-weight:400; }
+.box { border:1px solid #777; margin:2mm 0; }
+.box > .bh { background:#d0d0d0; text-align:center; font-weight:700; padding:1.5mm; line-height:1.35; }
+.box > .bb { padding:2mm 3mm; line-height:1.6; }
+.prt-red { color:#b3262e; font-size:9pt; font-family:"Noto Sans CJK KR","Nanum Gothic",sans-serif; }   /* 원본에 인쇄된 빨간 글씨 */
+.prt-blue { background:#dde8f6; }
+.p { margin:1mm 0; }
+.ind { margin-left:5mm; }
+.qn { font-weight:700; margin-right:1.5mm; }
+.ox { display:inline-block; min-width:9mm; text-align:center; }
+.fold { line-height:1.75; }
