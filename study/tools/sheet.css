@@ -1,14 +1,22 @@
-/* 원본 학습지 그대로 복원 (크기·양식·줄 위치 동일) + 같은 자리에 필기
+/* 원본 학습지 그대로 복원 (크기·양식·줄 위치 동일) + 근거 있는 필기
  *
- * 용지: 원본처럼 A4 두 쪽 펼침 = A3 가로 한 장 (.spread 안에 .pg 두 개)
- * 한 줄: <div class="r"><div class="lm">왼쪽 여백</div><div class="tx">본문</div><div class="rm">오른쪽 여백</div></div>
- * 글자 위 필기: <ruby>원문<rt>필기</rt></ruby>
- * 파란 펜 = 원래 학습지에 있던 필기 / 빨간 펜(.add) = 100점용 추가 필기·용어 뜻(📌)
- * 빈 학습지: body.mode-blank → 필기 전부 숨김 (render_pdf.js가 자동 처리)
+ * ── 필기 규칙 (근거) ──
+ * 1) 위치: 필기는 해당 단어 "바로 위"(ruby) 또는 그 줄 "바로 옆"(.n)에 쓴다. 멀리 떨어진 여백 칸 금지.
+ *    근거: 공간 근접 원리(Mayer) / 주의 분산 효과 — 관련 정보가 떨어져 있으면 눈이 오가며 학습이 떨어짐
+ *    (Ginns 2006 메타분석 d=0.85).
+ * 2) 색: 작성자가 아니라 "의미"로 색을 고정하고, 4색 이내로 쓴다 (색이 일관된 의미를 가질 때 기억 단서가 됨).
+ *      파랑 .c-b = 뜻 풀이·해석      초록 .c-g = 표현법·개념어(+뜻)
+ *      보라 .c-p = 구조·정서 흐름     빨강 .c-r = 시험 함정·정답 근거 (아껴 씀)
+ *      노란 형광 .hl = 핵심 문장 몇 개만 / 회색 = 밑줄·네모 표시
+ * 3) 강조는 드물게: 다른 것과 달라야 기억됨(폰 레스토프 효과). 형광펜 남발은 효과 낮음(Dunlosky 2013).
+ * 4) 빨강 최소화: 시험 맥락에서 빨강은 실패·회피를 떠올리게 함(Elliot 2007) → "틀리기 쉬운 곳" 경고에만.
+ *
+ * 용지: 원본 A4 두 쪽 펼침 = A3 가로 한 장 (.spread 안 .pg 두 개)
+ * 빈 학습지: body.mode-blank → 필기 전부 숨김
  */
 @import url("https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Nanum+Pen+Script&display=swap");
 
-:root { --ink:#111; --pen:#1f4fc4; --red:#d6202a; }
+:root { --ink:#111; --b:#1f4fc4; --g:#0d8a3e; --p:#7a35b8; --r:#d6202a; --mark:#777; --hl:#fff176; }
 @page { size: A3 landscape; margin: 0; }
 * { box-sizing: border-box; }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -19,38 +27,58 @@ body { margin:0; background:#fff; color:var(--ink);
 .pg { position:relative; height:297mm; padding:11mm 9mm 12mm 9mm; }
 .pg.left { border-right:0.3mm dashed #ccc; }
 .pno { position:absolute; bottom:6mm; left:0; right:0; text-align:center; font-size:9.5pt; }
-
-.hd { display:grid; grid-template-columns:16mm 1fr; font-size:10.5pt; margin-bottom:3mm; }
+.hd { display:grid; grid-template-columns:14mm 1fr; margin-bottom:3mm; }
 .hd .tx { display:flex; gap:9mm; white-space:nowrap; }
 
-.r  { display:grid; grid-template-columns:16mm 98mm 1fr; align-items:end; min-height:5.75mm; }
-.r2 { display:grid; grid-template-columns:1fr 40mm; align-items:start; }
-.tx { white-space:nowrap; }
-.r2 > .tx { white-space:normal; }
+.r { display:grid; grid-template-columns:14mm 1fr; align-items:end; min-height:5.75mm; }
+.r .tx { white-space:nowrap; }
 .lm { text-align:right; padding-right:2mm; }
-.rm { padding-left:2mm; }
 
-.pen, rt, .lm, .rm { font-family:"Nanum Pen Script",cursive; color:var(--pen); }
-.lm, .rm, .pen { font-size:12pt; line-height:1; }
-.pg.left .rm { white-space:nowrap; }
-rt { font-size:9.5pt; line-height:1; }
-.add, .add rt, rt.add { color:var(--red) !important; }
+/* 필기 글씨 */
+.n, rt, .lm { font-family:"Nanum Pen Script",cursive; line-height:1; }
+.n, .lm { font-size:12.5pt; }
+.n { margin-left:2.5mm; }
+rt { font-size:9.5pt; }
+.c-b, rt.c-b { color:var(--b); }  .c-g, rt.c-g { color:var(--g); }
+.c-p, rt.c-p { color:var(--p); }  .c-r, rt.c-r { color:var(--r); }
 .big { font-size:15pt; }
-.oval { border:1.4px solid var(--pen); border-radius:999px; padding:0 7px; display:inline-block; }
+.oval { border:1.3px solid currentColor; border-radius:999px; padding:0 6px; }
 
-.u  { text-decoration:underline 1.2px var(--pen); text-underline-offset:3px; }
-.bx { outline:1.2px solid var(--pen); outline-offset:1px; }
-.ci { border:1.2px solid var(--pen); border-radius:999px; padding:0 2px; }
-.ans { border:1.6px solid var(--red); border-radius:999px; padding:0 2px; }
+/* 표시 (회색 = 위치 표시일 뿐) */
+.u  { text-decoration:underline 1px var(--mark); text-underline-offset:3px; }
+.bx { outline:1px solid var(--mark); outline-offset:1px; }
+.ci { border:1px solid var(--mark); border-radius:999px; padding:0 2px; }
+.hl { background:linear-gradient(transparent 50%, var(--hl) 50%); }
+.ans { border:1.6px solid var(--r); border-radius:999px; padding:0 2px; }
 
+/* 2쪽 인쇄 요소 */
 .prbox { display:inline-block; border:1px solid #333; padding:0 4px; line-height:1.2; }
-.q { margin:5mm 0 1mm; }
-.opt { margin:0.6mm 0 0.6mm 3mm; }
-.bogi { border:1px solid #333; padding:2mm 4mm; margin:2mm 0 2mm 3mm; line-height:1.65; }
+.q { margin:4.5mm 0 1mm; }
+.opt { margin:0.7mm 0 0.7mm 3mm; }
+.bogi { border:1px solid #333; padding:2mm 4mm; margin:2mm 0 2mm 3mm; line-height:1.7; }
 .bogi .t { text-align:center; }
+.legend { font-family:"Nanum Pen Script",cursive; font-size:12pt; border:1px dashed #aaa; border-radius:6px; padding:1.5mm 3mm; display:inline-block; line-height:1.15; }
+.right-top { display:flex; justify-content:space-between; align-items:flex-start; }
 
-body.mode-blank .lm, body.mode-blank .rm, body.mode-blank .pen { visibility:hidden; }
-body.mode-blank rt { visibility:hidden; }
+body.mode-blank .n, body.mode-blank .lm, body.mode-blank rt, body.mode-blank .legend, body.mode-blank .note-only { visibility:hidden; }
 body.mode-blank .u { text-decoration:none; }
 body.mode-blank .bx { outline:none; }
-body.mode-blank .ci, body.mode-blank .ans, body.mode-blank .oval { border-color:transparent; }
+body.mode-blank .ci, body.mode-blank .ans { border-color:transparent; }
+body.mode-blank .hl { background:none; }
+
+/* 글자 위 필기: <span class="ov ov-b" data-o="필기">원문</span> — 원문 글자 간격을 건드리지 않음 */
+.ov { position:relative; }
+.ov::before { content:attr(data-o); position:absolute; left:0; bottom:88%; white-space:nowrap;
+  font-family:"Nanum Pen Script",cursive; font-size:10pt; line-height:1; }
+.ov-b::before { color:var(--b); } .ov-g::before { color:var(--g); } .ov-p::before { color:var(--p); } .ov-r::before { color:var(--r); }
+body.mode-blank .ov::before { visibility:hidden; }
+.pg.left { padding-top:9mm; }
+.r { min-height:5.6mm; }
+.r { min-height:0; line-height:1.38; }
+.r.has-ov { padding-top:2.6mm; }
+.ov::before { font-size:9.5pt; bottom:92%; }
+.r { line-height:1.5; }
+.bogi { line-height:2.15; }
+.bogi { line-height:1.95; }
+.q { margin:3.2mm 0 0.8mm; }
+.opt { margin:0.4mm 0 0.4mm 3mm; }
