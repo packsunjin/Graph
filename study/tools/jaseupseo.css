@@ -1,0 +1,123 @@
+/* 학원 자습서 스타일 — 학습지 디지털 복원 PDF용
+ * 같은 HTML로 두 가지 PDF를 뽑는다:
+ *   완성본(자습서)  : 빈칸 정답 + 선생님 필기 + 강조 박스 전부 보임
+ *   빈 학습지       : <body class="mode-blank"> → 정답·필기 숨김 (가리고 채우기 연습용)
+ */
+@import url("https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Nanum+Pen+Script&display=swap");
+
+:root {
+  --ink: #1d1d1f;
+  --sub: #5b5b66;
+  --line: #d9d9e0;
+  --red: #e0262f;        /* 빈칸 정답, 시험 포인트 */
+  --blue: #1f5fd6;       /* 선생님 필기 */
+  --hl: #fff27a;         /* 형광펜 */
+  --hl-pink: #ffc9de;
+  --hl-green: #c8f5c2;
+  --core-bg: #eef4ff;  --core-bd: #1f5fd6;
+  --exam-bg: #fff0f0;  --exam-bd: #e0262f;
+  --trap-bg: #fff8e6;  --trap-bd: #f0a400;
+  --tip-bg:  #effaf0;  --tip-bd:  #1e9e45;
+}
+
+@page { size: A4; margin: 14mm 13mm 16mm; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body {
+  margin: 0; color: var(--ink); background: #fff;
+  font-family: "Nanum Gothic", "NanumGothic", "NanumBarunGothic", sans-serif;
+  font-size: 10.5pt; line-height: 1.75; word-break: keep-all;
+}
+
+/* ── 머리말 ── */
+.head {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  border-bottom: 3px solid var(--ink); padding-bottom: 6px; margin-bottom: 14px;
+}
+.head .meta { font-size: 9pt; color: var(--sub); }
+.head .meta b { color: var(--ink); }
+h1 { font-size: 19pt; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
+.namebox { font-size: 9pt; color: var(--sub); border: 1px solid var(--line); padding: 3px 10px; border-radius: 4px; }
+
+/* ── 단원/소제목 ── */
+h2 {
+  font-size: 13pt; font-weight: 800; margin: 18px 0 8px;
+  display: flex; align-items: center; gap: 8px; break-after: avoid;
+}
+h2 .num {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 26px; height: 26px; padding: 0 6px; border-radius: 6px;
+  background: var(--ink); color: #fff; font-size: 11pt;
+}
+h3 { font-size: 11pt; font-weight: 800; margin: 12px 0 4px; padding-left: 8px; border-left: 4px solid var(--red); break-after: avoid; }
+p { margin: 4px 0; }
+ul, ol { margin: 4px 0; padding-left: 20px; }
+li { margin: 2px 0; }
+
+/* ── 빈칸 ── 사용법: <span class="blank" data-n="①">광합성</span> */
+.blank {
+  display: inline-block; min-width: 5.5em; padding: 0 4px; text-align: center;
+  border-bottom: 1.5px solid var(--ink); color: var(--red); font-weight: 800;
+}
+.blank::before { content: attr(data-n) " "; color: var(--sub); font-weight: 400; font-size: 0.85em; }
+
+/* ── 강조 ── */
+.hl   { background: linear-gradient(transparent 45%, var(--hl) 45%); font-weight: 700; }
+.hl-p { background: linear-gradient(transparent 45%, var(--hl-pink) 45%); font-weight: 700; }
+.hl-g { background: linear-gradient(transparent 45%, var(--hl-green) 45%); font-weight: 700; }
+.key  { color: var(--red); font-weight: 800; }
+.ul   { text-decoration: underline wavy var(--red); text-underline-offset: 3px; }
+.circle { border: 1.6px solid var(--red); border-radius: 999px; padding: 0 5px; }
+.star { color: var(--red); font-weight: 800; letter-spacing: -1px; }       /* ★★★ */
+.tag  { display: inline-block; font-size: 8pt; font-weight: 800; color: #fff; background: var(--red); border-radius: 3px; padding: 0 5px; margin-left: 4px; vertical-align: 2px; }
+.tag.blue { background: var(--blue); }
+
+/* ── 선생님 필기 (손글씨) ── 사용법: <span class="memo">이거 시험 나옴!</span> */
+.memo, .memo-block {
+  font-family: "Nanum Pen Script", cursive; color: var(--blue);
+  font-size: 1.45em; line-height: 1.2;
+}
+.memo { margin-left: 4px; }
+.memo-block { display: block; margin: 2px 0 6px 10px; }
+.memo-block::before { content: "✎ "; font-family: "Nanum Gothic", sans-serif; font-size: 0.6em; }
+.arrow::before { content: "→ "; }
+
+/* ── 박스 ── */
+.box { border: 1.5px solid; border-radius: 8px; padding: 8px 12px 8px; margin: 10px 0; break-inside: avoid; }
+.box > .label {
+  display: inline-block; font-weight: 800; font-size: 9.5pt; color: #fff;
+  border-radius: 4px; padding: 1px 8px; margin-bottom: 4px;
+}
+.box.core { background: var(--core-bg); border-color: var(--core-bd); }
+.box.core > .label { background: var(--core-bd); }
+.box.exam { background: var(--exam-bg); border-color: var(--exam-bd); }
+.box.exam > .label { background: var(--exam-bd); }
+.box.trap { background: var(--trap-bg); border-color: var(--trap-bd); }
+.box.trap > .label { background: var(--trap-bd); }
+.box.tip  { background: var(--tip-bg);  border-color: var(--tip-bd); }
+.box.tip  > .label { background: var(--tip-bd); }
+
+/* ── 표 ── */
+table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 10pt; break-inside: avoid; }
+th, td { border: 1px solid #b9b9c4; padding: 5px 8px; vertical-align: top; }
+th { background: #f1f1f5; font-weight: 800; }
+
+/* ── 그림 자리 ── */
+.figure { border: 1.5px dashed #b9b9c4; border-radius: 8px; padding: 10px; margin: 8px 0; text-align: center; color: var(--sub); font-size: 9.5pt; break-inside: avoid; }
+.figure img { max-width: 100%; max-height: 80mm; }
+.unreadable { background: #eee; color: #888; padding: 0 4px; border-radius: 3px; }
+
+/* ── 2단 ── */
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ── 쪽 나눔 / 바닥글 ── */
+.pagebreak { break-after: page; }
+.foot { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 4px; font-size: 8pt; color: var(--sub); text-align: right; }
+
+/* ═══ 빈 학습지 모드: 정답·필기·해설 박스 숨김 ═══ */
+body.mode-blank .blank { color: transparent; }
+body.mode-blank .memo, body.mode-blank .memo-block, body.mode-blank .answer-only { display: none !important; }
+body.mode-blank .hl, body.mode-blank .hl-p, body.mode-blank .hl-g { background: none; font-weight: inherit; }
+body.mode-blank .key { color: inherit; }
+body.mode-blank .ul { text-decoration: none; }
+body.mode-blank .circle { border-color: transparent; }
